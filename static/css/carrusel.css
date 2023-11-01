@@ -1,0 +1,40 @@
+.swiper {
+    width: 100%;
+    z-index: 0;
+  }
+
+  .img-carrusel{
+    height: 255px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: 1024px) {
+    .img-carrusel{
+        height: 300px;
+      }
+  }
+
+  @media (max-width: 670px) {
+    .img-carrusel{
+        height: 150px;
+      }
+  }
+
+  @media (max-width: 420px) {
+    .img-carrusel{
+        height: 120px;
+        border: 0;
+      }
+  }
+
+  .swiper-button-prev,
+  .swiper-button-next {
+    --swiper-navigation-size:20px;
+    --swiper-theme-color: white;
+    height: 70px;
+    width: 50px;
+    margin-top: -35px;
+  }
+
+

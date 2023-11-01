@@ -1,0 +1,90 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.oferts {
+    position: relative;
+    width: 100%;
+    max-height: 350px; /* Ajusta la altura máxima según tus necesidades */
+    overflow: hidden; /* Evita que los elementos se desborden del contenedor */
+    padding-top: 3vh;
+}
+
+.img-ofertas{
+    height: 100px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .overlay {
+    padding-top: 3vh;
+    padding-bottom: 2vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay h1 {
+    text-align: left;
+    color: rgb(15, 15, 15);
+    font-size: 30px;
+    margin: 3px;
+    font-weight: bold;
+}
+
+.overlay p {
+    text-transform: none;
+    display: inline; /* Hace que el texto se muestre en línea con el botón */
+    color: rgb(45, 45, 45);
+    font-size: 15px;
+    margin: 30px;
+    font-weight: bold;
+}
+
+.overlay .btn {
+    background: rgba(255, 255, 255, 0.096);
+    color: rgb(3, 3, 3);
+    border: 2px solid white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s, color 0.3s;
+    margin-top: 2px;
+    font-weight: bold;
+}
+
+.overlay .btn:hover {
+    background: white;
+    color: #333;
+}
+
+@media(max-width:750px){
+    .overlay h1 {
+        font-size: 20px;
+    }
+    .overlay p {
+        font-size: 12px;
+        margin: 10px;
+    }
+    .overlay .btn {
+        font-size: 12px;
+    }
+}
+
+@media(max-width:525px){
+    .overlay p {
+        display: none;
+    }
+    .overlay .btn {
+        font-size: 12px;
+        margin-top: 7px;
+    }
+}

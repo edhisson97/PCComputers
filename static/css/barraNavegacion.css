@@ -1,0 +1,151 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+}
+
+nav{
+    width: 100%;
+    height: 9vh;
+    background-color: #c2c0c0;
+    position: fixed;
+    z-index: 999;
+}
+
+.brand {
+    margin-right: 5%;
+    line-height: 8vh;
+}
+
+.brand a{
+    color: rgb(138, 5, 5);
+    font-size: 20px;
+}
+
+ul{
+    float: right;
+    margin-right: 5%;
+}
+
+nav ul li{
+    display: inline-block;
+    line-height: 8vh;
+}
+
+nav ul li a{
+    color: rgb(39, 37, 37);
+    font-size: 15px;
+    padding: 7px 13px;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+.logo img {
+    list-style: none;
+    width: 220px; /* Tamaño deseado en píxeles */
+    height: auto; /* Mantener la proporción original */
+    margin-left: 20px; /* Espacio izquierdo entre el logo y el contenido */
+}
+
+nav a {
+    text-decoration: none;
+    color: #fff; /* Color del texto de los enlaces */ 
+}
+
+.contenido{
+    padding-top: 13vh;
+    padding-left: 13vh;
+    padding-right: 13vh;
+}
+
+li a:hover{
+    background: rgb(254, 252, 252);
+    transition: .5s;
+}
+
+.checkbtn{
+    font-size: 30px;
+    color: white;
+    float: right;
+    line-height: 9vh;
+    margin-right: 8vh;
+    cursor: pointer;
+    display: none;
+}
+
+#check{
+    display: none;
+}
+
+/*para pantalla mas pequeña*/
+@media(max-width:1168px){
+    .logo img {
+        width: 200px; /* Tamaño deseado en píxeles */
+        margin-left: 5px; /* Espacio izquierdo entre el logo y el contenido */
+    }
+    ul{
+        margin-right: 1%;
+    }
+    nav ul li a{
+        font-size: 13px;
+        padding: 7px 13px;
+        border-radius: 3px;
+        margin-left: 5px;
+    }
+}
+
+/*para tablet*/
+@media(max-width:952px){
+    nav ul li a{
+        font-size: 15px;
+    }
+}
+
+/*para casi celular*/
+@media(max-width:1019px){
+    .checkbtn{
+        display: block;
+    }
+    ul{
+        position: fixed;
+        width: 40%;
+        height: 100vh;
+        background: rgb(37, 37, 37);
+        top: 64px;
+        left: -100%;
+        text-align: center;
+        transition: all .5s;
+    }
+    li {
+        display: block;
+    }
+    nav ul li{
+        display: block;
+        margin: 50px 0;
+        line-height: 15px;
+    }
+    nav ul li a{
+        color: rgb(243, 243, 243);
+        font-size: 15px;
+    }
+    li a:hover, li a.active{
+        background: none;
+        color: red;
+    }
+    #check:checked ~ ul{
+        left: 0;
+    }
+    .contenido{
+        padding-top: 12vh;
+        padding-left: 4vh;
+        padding-right: 4vh;
+    }
+}
+
+@media(max-width:600px){
+    ul{
+        width: 100%;
+    }
+}

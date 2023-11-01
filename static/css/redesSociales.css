@@ -1,0 +1,20 @@
+.social-icons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .social-icons a {
+    display: block;
+    margin-bottom: 10px;
+    transition: transform 0.3s; /* Agregamos una transición suave */
+  }
+  
+  .social-icons a:hover {
+    transform: scale(1.2); /* Escalamos el ícono al 120% del tamaño original en hover */
+  }
+  
+  .social-icons img {
+    width: 50px; /* Ajusta el ancho según tus preferencias */
+    height: auto;
+  }

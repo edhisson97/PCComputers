@@ -1,0 +1,85 @@
+{% extends "paginaInicio.html" %}
+
+{% block content %}
+{% load static %}
+    <!-- Slider main container -->
+    <div class="swiper">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+            <!-- Slides -->
+            <div class="swiper-slide"><img class="img-carrusel" src="{% static 'img/carrusel/oferta1.png' %}" alt="WhatsApp"></div>
+            <div class="swiper-slide"><img class="img-carrusel" src="{% static 'img/carrusel/oferta2.png' %}" alt="WhatsApp"></div>
+        </div>
+        <!-- If we need pagination -->
+        <div class="swiper-pagination"></div>
+    
+        <!-- If we need navigation buttons -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    
+    </div>
+
+    <div class="oferts">
+        <img class="img-ofertas" src="{% static 'img/fondo1.png' %}" alt="WhatsApp">
+        <div class="overlay">
+            <h1>PRODUCTOS EN OFERTA</h1>
+            <div class="button-container">
+                <p>Conoce todos los productos en descuento de nuestra tienda! </p>
+            <a href="#" class="btn">Ofertas <i class="fa-solid fa-angles-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="categoria-section">
+        <div class="categoria-title">
+            <h2>Categorías</h2>
+        </div>
+        <div class="categoria-grid">
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/accesorios.png' %}" alt="Categoría 1">
+                <h3>Accesorios y Suministros</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/monitor.png' %}" alt="Categoría 2">
+                <h3>Audio y Video</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/computadoras.png' %}" alt="Categoría 3">
+                <h3>Computadoras</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/componentes.png' %}" alt="Categoría 4">
+                <h3>Componentes</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/periferico.png' %}" alt="Categoría 5">
+                <h3>Periféricos</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/impresora.png' %}" alt="Categoría 5">
+                <h3>Impresión</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/proteccion.png' %}" alt="Categoría 5">
+                <h3>Protección de poder</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/seguridad.png' %}" alt="Categoría 5">
+                <h3>Seguridad y Vigilancia</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/redes.png' %}" alt="Categoría 5">
+                <h3>Redes</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/repuestos.png' %}" alt="Categoría 5">
+                <h3>Repuestos</h3>
+            </div>
+            <div class="categoria-item">
+                <img src="{% static 'img/categorias/software.png' %}" alt="Categoría 5">
+                <h3>Software, Programas, Licencias</h3>
+            </div>    
+        </div>
+    </div>
+    
+{% endblock %} 
