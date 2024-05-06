@@ -1,0 +1,42 @@
+{% extends "contraseñaPaginaInicio.html" %}
+
+{% block title %}PC Computers - Configurar nueva contraseña{% endblock %}
+
+{% block content %}
+{% load static %}
+    <div class="item-verificarcorreo">
+        <p> <i class="fa-solid fa-lock"></i></p>
+        <br>
+        <h4>Por favor, introduzca su contraseña nueva dos veces para verificar que la ha escrito correctamente.</h4>
+        <br>
+        <form action="" method="POST">
+                {% csrf_token %}
+                {% if form.errors %}
+                        <p id="error">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            {% for field, error_msgs in form.errors.items %}
+                                {% for error_msg in error_msgs %}
+                                    {{ error_msg }}
+                                {% endfor %}
+                            {% endfor %}
+                        </p>
+                    {% endif %}
+                <div class="form-floating ">
+                    <input type="password" class="form-control" id="floatingInputValue1" name="{{form.new_password1.name}}"  required>
+                    <label for="floatingInputValue">Contraseña</label>
+                </div>
+                <br><div class="form-floating ">
+                    <input type="password" class="form-control" id="floatingInputValue2" name="{{form.new_password2.name}}"  required>
+                    <label for="floatingInputValue">Confirmar contraseña</label>
+                </div><br>
+                <div class="form-floating ">
+                    La contraseña debe tener al menos 8 caracteres.
+                    Intente hasta obtener la verificación.
+                </div>
+                <div class="btns" >
+                    <a class="btn-cancelar" href="/">Cancelar</a>
+                    <button type="submit" class="btn-enviar" >Enviar</button>
+                </div>
+            </form>
+    </div>
+{% endblock %} 

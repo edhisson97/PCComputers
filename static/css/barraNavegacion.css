@@ -8,39 +8,48 @@
 
 nav{
     width: 100%;
-    height: 9vh;
-    background-color: #c2c0c0;
+    height: 60px !important;
+    min-height: 60px !important;
+    /*background: linear-gradient(to right, #FFFFFF 10%, #031E54 90%);*/
+    background: linear-gradient(45deg, #FFFFFF 0%, #FFFFFF 25%, #031E54 25%, #031E54 100%);
+    background-size: 100% 100%; /* Ancho adicional para compensar la línea inclinada */
     position: fixed;
-    z-index: 999;
+    z-index: 5;
+    /*border-bottom: 1px solid #031E54;*/
 }
 
 .brand {
     margin-right: 5%;
-    line-height: 8vh;
+    line-height: 50px;
 }
 
 .brand a{
     color: rgb(138, 5, 5);
-    font-size: 20px;
+    font-size: 19px;
 }
+
+
 
 ul{
     float: right;
-    margin-right: 5%;
+    margin-right: 90px;
+    /*width: 70%;*/
 }
 
 nav ul li{
     display: inline-block;
-    line-height: 8vh;
+    line-height: 50px;
+    white-space: nowrap;
 }
 
 nav ul li a{
-    color: rgb(39, 37, 37);
+    color: Interfaz 1 rgb(194, 194, 194); /*Interfaz 1 rgb(39, 37, 37) interfaz 2 rgb(35, 4, 148)*/
     font-size: 15px;
     padding: 7px 13px;
     border-radius: 3px;
-    margin-left: 5px;
-}
+    margin-left: 4px;
+    white-space: nowrap;
+} 
 
 .logo img {
     list-style: none;
@@ -51,26 +60,120 @@ nav ul li a{
 
 nav a {
     text-decoration: none;
-    color: #fff; /* Color del texto de los enlaces */ 
+    color: #ffffff; /* Color del texto de los enlaces */ 
 }
 
 .contenido{
-    padding-top: 13vh;
+    padding-top: 12vh;/*interfaz 1 13vh*/
     padding-left: 13vh;
     padding-right: 13vh;
 }
 
 li a:hover{
-    background: rgb(254, 252, 252);
+    background-color: lightgray;
+    color: #031E54;
     transition: .5s;
+}
+
+/*seccion para el submenu*/
+.show, .input_check{
+    display: none;
+}
+
+#item2{
+    display: none;
+}
+
+#nombres{
+    display: none;
+}
+
+#espacio{
+    display: none;
+}
+
+/*fin de submenu*/
+
+#desple{
+    display: none;
+    position: absolute;
+    background-color: #fdfdfd;
+    top: 50px;
+    left: 10%;
+    right: 10%;
+    border-radius: 10px; /* Esquinas redondas */
+    padding: 10px;
+    flex-wrap: wrap; /* Para que las categorías se ajusten horizontalmente */
+    border: 1px solid #d2d2d2;
+    z-index: 1000;
+}
+
+#desple li{
+    margin: 0 5px;
+    width: calc(16.666% - 10px); /* 6 categorías por fila (10px de margen entre ellas) */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px 0;
+}
+
+
+#desple ul{
+    margin: 0 5px;
+    width: calc(15% - 5px); /* 6 categorías por fila (10px de margen entre ellas) */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+#desple li:hover {
+    background-color: lightgray;
+    border-radius: 10px;
+    display: flex;
+}
+
+#desple img:hover{
+    background-color: lightgray;
+}
+
+#desple img{
+    max-width: 100%;
+    max-height: 80px;
+    padding-top: 8px;
+    object-fit: contain;
+    margin-bottom: 5px;
+}
+
+#item:hover #desple{
+    display: flex;
+    flex-direction: row;
+}
+
+#desple #aCategoria{
+    color: #031E54;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es muy largo */
+    font-size: 12px;
+    
+}
+
+#desple #aCategoria{
+    background: none;
 }
 
 .checkbtn{
     font-size: 30px;
     color: white;
     float: right;
-    line-height: 9vh;
-    margin-right: 8vh;
+    line-height: 60px;
+    margin-right: 50px;
     cursor: pointer;
     display: none;
 }
@@ -79,8 +182,49 @@ li a:hover{
     display: none;
 }
 
+#buscar-btn{
+    display: none;
+}
+
+#users-btn-perfil .fa-solid{
+    color: rgb(16, 222, 16);
+}
+
+/*para el numero tipo notificacion*/
+/* Agrega estilos según sea necesario */
+
+#carrito-btn {
+    position: relative; /* Asegura que #carrito-notificacion sea relativo a este contenedor */
+}
+
+#carrito-notificacion {
+    position: absolute;
+    top: 10px;
+    width: 15px;
+    height: 15px;
+    background-color: rgb(255, 0, 0);
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 15px;
+    text-align: center;
+     white-space: nowrap;
+}
+
+/* Aplicar el efecto de desenfoque al contenido principal 
+main .blur {
+    backdrop-filter: blur(5px);  Ajusta el valor según lo desees 
+}*/
+
 /*para pantalla mas pequeña*/
-@media(max-width:1168px){
+@media(max-width:1300px){
+    ul{
+        margin-right: 20px;
+        /*width: 70%;*/
+    }
+}
+
+@media(max-width:1180px){
     .logo img {
         width: 200px; /* Tamaño deseado en píxeles */
         margin-left: 5px; /* Espacio izquierdo entre el logo y el contenido */
@@ -98,18 +242,27 @@ li a:hover{
 
 /*para tablet*/
 @media(max-width:952px){
+    nav{
+        background: linear-gradient(45deg, #FFFFFF 0%, #FFFFFF 33%, #031E54 33%, #031E54 100%);
+        background-size: 100% 100%;
+        background-position: 100%;
+    }
     nav ul li a{
         font-size: 15px;
     }
 }
 
 /*para casi celular*/
-@media(max-width:1019px){
+@media(max-width:1037px){
     .checkbtn{
         display: block;
     }
+    nav{
+        background: linear-gradient(45deg, #FFFFFF 0%, #FFFFFF 30%, #031E54 30%, #031E54 100%);
+        background-size: 100% 100%; /* Ancho adicional para compensar la línea inclinada */
+    }
     ul{
-        position: fixed;
+        position: absolute;
         width: 40%;
         height: 100vh;
         background: rgb(37, 37, 37);
@@ -117,13 +270,14 @@ li a:hover{
         left: -100%;
         text-align: center;
         transition: all .5s;
+        overflow-y: auto;
     }
     li {
         display: block;
     }
     nav ul li{
         display: block;
-        margin: 50px 0;
+        margin: 40px 0;
         line-height: 15px;
     }
     nav ul li a{
@@ -142,6 +296,123 @@ li a:hover{
         padding-left: 4vh;
         padding-right: 4vh;
     }
+    #fondo {
+        backdrop-filter: none;
+    }
+    /*menu para desplegar submenu*/
+    #aproductos{
+        display: none;
+    }
+    .show{
+        display: block;
+        color: rgb(243, 243, 243);
+        text-align: left;
+        margin-left: 20px;
+    }
+    #item2 label:hover {
+        cursor: pointer; /* Cambia el cursor a una mano */
+        color: red; /* Cambia el color del texto a rojo al pasar el mouse */
+    }
+    #item2{
+        display: block;
+    }
+
+    #btn-1:checked + .dropdown_content {
+        --rows: 1fr;
+        /* Otros estilos que desees aplicar cuando el checkbox está marcado */
+        --rotate: rotate(180deg);
+    }
+    
+    #item2 .dropdown_content{
+        display: grid;
+        grid-template-rows: var(--rows, 0fr);
+        transition: .3s grid-template-rows;
+    }
+
+    #item2 .dropdown_sub{
+        overflow: hidden;
+    }
+
+    #item2 .dropdown_li{
+        width: 90%;
+        list-style: none;
+        margin-left: auto;
+        margin-top: 25px;
+    }
+
+    #item2 .dropdown_anchor{
+        color: #fff;
+        display: block;
+        margin-bottom: 5px;
+        margin-left: 20px;
+        text-align: left;
+        transition: .2s;
+    }
+
+    #item2 #flecha{
+        margin-left: 10px;
+        font-size: 10px;
+        transform: var(--rotate, 0);
+        transition: .2s transform;
+    }
+
+    #item2 a:hover{
+        color: rgb(44, 44, 44);
+        border-right: 10px;
+        background-color: rgb(244, 244, 244);
+        font-size: 16px;
+    }
+
+    #espacio{
+        display: block;
+    }
+
+    li a {
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Estilo para el ícono */
+    li a i {
+        margin-right: 15px; /* Ajusta el espaciado entre el ícono y el texto según sea necesario */
+    }
+
+    li a #nombres{
+        display: block;
+        white-space: nowrap;
+    }
+    
+    /*****************/
+    #carrito-notificacion {
+        position: relative;
+        width: 15px;
+        height: 15px;
+        background-color: rgb(255, 0, 0);
+        color: white;
+        border-radius: 50%;
+        font-size: 12px;
+        line-height: 15px;
+        text-align: center;
+    }
+
+    #buscar-btn{
+        display: block;
+    }
+    
+   }
+
+@media(max-width:850px){
+    nav{
+        background: linear-gradient(45deg, #FFFFFF 0%, #FFFFFF 50%, #031E54 50%, #031E54 100%);
+        background-size: 100% 100%; /* Ancho adicional para compensar la línea inclinada */
+    }
+}
+
+@media(max-width:500px){
+    nav{
+        background: linear-gradient(45deg, #FFFFFF 0%, #FFFFFF 60%, #031E54 50%, #031E54 100%);
+        background-size: 100% 100%; /* Ancho adicional para compensar la línea inclinada */
+    }
 }
 
 @media(max-width:600px){
@@ -149,3 +420,36 @@ li a:hover{
         width: 100%;
     }
 }
+/*para altura del navegador
+@media (max-height: 560px) {
+    .logo img {
+        height: 11vh;
+        width: auto;
+    }
+}*/
+
+#fondo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(59, 59, 59, 0.5); /* Fondo oscuro con transparencia */
+    backdrop-filter: blur(3px); /* Aplica un filtro de desenfoque */
+    z-index: 2;
+    display: none;  
+}
+
+#check:checked ~ #menu #desple {
+    position: absolute;
+    top: 100%; /* Alinea el menú hacia abajo del botón de hamburguesa */
+    left: 0;
+    right: 0;
+    display: block;
+    background-color: #fff; /* Fondo blanco o el color que prefieras */
+    border-radius: 10px; /* Esquinas redondas */
+    padding: 10px;
+    text-align: center;
+    z-index: 3; /* Asegura que el menú sea visible por encima del fondo */
+}
+

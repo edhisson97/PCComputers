@@ -1,0 +1,100 @@
+.item-verificarcorreo{
+    text-align: center;
+    justify-content: center;
+    max-width: 600px;
+    margin: auto;
+}
+
+.item-verificarcorreo h4{
+    text-align: justify;
+    color: #979898;
+    font-size: 17px;
+}
+
+.item-verificarcorreo p{
+    text-align: center;
+    color: #979898;
+    font-size: 50px;
+}
+
+.btns .btn-cancelar {
+    display: inline-block;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    background-color: #c53c32; /* Color de fondo del botón */
+    color: #fff; /* Color del texto del botón */
+    text-decoration: none;
+    border-radius:20px;
+    margin-right: 10px;
+    border: 1px solid #c53c32;
+}
+
+.btns .btn-cancelar:hover {
+    color: #c53c32; /* Color de fondo del botón */
+    background-color: #fff; /* Color del texto del botón */
+    
+}
+
+.btns .btn-enviar {
+    display: inline-block;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    background-color: #031E54; /* Color de fondo del botón */
+    color: #fff; /* Color del texto del botón */
+    text-decoration: none;
+    border-radius: 20px;
+    margin-right: 10px;
+    border: 1px solid #031E54;
+}
+
+.btns .btn-enviar:hover {
+    color: #031E54; /* Color de fondo del botón */
+    background-color: #fff; /* Color del texto del botón */
+    
+}
+
+#btn-gmail {
+    display: inline-block;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    padding: 8px 20px;
+    background-color: rgb(255, 0, 0); /* Color de fondo del botón */
+    color: #fff; /* Color del texto del botón */
+    text-decoration: none;
+    border-radius:20px;
+    margin-right: 10px;
+    border: 1px solid rgb(255, 0, 0);
+}
+
+#btn-gmail:hover {
+    color: rgb(255, 0, 0); /* Color de fondo del botón */
+    background-color: #fff; /* Color del texto del botón */
+    
+}
+
+#btn-outlook {
+    display: inline-block;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    padding: 8px 20px;
+    background-color: rgb(0, 85, 255); /* Color de fondo del botón */
+    color: #fff; /* Color del texto del botón */
+    text-decoration: none;
+    border-radius: 20px;
+    margin-right: 10px;
+    border: 1px solid rgb(0, 85, 255);
+}
+
+#btn-outlook:hover {
+    color: rgb(0, 85, 255); /* Color de fondo del botón */
+    background-color: #fff; /* Color del texto del botón */
+    
+}
+
+#error{
+    font-size: 14px;
+    color: red;
+    text-align: center;
+}

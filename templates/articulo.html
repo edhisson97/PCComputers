@@ -1,0 +1,116 @@
+{% extends "paginaInicio.html" %}
+
+{% block title %}PC Computers - {{ prod.marca }} {{ prod.modelo }}{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="contenedor-principal">
+    <div class="contenedor-articulo">
+        {% if prod.imagenes %}
+        <div class="galeria">
+            <div class="img_container">
+                <img class="main_img" src="{{ prod.imagenes.first.imagen.url }}" >
+            </div>
+            <div class="thumbnail_container" >
+                {% for imagen in prod.imagenes.all %}
+                    <div class="img_container">
+                        <img class="thumbnail" src="{{ imagen.imagen.url }}" alt="" onclick="cambiarImagenArticulo('{{ imagen.imagen.url }}')">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <h3>{{ prod.marca }} - {{ prod.modelo }}</h3>
+        <p class="detalle">{{ prod.detalle }}</p>
+        {% if prod.oferta == False %}
+            <p class="etiqueta-precio">Precio: </p>
+            <p class="precio">${{ prod.precio }}</p>
+        {% else %}
+            <p class="etiqueta-precio">Precio: </p>
+            <p class="precio-tachado">${{ prod.precio }}</p>
+            <p class="etiqueta-oferta"> Oferta: </p>
+            <p class="precio">${{ prod.precio_oferta }}</p>
+        {% endif %}
+        {% if prod.colores.all %}
+            <p class="etiqueta-precio"> Disponible en </p>
+            <div class="color-capsule">
+                {% for color in prod.colores.all %}
+                    {%if color.stock > 0%}
+                        {% if color.imagen %}
+                            <div class="color-circle" data-color="{{ color.codigo_color }}" style="background-color: {{ color.codigo_color }};" onclick="cambiarImagenArticulo('{{ color.imagen.url }}')"></div>
+                        {%else%}
+                            <div class="color-circle" data-color="{{ color.codigo_color }}" style="background-color: {{ color.codigo_color }};" onclick="cambiarImagenArticulo('{{ prod.imagenes.first.imagen.url }}')"></div>
+                        {%endif%}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if prod.colores.exists %}
+            {% if prod.colores.all.0.stock > 0 or prod.colores.all.1.stock > 0 or prod.colores.all.2.stock > 0 or prod.colores.all.3.stock or prod.colores.all.4.stock > 0 %}
+            <div class="contenedor-comprar">
+                <br><button class="comprar" data-product-id="{{prod.id}}" data-product-marca="{{prod.marca}}" data-product-modelo="{{prod.modelo}}" data-color-seleccionado="{{ color.codigo_color }}">Comprar <i class="fa-solid fa-cart-shopping"></i></button>
+            </div>
+            {% else %}
+                <p class="producto-agotado">Producto Agotado <i class="fa-regular fa-face-frown-open"></i></p>
+            {% endif %}
+        {% else %}
+            <p class="producto-agotado">Producto Agotado <i class="fa-regular fa-face-frown-open"></i></p>
+        {% endif %}
+        <br>
+        <p class="descripcion">{{ prod.descripcion }}</p>
+    </div>
+
+
+    <div class="contenedor-sugeridos">
+        <h3>Productos sugeridos</h3>
+        <div class="sugeridos-inner">
+            <div class="filtrar-container">
+                <p><i class="fa-solid fa-sliders"></i> Filtrar <p>
+                    <select data-categoria-id="{{ categoria_actual }}" id="filtroGeneral">
+                        <option value="todos">Producto actual</option>
+                        <option value="todos" data-option="" data-categoria-id="{{ categoria_actual }}">Todos los productos</option>
+                        <optgroup label="Precio" id="grupoPrecio">
+                            <option data-option="MenorPrecio" data-categoria-id="{{ categoria_actual }}" value="MenorPrecio">Menor Precio</option>
+                            <option data-option="MayorPrecio" data-categoria-id="{{ categoria_actual }}" value="MayorPrecio">Mayor Precio</option>
+                            <option data-option="Ofertas" data-categoria-id="{{ categoria_actual }}" value="Ofertas">Ofertas</option>
+                        </optgroup>
+                        <optgroup label="{{categoria_nombre}}">
+                            {% for m in marca %}
+                                <option data-option="{{ m.id }}" data-categoria-id="{{ categoria_actual }}" value="{{ m.id }}">{{ m.nombre }}</option>
+                            {% endfor %}
+                        <!-- Agrega más marcas según sea necesario -->
+                        </optgroup>
+                    </select>                    
+              </div>
+        <!-- Contenido de los artículos sugeridos -->
+        {% for prodS in productosSugeridos %}
+            <div class="articulo-sugerido" data-id="{{ prodS.id }}">
+                {% if prodS.imagenes %}
+                    <img class="main_img" src="{{ prodS.imagenes.first.imagen.url }}" >
+                {% endif %}
+                
+                <div class="detalles-sugeridos">
+                    <h4>{{prodS.marca}} {{prodS.modelo}}</h4>
+                    <!--<p>{{prodS.detalle}}</p>-->
+                    {% if prodS.oferta == False %}
+                        <p class="precio">${{ prodS.precio }}</p>
+                    {% else %}
+                        <p class="precio-tachado">${{ prodS.precio }}</p>
+                        <p class="etiqueta-oferta"> Oferta: </p>
+                        <p class="precio">${{ prodS.precio_oferta }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+<script>
+    // Obtén la altura del contenedor-articulo
+    var alturaArticulo = document.querySelector('.contenedor-articulo').clientHeight;
+
+    // Aplica la altura al contenedor-sugeridos
+    document.querySelector('.contenedor-sugeridos').style.maxHeight = alturaArticulo + 'px';
+</script>
+{% endblock %} 

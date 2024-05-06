@@ -1,0 +1,73 @@
+
+
+.item-verificarcorreo{
+    text-align: center;
+    justify-content: center;
+    max-width: 600px;
+    margin: auto;
+}
+
+.item-verificarcorreo h4{
+    text-align: justify;
+    color: #979898;
+    font-size: 17px;
+}
+
+.item-verificarcorreo p{
+    text-align: center;
+    color: #979898;
+    font-size: 50px;
+}
+
+#btn-gmail {
+    display: inline-block;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    padding: 10px 20px;
+    background-color: rgb(255, 0, 0); /* Color de fondo del botón */
+    color: #fff; /* Color del texto del botón */
+    text-decoration: none;
+    border-radius:10px;
+    margin-right: 10px;
+    border: 1px solid rgb(255, 0, 0);
+}
+
+#btn-gmail:hover {
+    color: rgb(255, 0, 0); /* Color de fondo del botón */
+    background-color: #fff; /* Color del texto del botón */
+    
+}
+
+#btn-outlook {
+    display: inline-block;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    padding: 10px 20px;
+    background-color: rgb(0, 85, 255); /* Color de fondo del botón */
+    color: #fff; /* Color del texto del botón */
+    text-decoration: none;
+    border-radius: 10px;
+    margin-right: 10px;
+    border: 1px solid rgb(0, 85, 255);
+}
+
+#btn-outlook:hover {
+    color: rgb(0, 85, 255); /* Color de fondo del botón */
+    background-color: #fff; /* Color del texto del botón */
+    
+}
+
+#btn-home {
+    display: inline-block;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    padding: 10px 20px;
+    background-color: #031E54; /* Color de fondo del botón */
+    color: #fff; /* Color del texto del botón */
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+#btn-home:hover {
+    background-color: rgb(180, 181, 182); /* Color de fondo del botón */
+}

@@ -1,0 +1,66 @@
+{% extends "ventas.html" %}
+
+{% block title %}PC Computers - Ventas{% endblock %}
+
+{% block content %}
+{% load static %}
+<h3>Registro de las transacciones de {{user}}</h3>
+
+<div class="container">
+    <div class="section">
+      <div class="sales-info">
+        <div class="conteo">
+            
+          <h2><i class="fa-solid fa-cart-shopping"></i> Conteo de Ventas {% if option == None%} (Todas las ventas) {% elif option == 'hoy' %} (Ventas de hoy) {% elif option == 'semana' %} (Última semana) {% elif option == 'mes' %} (Este mes) {% elif option == 'todo' %} (Todas las transacciones) {%endif%}</h2>
+          {%if transacciones == 1%}
+            <p>{{transacciones}} venta.</p> <!-- Aquí va el conteo de ventas -->
+          {%else%}
+            <p>{{transacciones}} ventas.</p> <!-- Aquí va el conteo de ventas -->
+          {%endif%}
+        </div>
+        <div class="total">
+          <h2><i class="fa-solid fa-sack-dollar"></i> Total Vendido</h2>
+          <p>${{total}} dólares.</p> <!-- Aquí va el total vendido -->
+        </div>
+      </div>
+    </div>
+
+    <div class="options-container">
+      <p class="etiqueta-filtrar">Filtrar: </p>
+      <a href="/ventas/transacciones?option=todo" class="option-button" >TODO</a>
+      <a href="/ventas/transacciones?option=hoy" class="option-button" >Hoy</a>
+      <a href="/ventas/transacciones?option=semana" class="option-button" >Última semana</a>
+      <a href="/ventas/transacciones?option=mes" class="option-button" >Este mes</a>
+    </div>
+    
+    <div class="section table-container">
+      <h4>Transacciones {% if option == None%} (Últimas 10) {% elif option == 'hoy' %} (Ventas de hoy) {% elif option == 'semana' %} (Última semana) {% elif option == 'mes' %} (Este mes) {% elif option == 'todo' %} (Todas las transacciones){%endif%}</h4>
+      <table>
+        <thead>
+          <tr>
+            <th># transacción</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Descuento</th>
+            <th>Factura #</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for registro in registros%}
+            <tr>
+              <td>{{registro.id}}</td>
+              <td>{{registro.usuario}}</td>
+              <td>{{registro.fecha_hora}}</td>
+              <td>{{registro.total_vendido}}</td>
+              <td>{{registro.total_descuento}}</td>
+              <td>{{registro.factura}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+{% endblock %} 

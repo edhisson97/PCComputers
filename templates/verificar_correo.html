@@ -1,0 +1,18 @@
+{% extends "paginaInicio.html" %}
+
+{% block title %}PC Computers - Verificar correo{% endblock %}
+
+{% block content %}
+{% load static %}
+    <div class="item-verificarcorreo">
+        <p><i class="fa-solid fa-envelope"></i></p>
+        <br>
+        <h4>Usuario creado exitosamente, por favor ingrese a su correo electronico para verificar su cuenta y finalizar el registro.</h4>
+        <br>
+        <h4>Si aún no recibes el correo de verificación puede que se encuentre en la sección spam o correo no deseado de su bandeja de entrada.</h4>
+        <br>
+        <a id="btn-gmail" href="https://gmail.com" target="_blank">Gmail <i class="fa-brands fa-google"></i><a>
+        <a id="btn-outlook" href="https://login.live.com/" target="_blank">Outlook <i class="fa-brands fa-microsoft"></i><a>
+        <a id="btn-home" href="/">Ir al Inicio <i class="fa-solid fa-house"></i><a>
+    </div>
+{% endblock %} 

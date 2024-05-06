@@ -5,9 +5,10 @@
 }
 
 .categoria-title {
+    color: #031E54; /*interfaz 2 rgb(35, 4, 148);*/
     text-align: left;
     margin-bottom: 20px;
-    border-bottom: 2px solid #333;
+    border-bottom: 2px solid #031E54; /*interfaz 1 #333*/
     font-size: 20px;
 }
 
@@ -38,15 +39,21 @@
 .categoria-item h3 {
     margin: 10px 0;
     font-size: 15px;
-    color: #4e4c4c;
+    color: #031E54;/*interfaz 1 #4e4c4c*/
 }
+
+.categoria-item a {
+    text-decoration: none;
+}
+
 .categoria-item h2 {
     font-size: 10px;
-    color: #969292;
+    color: #031E54;/*interfaz 1 #969292*/
 }
 
 .categoria-item:hover {
     background-color: lightgray;
+    border-radius: 10px;
 }
 
 @media(max-width:700px){

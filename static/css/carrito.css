@@ -1,0 +1,300 @@
+/******************CARRITO COMPRAS*************/
+#fondo-carrito {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Fondo semitransparente para todo el cuerpo */
+    z-index: 100; /* Coloca el fondo semitransparente detrás de la barra lateral */
+    display: none;
+}
+
+#carrito-sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: #fff; /* Fondo opaco para la barra lateral */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease; /* Agrega transición al desplazamiento lateral */
+    z-index: 999; /* Asegura que la barra lateral esté sobre el fondo semitransparente */
+}
+
+.carrito-content {
+    padding: 20px;
+}
+
+.cerrar-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.cerrar-btn:hover {
+    color: #f00;
+}
+
+#items-container {
+    /* Otros estilos para el carrito-items */
+    height: 500px; /* Altura máxima para mostrar, ajusta según sea necesario */
+    overflow-y: auto;
+    border-bottom: 2px solid #cfcfcf;
+}
+
+body.carrito-abierto #fondo-carrito {
+    display: block; /* Muestra el fondo semitransparente cuando el carrito está abierto */
+}
+
+body.carrito-abierto #carrito-sidebar {
+    right: 0;
+}
+
+#subtotal {
+    font-size: 18px;
+    color: #000000;
+    text-align: center;
+    margin-top: 10px;
+}
+#etiqueta-colorcantidad {
+    position: relative;
+    font-size: 11px;
+    text-align: center;
+    bottom: 15px;
+}
+
+.btnIrAPagar {
+    width: 220px; 
+    position: absolute;
+    bottom: 10px;
+    left: 40px;
+    background-color: #c53c32;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+}
+
+#btnIrAPagar:hover {
+    background-color: #979898;
+}
+
+/******ocultar scroll bar *********/
+body.carrito-abierto {
+    overflow: hidden; /* Oculta la barra de desplazamiento cuando el carrito está abierto */
+}
+
+body.carrito-abierto #carrito-sidebar {
+    right: 0;
+}
+
+/**Scroll bar**/
+::-webkit-scrollbar {
+    width: 12px; /* Ancho de la barra de desplazamiento */
+}
+
+/* Pista (fondo) de la barra de desplazamiento */
+::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Color de fondo de la pista */
+}
+
+/* Mango (agarre) de la barra de desplazamiento */
+::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color del mango */
+    border-radius: 6px; /* Borde redondeado del mango */
+}
+
+/* Flechas de botón de la barra de desplazamiento (si están habilitadas) */
+::-webkit-scrollbar-button {
+    display: none; /* Oculta las flechas de botón */
+}
+
+/****** altura carrito*******/
+@media (max-height: 920px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 700px;
+    }
+}
+
+@media (max-height: 820px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 600px;
+    }
+}
+
+@media (max-height: 720px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 500px;
+    }
+}
+
+@media (max-height: 660px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 480px;
+    }
+}
+
+@media (max-height: 645px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 450px;
+    }
+}
+
+@media (max-height: 615px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 430px;
+    }
+}
+
+@media (max-height: 595px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 400px;
+    }
+}
+
+@media (max-height: 570px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 360px;
+    }
+}
+
+@media (max-height: 530px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 320px;
+    }
+}
+
+@media (max-height: 490px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 280px;
+    }
+}
+
+@media (max-height: 450px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 240px;
+    }
+}
+
+@media (max-height: 410px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 200px;
+    }
+}
+
+@media (max-height: 370px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 160px;
+    }
+}
+
+@media (max-height: 330px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 120px;
+    }
+}
+
+@media (max-height: 290px) {
+    #items-container {
+        /* Otros estilos para el carrito-items */
+        height: 0px;
+    }
+}
+
+/*******preoductos del carrito***/
+#carrito-item {
+    display: flex;
+    align-items: center;
+}
+
+#item-carritovacio{
+    justify-content: center;
+}
+
+#item-carritovacio h4{
+    text-align: center;
+    color: #979898;
+    font-size: 17px;
+    margin-top: 40px;
+}
+
+#item-carritovacio p{
+    text-align: center;
+    color: #979898;
+    font-size: 35px;
+    margin-top: 10px;
+}
+
+#info-producto .eliminar-producto {
+    color: rgb(1, 86, 255);
+    background-color: transparent;
+}
+
+#info-producto .eliminar-producto:hover {
+    color: #f00;
+    background-color: transparent;
+}
+
+#info-producto .color-palette {
+    display: flex;
+    gap: 5px;
+    border: 1px solid #000;
+    border-radius: 9px;
+    padding: 3px;
+    left: 50%;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    overflow: hidden; /* Evitar que los márgenes negativos afecten el diseño general */
+}
+
+#info-producto .color-circle {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+/* Agrega este estilo para ajustar el espacio alrededor de la paleta */
+#info-producto .color-circle:first-child {
+    margin-left: 5px; /* Márgenes izquierdo y derecho negativos para compensar el relleno */
+}
+
+#info-producto .color-circle:last-child {
+    margin-right: 5px; /* Márgenes izquierdo y derecho negativos para compensar el relleno */
+}
+
+/*******aumentar la cantidad de productos********/
+/* Estilos para el recuadro de cantidad */
+#info-producto .cantidad-container {
+    display: flex;
+    align-items: center;
+}
+
+#info-producto .cantidad-input {
+    width: 20px;
+    border-radius: 10px;
+    border: none;
+    text-align: center;
+    margin: 0 3px;
+}
+
+
+

@@ -1,0 +1,73 @@
+{% if productos_en_carrito %}
+    <div id="items-container"  style="margin-bottom: 10px;">
+        {% for producto in productos_en_carrito %}
+        
+            <div id="carrito-item" data-producto-id="{{ producto.id }}" style="display: flex; align-items: center; padding: 10px;">
+                <!--<p> {{ producto.marca }} {{ producto.modelo }}</p>
+                <p>Precio: {{ producto.precio }}</p>-->
+                <div id="imagen-producto" style="flex: 0 0 50%; margin-right: 20px;">
+                    <!-- Aquí coloca el código para mostrar la imagen pequeña del producto -->
+                    {% if producto.imagen %}
+                        <img src="{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-width: 100%; height: auto; max-height: 90px; border-radius: 1px;"></a>
+                    {% endif %}
+                </div>
+                <div id="info-producto" style="flex: 1;">
+                    <p style="font-size: 15px;  font-weight: bold; "> {{ producto.marca }} {{ producto.modelo }}</p>
+                    {% if producto.precio_oferta %}
+                        <p style="font-size: 13px; text-decoration: line-through;">Precio: {{ producto.precio }}</p>
+                        <p style="font-size: 13px;">Oferta: {{ producto.precio_oferta }}</p>
+                    {% else %}
+                        <p style="font-size: 13px;">Precio: {{ producto.precio }}</p>
+                    {% endif %}
+                    <!--<div class="color-palette">
+                        <div class="color-circle" style="background-color: #ff0000;"></div>
+                        <div class="color-circle" style="background-color: #00ff00;"></div>
+                        <div class="color-circle" style="background-color: #0000ff;"></div>
+                      </div>-->
+                    <!--para selector de color-->
+                    <!--<div class="color-capsule" style="display: inline-flex;
+                                                        border: 1px solid #ccc;
+                                                        padding: 5px;
+                                                        border-radius: 20px;
+                                                        margin-bottom: 10px;">
+                        {% for color_stock in producto.colores_stock %}
+                            <div class="color-circle" style="background-color: {{ color_stock.codigo_color }};"></div>
+                            <li>Código de color: {{ color_stock.codigo_color }}, Stock: {{ color_stock.stock }}</li>
+                        {% endfor %}
+                    </div>
+                    <div id="acciones" style="flex: 0 0 auto; text-align: right;">
+                        <div class="cantidad-container">
+                            <button class="btn-menos">-</button>
+                            <input type="text" class="cantidad-input" value="1" readonly>
+                            <button class="btn-mas">+</button>
+                        </div>
+                        <div class="colores-y-stock">
+                            {% for color_stock in producto.colores_stock %}
+                                <p>Código de color: {{ color_stock.codigo_color }}</p>
+                                <p>Stock: {{ color_stock.stock }}</p>
+                            {% endfor %}
+                        </div>
+                        <button data-producto-id="{{ producto.id }}" class="eliminar-producto" style="border: none;"> <i class="fa-solid fa-trash"></i></button>
+                    </div>-->
+                    <div id="acciones" style="flex: 0 0 auto; text-align: right;">
+                        <button data-producto-id="{{ producto.id }}" class="eliminar-producto" style="border: none;"> <i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+            {% if not forloop.last %}
+                <div class="producto-separador" style="width: 100%; height: 1px; background: linear-gradient(to right, transparent 50%, rgba(0, 0, 0, 0.2) 50%); margin: 10px 0;"></div>
+            {% endif %}
+
+        {% endfor %}
+    </div>
+    <p id="subtotal">Subtotal: <b>${{subtotal}}</b></p>
+    <p id="etiqueta-colorcantidad">A continuación escoge el color y la cantidad</p>
+    <button class="btnIrAPagar" id="btnIrAPagar">Continuar con la compra <i class="fa-solid fa-cart-plus"></i></button>
+{%else%}
+<div id="item-carritovacio">
+    <h4>Aún no se han agregado productos al carrito</h4>
+    <p><i class="fa-solid fa-cart-shopping"></i></p>
+</div>
+{% endif %}
+
+

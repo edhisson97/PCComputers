@@ -15,20 +15,44 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/carrusel.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/ofertas.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/categoria.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/productos.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/carrito.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/notificacion.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/carritoCompleto.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/modalUsuarios.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/verificarCorreo.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/perfil.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/verificacionExitosa.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/contraseña.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/articulo.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/contactanos.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/servicios.css' %}">
+
+    <!-- Agrega estos enlaces a los archivos CSS y JS de Slick Carousel 
+<link rel="stylesheet" type="text/css" href="ruta/a/slick.css"/>
+<link rel="stylesheet" type="text/css" href="ruta/a/slick-theme.css"/>
+<script type="text/javascript" src="ruta/a/slick.min.js"></script>-->
     
     <!--Link bootstrap-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <!--Font awesome-->
     <script src="https://kit.fontawesome.com/91363630b1.js" crossorigin="anonymous"></script>
     <!--Swiper carrusel-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+/>
+    <!--jQuery-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!--CDN bootstrap-->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 
-    <title>Pc Computers</title>
+    <title>{% block title %} Pc Computers{% endblock %}</title>
     {% load static %}
     <link rel="shortcut icon" type="image/logo1.png" href="{% static 'img/logo1.png' %}">
 </head>
 <body>
+    
     <header>
         <nav>
             <input type="checkbox" id="check">
@@ -43,26 +67,198 @@
                 </div>
             </label>
             <ul>
-                <li><a href="/"><i class="fa-solid fa-house"></i></a></li>
-                <li><a href="/contacto/">Productos</a></li>
-                <li><a href="/contacto/">Servicios</a></li>
-                <li><a href="/acerca-de/">¿Quiénes somos?</a></li>
-                <li><a href="/contacto/">Contáctanos</a></li>
-                <li><a href="/contacto/"><i class="fa-solid fa-user"></i></a></li>
-                <li><a href="/contacto/"><i class="fa-solid fa-cart-shopping"></i></a></li>
+                <li><a href="/"><i class="fa-solid fa-house"></i><div id="nombres">Inicio</div></a></li>
                 <li>
                     <div class="centered">
                         <div class="search-bar">
-                            <input type="text" placeholder="Buscar en la página">
+                            <input type="text" name="buscador" id="buscador" placeholder="Buscar en la página">
                             <i class="fas fa-search"></i>
                         </div>
                     </div>
                 </li>
+                <li id="buscar-btn"><a href="#"><i class="fa-solid fa-magnifying-glass"></i> Buscar</a></li>
+                <li id="item">
+                    <a id ="aproductos" href="#">Productos</a>
+                    <ul id="desple">
+                        {% for c in categoria %}
+                        <li><a class="productos-link" href="/productos/{{ c.id }}">
+                            {% if c.imagen %}
+                                <img src={{ c.imagen.url }} alt="Categoría 5"></a>
+                            {% endif %}
+                            <a id="aCategoria" href="/productos/{{ c.id }}">{{ c.nombre }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li id="item2">
+                    <label for="btn-1" class="show">Productos <i id="flecha" class="fa-solid fa-chevron-down"></i></label>
+                    <input class="input_check" type="checkbox" id="btn-1">
+                    <div class="dropdown_content">
+                        <div class="dropdown_sub">
+                            <div class="dropdown_li">
+                                {% for c in categoria %}
+                                    <a href="/productos/{{ c.id }}" class="dropdown_anchor">
+                                        {{ c.nombre }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </sub>
+                    </div>
+                </li>
+                <li><a href="/servicios/">Servicios</a></li>
+                <li><a href="/acerca-de/">¿Quiénes somos?</a></li>
+                <li><a href="/contactanos/">Contáctanos</a></li>
+                {% if user.is_authenticated %}
+                    <li id="users-btn-perfil"><a href="/perfil/" ><i class="fa-solid fa-user"></i><div id="nombres">Ver Perfil</div></a></li>
+                {% else %}
+                    <li id="users-btn"><a href="#" onclick="mostrarVentana()"><i class="fa-solid fa-user"></i><div id="nombres">Ingresar</div></a></li>
+                {% endif %}
+                {% if request.path != '/carrito/' %}
+                <li id="carrito-btn"><a href="#"><i class="fa-solid fa-cart-shopping"></i>
+                    <div id="nombres">Mi carrito</div>
+                    <span id="carrito-notificacion"></span>
+                    </a>
+                </li>
+                {% endif %}    
+                
+                <li id="espacio"><br></li>
             </ul>
         </nav>
     </header>
     
     <main>
+        <div id="modalFondoBusqueda" style="display: none;"></div>
+        <div id="miModalBusqueda" class="modal">
+            <div class="modal-contenido">
+                <span class="cerrar-modal">&times;</span>
+
+                <div class="centered-modal">
+                    <div class="modal-search-bar">
+                        <input type="text" name="buscador" id="buscador" placeholder="Buscar en Pc Computers">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div id="mensajeNoProductos" style="display: none;">Lo siento, no se encontraron resultados para tu busqueda. <i class="fa-regular fa-face-frown"></i></div>
+                <div id="listaArticulos">
+                    {% if todosProductos %}
+                        {% for prod in todosProductos %}
+                                <div class="articulo" data-id="{{ prod.id }}">
+                                    <div class="detalles">
+                                        <h3>{{ prod.marca }} {{ prod.modelo }}</h3>
+                                        <p>{{ prod.detalle }}</p>
+                                    </div>
+                                    <div class="img-container">
+                                    {% if prod.imagenes %}
+                                        <img src={{ prod.imagenes.first.imagen.url }} alt="Categoría 5"></a>
+                                    {% endif %}
+                                    </div>
+                                </div>
+                                
+                        {% endfor %}
+                    {% else %}
+
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>
+       
+        <div id="fondo"></div>
+        <div id="fondo-carrito" onclick="cerrarCarrito()"></div>
+        <div id="carrito-sidebar">
+            <div class="carrito-content">
+                <h4 class="etiqueta-carrito"><i class="fa-solid fa-cart-shopping"></i> Carrito</h4>
+                <!-- Aquí se mostrarán los productos en el carrito -->
+                <div class="carrito-items" id="carrito-items-container">
+                    
+                </div>
+                
+            </div>
+            <span class="cerrar-btn" id="cerrar-carrito">&times;</span>
+        </div>
+        
+        <!-- Ventana emergente para usuarios -->
+        <div class="ventana-emergente" id="ventanaEmergente" style="display: {% if mensaje_error %}block{% elif mensaje_alerta %}block{% else %}none{% endif %};">
+            <div class="contenido-ventana">
+                <span class="cerrar" onclick="cerrarVentana()">&times;</span>
+                <!-- Contenido de la ventana emergente -->
+                <!-- Puedes agregar aquí el formulario de registro o la información del perfil -->
+
+                    <div class="columna">
+                        <h4>¡Sé parte de Pc Computers!</h4>
+                        <!--<img src="{% static 'img/logo.png' %}" alt="Logo de Mi Sitio">-->
+                        <!-- Campos de inicio de sesión -->
+                        <form id="formularioInicioSesion" method="post" action="{% url 'ingresar' %}" style="display: {% if mensaje_alerta %}none{% endif %};">
+                            <h2>Iniciar sesión</h2>    
+                            {% csrf_token %}
+                            <!-- Campo de Correo Electrónico con ícono -->
+                            <div style="position: relative;">
+                                <i class="fas fa-envelope icono-input"></i>
+                                <input type="text" name="correo" id="correo" placeholder="Correo electrónico" required/>
+                                <div class="mensaje-error" id="mensajeCorreo"></div>
+                            </div>
+                            <!-- Campo de Contraseña con ícono -->
+                            <div style="position: relative;">
+                                <i class="fas fa-lock icono-input"></i>
+                                <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña" required/>
+                                <div class="mensaje-error" id="mensajeContrasena"></div>
+                            </div>
+                            {% if mensaje_error %}
+                                <p class="error" ><i class="fa-solid fa-circle-exclamation"></i> {{ mensaje_error }}</p>
+                            {% endif %}
+                            <button type="submit" onclick="iniciarSesion()">INGRESAR</button>
+                        </form>
+                        
+                        <!-- Enlace para mostrar el formulario de recuperación de contraseña -->
+                        <div id="linkRecuperarContrasena" style="display: {% if mensaje_alerta %}none{% endif %};">
+                            <a href="/reset_password/" >¿Olvidó su contraseña?</i></a>
+                        </div>
+                        <!-- Contenido de recuperación de contraseña (inicialmente oculto) -->
+                        <div id="recuperarContrasena" style="display: {% if mensaje_alerta %}none{% endif %};">
+                            <h2>Recuperar Contraseña</h2>
+                            <p></p>
+                            <!-- Formulario de recuperación de contraseña aquí -->
+                            <form id="formularioRecuperarContrasena">
+                                <input type="text" placeholder="Correo electrónico" />
+                                <div class="btns">
+                                    <button class="btn-regresar" type="button" onclick="iniciarSesion()"> <i class="fa-solid fa-chevron-left"></i> Atrás</button>
+                                    <button type="button" onclick="recuperarContrasena()"><i class="fa-solid fa-envelope"></i> Enviar correo </button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Enlace para cambiar a la sección de Registro -->
+                        <div id="registrar" style="display: {% if mensaje_alerta %}block{% endif %};">
+                            <h2>Registrar usuario</h2>
+                            <!-- Formulario de recuperación de contraseña aquí -->
+                            <form id="formularioRegistro" method="post" action="{% url 'registro' %}">
+                                {% csrf_token %}
+                                {% if mensaje_alerta %}
+                                    <p class="error" ><i class="fa-solid fa-circle-exclamation"></i> {{ mensaje_alerta }}</p>
+                                {% endif %}
+                                <input type="text" name="nombre" placeholder="Nombre"/>
+                                <input type="text" name="apellido" placeholder="Apellido"/>
+                                <input type="number" name="cedula" placeholder="Cédula" required>
+                                <input type="email" name="correo" placeholder="Correo electrónico" />
+                                <input type="number" name="celular" placeholder="Celular">
+                                <input type="text" name="direccion" placeholder="Dirección">
+                                <input type="password" name="contrasena" placeholder="Contraseña" />
+                                <div class="btns">
+                                    <button class="btn-regresar" type="button" onclick="iniciarSesion()"> <i class="fa-solid fa-chevron-left"></i> Atrás</button>
+                                    <button type="submit" onclick="registrarse()">Registrarme</button>
+                                </div>
+                            </form>
+                        </div>
+                        <!--<a href="#" onclick="mostrarRegistro()">¿No tienes cuenta? Regístrate</a>-->
+                        <div id="btn-registrar">
+                            <button id="button-registrarse" type="button" onclick="mostrarRegistro()" >REGISTRARSE</button>
+                        </div>
+                        <br id="espaciado"></br>
+                    </div>
+                    
+            </div>
+        </div>
+
+
         <div class="contenido">
 
             {% block content %}
@@ -78,6 +274,9 @@
                 </a>-->
             </div>              
         </div>
+        <div id="notification" class="notification">
+            <p id="notification-text"> <i class="fa-solid fa-check"></i> </p>
+        </div>
     </main>
     
     <footer>
@@ -89,16 +288,16 @@
         </div>
         <div class="footer-section">
           <h2>Enlaces Rápidos</h2>
-          <a class="footer-link" href="#"><i class="fa-solid fa-shop"></i> Tienda</a>
-          <a class="footer-link" href="#"><i class="fa-solid fa-computer"></i> Servicios</a>
+          <a class="footer-link" href="/"><i class="fa-solid fa-shop"></i> Tienda</a>
+          <a class="footer-link" href="/servicios/"><i class="fa-solid fa-computer"></i> Servicios</a>
           <a class="footer-link" href="#"><i class="fa-solid fa-user"></i> Mi cuenta</a>
           <a class="footer-link" href="#"><i class="fa-regular fa-building"></i> Acerca de</a>
         </div>
         <div class="footer-section">
           <h2>Redes Sociales</h2>
-          <a class="footer-link" href="#"><i class="fa-brands fa-square-facebook"></i> Facebook</a>
-          <a class="footer-link" href="#"><i class="fa-brands fa-instagram"></i> Instagram</a>
-          <a class="footer-link" href="#"><i class="fa-brands fa-tiktok"></i> TikTok</a>
+          <a class="footer-link" href="https://www.facebook.com/PcComputersNet" target="_blank"><i class="fa-brands fa-square-facebook"></i> Facebook</a>
+          <a class="footer-link" href="https://www.instagram.com/pccomputers.ec/" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a>
+          <a class="footer-link" href="https://www.tiktok.com/@pccomputers.ec" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok</a>
         </div>
         <div class="footer-section">
           <h2>Contacto</h2>
@@ -106,12 +305,32 @@
           <a class="footer-link" href="#"><i class="fa-solid fa-envelope"></i> ventas@pccomputers-ec.com</a>
         </div>
       </footer>  
-        <p class="copyright-text">&copy; Copyright PC Computers &reg; Todos los derechos reservados 2023</p>
+        <p class="copyright-text">&copy; Copyright PC Computers &reg; Todos los derechos reservados 2024</p>
        
 
     <!--Script swiper-->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <!--Link js-->
     <script src="{% static 'js/carrusel.js' %}"></script>
+    <!--Link bar productos-->
+    <script src="{% static 'js/bar-productos.js' %}"></script>
+    <!--Link bar para desplegar categorias-->
+    <script src="{% static 'js/navbar-categorias.js' %}"></script>
+    <!--Link para modal de cada producto-->
+    <script src="{% static 'js/productos.js' %}"></script>
+    <!--Link para carrito desplegable -->
+    <script src="{% static 'js/carrito.js' %}"></script>
+    <!--Link carrito completoo-->
+    <script src="{% static 'js/carrito-completo.js' %}"></script>
+    <!--Link modal usuarios -->
+    <script src="{% static 'js/usuarios.js' %}"></script>
+    <!--Link resultados de busqueda -->
+    <script src="{% static 'js/busqueda.js' %}"></script>
+    <!--Link resultados de articulos -->
+    <script src="{% static 'js/articulo.js' %}"></script>
+    <!--Link google maps contactanos -->
+    <script src="{% static 'js/contactanos.js' %}"></script>
+    <!--Link servicios -->
+    <script src="{% static 'js/servicios.js' %}"></script>
 </body>
 </html>

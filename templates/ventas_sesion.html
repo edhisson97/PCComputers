@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--Link css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ventas_sesion.css' %}">
+
+  <title>Ventas - Login</title>
+
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+        <img src="{% static 'img/logo.png' %}" alt="Logo de Mi Sitio">
+    </div>
+    <h3> Bienvenid@ </h3>
+    <p>Por favor ingresa tus credenciales de acceso.</p>
+    {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+    {% endif %}
+    <form class="login-form" method="post">
+        {% csrf_token %}
+      <input type="text" name="username" placeholder="Usuario" required>
+      <input type="password" name="password" placeholder="Contraseña" required>
+      <input type="submit" value="Iniciar sesión">
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,492 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0; /* Color de fondo pastel */
+    color: #333; /* Color de texto */
+    margin: 0;
+    padding: 0;
+  }
+
+
+
+  .title{
+    text-align: center;
+    color: #031E54;
+  }
+
+  .centered, .centered-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+  }
+  .buscar-cliente{
+    background-color: #1c92a7; /* Color gris claro */
+    color: #ffffff; /* Color del texto */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    display: block;
+    margin: 20px auto; /* Para centrar el botón con un margen superior de 20px */
+    text-align: center; /* Para centrar el contenido del botón */
+  }
+  .buscar-cliente:hover{
+    background-color: #393939;
+    color: white;
+  }
+
+  .detalles-pago{
+    background-color: #0eba67; /* Color gris claro */
+    color: #ffffff; /* Color del texto */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    display: block;
+    margin: 20px auto; /* Para centrar el botón con un margen superior de 20px */
+    text-align: center; /* Para centrar el contenido del botón */
+  }
+  .detalles-pago:hover{
+    background-color: #609060;
+    color: white;
+  }
+
+
+  .search-bar-ventas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;/*interfaz 1 30px interfaz 2 40px*/
+    width: 450px;/*interfaz 1 150px interfaz 2 450px*/
+    background-color: #e4e4e4;
+    border-radius: 20px; /* Redondea las esquinas */
+    transition: transform 0.3s, border-radius 0.3s; /* Agregamos transiciones suaves */
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  .search-bar-ventas i {
+    color: rgb(35, 4, 148); /* Cambia el color del icono según tus preferencias */
+    margin-right: 11px; /* Espacio entre el icono y el input */
+  }
+
+  .search-bar-ventas i:hover {
+    color: rgb(255, 0, 0); /* Cambia el color a azul en hover */
+  }
+  
+  .search-bar-ventas input {
+    border: none;
+    background: transparent;
+    font-size: 13px;/*Interfaz 1 10px Interfaz 2 15px*/
+    outline: none;
+    width: 65%;
+    transition: width 0.3s;
+  }
+  
+  .search-bar-ventas:hover {
+    transform: scale(1.05); /* Escalamos al 110% del tamaño original en hover */
+    border-radius: 20px; /* Quitamos el redondeo en hover */
+  }
+  
+  .search-bar-ventas input:focus {
+    width: 75%; /* Expandimos el input al 100% al enfocarlo */
+  }
+
+  .container-inicio {
+    max-width: 1200px;
+    margin: 10px auto;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.seccion-datos{
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f5f5f5; /* Fondo gris claro */
+}
+
+.seccion-datos h2 {
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: #333;
+}
+
+.form-row {
+    display: flex;
+    /*justify-content: space-between;*/
+    align-items: center; /* Alinea verticalmente */
+    margin-bottom: 10px;
+}
+
+.form-row label {
+    font-weight: bold;
+    margin-right: 10px;
+    margin-left: 20px;
+    width: 150px;
+    color: #656565;
+}
+
+.form-row input[type="text"],
+.form-row select {
+    flex: 1;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    height: 30px;
+    
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input[type="number"] {
+  padding: 5px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: 30px;
+  max-width: 300px;
+}
+
+.percent-sign {
+  margin-left: 5px; /* Ajusta el espacio entre el input y el signo % */
+  color: #656565;
+}
+
+.seccion-button {
+  display: flex;
+  justify-content: flex-end; /* Alinear elementos al final (derecha) */
+}
+
+.form-row-pago{
+  margin-right: 400px;
+}
+
+.form-row-pago select {
+  flex: 1;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  height: 30px;
+  
+}
+
+#numeroCheque{
+  margin-left: 200px;
+}
+
+#numeroCheque input {
+  flex: 1;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  height: 30px;
+  
+}
+
+.generar-venta {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px; /* Espacio adicional entre los botones */
+  margin-right: 30px; /* Espacio a la derecha */
+}
+
+
+.generar-venta:hover {
+  background-color: #0056b3;
+}
+
+.cancelar {
+  background-color: #dc3545; /* Color de fondo para el botón Cancelar */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancelar:hover {
+  background-color: #97101d;
+}
+
+.descuento {
+  background-color: rgb(131, 214, 5); /* Color de fondo para el botón Cancelar */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px; /* Espacio adicional entre los botones */
+  margin-right: 30px; /* Espacio a la derecha */
+}
+
+.descuento:hover {
+  background-color: #2e8b0f;
+}
+
+
+.agregarProducto {
+  display: block;
+  margin: 0 auto; /* Centrar el botón horizontalmente */
+  padding: 10px 20px; /* Ajustar el relleno del botón */
+  background-color: green; /* Color de fondo verde */
+  color: white; /* Color del texto blanco */
+  border: none; /* Quitar borde */
+  border-radius: 5px; /* Esquinas redondeadas */
+  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+  margin-bottom: 20px;
+}
+
+.agregarProducto:hover {
+  background-color: rgb(64, 136, 64); /* Color de fondo verde */
+}
+
+.agregarProducto i {
+  margin-right: 5px; /* Espacio entre el icono y el texto */
+}
+
+
+
+.centered, .centered-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
+
+
+
+#modalFondoBusqueda {
+display: none;
+position: fixed;
+top: 60px;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+z-index: 999; /* Asegurar que el fondo esté detrás del modal */
+}
+
+#miModalBusqueda {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+max-width: 1000px; /* Establecer un ancho máximo para evitar que sea demasiado ancho en pantallas grandes */
+border-radius: 10px;
+max-height: 500px;
+padding: 20px;
+background: #fff;
+z-index: 1000;
+}
+
+.cerrar-modal {
+position: absolute;
+top: 10px;
+right: 10px;
+cursor: pointer;
+}
+
+#listaArticulos{
+font-size: 30px;
+margin-top: 20px;
+list-style: none;
+color: #000000;
+max-height: 5 ;
+}
+
+.articulo{
+display: flex;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombreado */
+margin-bottom: 20px;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+
+.articulo:hover {
+background-color: #c5c5c5; /* Cambia el color de fondo al pasar el ratón por encima */
+}
+
+.detalles {
+margin-left: 20px;
+margin-top: 5px;
+flex: 70%; /* Ocupa el 65% del espacio disponible */
+padding-right: 20px; /* Espaciado derecho para separar del div de la imagen */
+}
+
+.detalles h3 {
+font-size: 15px;
+}
+
+.img-container{
+flex: 30%; /* Ocupa el 35% del espacio disponible */
+margin-right: auto;
+}
+
+.img-container img {
+max-width: 60px; 
+width: auto; 
+max-height: 60px; 
+height: auto; 
+border-radius: 5px;
+margin: 5px;
+}
+
+
+#listaArticulos .agregar-producto{
+  color: rgb(255, 255, 255);
+  background-color: green;
+  margin: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 5px;
+  border: none;
+  width: 50px;
+  height: 50px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+#listaArticulos .agregar-producto:hover{
+  background-color: #ecebeb;
+  color: green;
+}
+
+.filtro{
+display: none;
+}
+
+#mensajeNoProductos{
+max-width: 80%;
+font-size: 20px;
+color: #707070;
+text-align: center;
+margin-top: 50px;
+margin-left: auto;
+margin-right: auto;
+}
+
+.codigo-articulo p, 
+.codigo-referencial p,
+.detalles p,
+.color p,
+.precio p{
+  font-size: 17px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  border-top: 1px;
+  border-bottom: 1px;
+}
+
+.tachado{
+  text-decoration: line-through;
+  font-size: 17px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  border-top: 1px;
+  border-bottom: 1px;
+}
+
+
+.color select{
+  font-size: 17px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  margin-left: 10px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  border-top: 1px;
+  border-bottom: 1px;
+  border-radius: 5px;
+  border: 1px solid #393939;
+}
+
+.cantidad select{
+  font-size: 17px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  margin-left: 10px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  border-top: 1px;
+  border-bottom: 1px;
+  border-radius: 5px;
+  border: 1px solid #393939;
+}
+
+.limpiar{
+  color: #ffffff;
+  background-color: red;
+  border: 1px solid red;
+  border-radius: 5px;
+  text-align: center;
+  padding: 5px;
+}
+
+.eliminar{
+  border: none;
+  color: blue;
+  margin-left: 20px;
+}
+
+.eliminar:hover{
+  color: red;
+}
+
+/*************Modal cliente***********/
+.modal-contenido-cliente {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 10000; /* Asegura que esté encima del fondo */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra */
+}
+
+.cerrar-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+/*************Modal Detalles***********/
+.modal-contenido-detalles {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 10000; /* Asegura que esté encima del fondo */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra */
+}

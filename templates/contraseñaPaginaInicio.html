@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="HTML Masters">
+
+    <!--Link css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/barraNavegacion.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/redesSociales.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/piePagina.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/verificacionExitosa.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/contraseña.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/modalUsuarios.css' %}">
+    
+    <!--Link bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!--Font awesome-->
+    <script src="https://kit.fontawesome.com/91363630b1.js" crossorigin="anonymous"></script>
+    <!--Swiper carrusel-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <!--jQuery-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <title>{% block title %} Pc Computers{% endblock %}</title>
+    {% load static %}
+    <link rel="shortcut icon" type="image/logo1.png" href="{% static 'img/logo1.png' %}">
+</head>
+<body>
+    
+    <header>
+        <nav>
+            <input type="checkbox" id="check">
+            <label for="check" class="checkbtn">
+                <i class="fa-solid fa-bars"></i>
+            </label>
+            <label class="brand">
+                <div class="logo">
+                    <a href="/">
+                        <img src="{% static 'img/logo.png' %}" alt="Logo de Mi Sitio">
+                    </a>
+                </div>
+            </label>
+            <ul>
+                <li><a href="/"><i class="fa-solid fa-house"></i> <div id="nombres">Inicio</div></a></li>
+                <li><a href="/acerca-de/">¿Quiénes somos?</a></li>
+                <li><a href="/contacto/">Contáctanos</a></li>   
+                <li id="espacio"><br></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+
+        <!-- Ventana emergente para usuarios -->
+        <div class="ventana-emergente" id="ventanaEmergente" style="display: {% if mensaje_error %}block{% elif mensaje_alerta %}block{% else %}none{% endif %};">
+            <div class="contenido-ventana">
+                <span class="cerrar" onclick="cerrarVentana()">&times;</span>
+                <!-- Contenido de la ventana emergente -->
+                <!-- Puedes agregar aquí el formulario de registro o la información del perfil -->
+
+                    <!-- Columna 2: Iniciar Sesión con Google y Facebook -->
+                    <div class="columna">
+                        <h2>Ingresar con</h2>
+                        <!-- Botones de inicio de sesión con Google y Facebook -->
+                        <a href="{% url 'social:begin' 'google-oauth2' %}" class="button-g" type="button" onclick="iniciarSesionGoogle()"><i class="fa-brands fa-google"></i> Google</a> - ó -
+                        <!--<button class="button-f" type="button" onclick="iniciarSesionFacebook()"><i class="fa-brands fa-facebook-f"></i></button>-->
+
+                        <!-- Campos de inicio de sesión -->
+                        <form id="formularioInicioSesion" method="post" action="{% url 'ingresar' %}" style="display: {% if mensaje_alerta %}none{% endif %};">
+                            <h2>Iniciar sesión</h2>    
+                            {% csrf_token %}
+                            <!-- Campo de Correo Electrónico con ícono -->
+                            <div style="position: relative;">
+                                <i class="fas fa-envelope icono-input"></i>
+                                <input type="text" name="correo" id="correo" placeholder="Correo electrónico" required/>
+                                <div class="mensaje-error" id="mensajeCorreo"></div>
+                            </div>
+                            <!-- Campo de Contraseña con ícono -->
+                            <div style="position: relative;">
+                                <i class="fas fa-lock icono-input"></i>
+                                <input type="password" name="contrasena" id="contrasena" placeholder="Contraseña" required/>
+                                <div class="mensaje-error" id="mensajeContrasena"></div>
+                            </div>
+                            {% if mensaje_error %}
+                                <p class="error" ><i class="fa-solid fa-circle-exclamation"></i> {{ mensaje_error }}</p>
+                            {% endif %}
+                            <button type="submit" onclick="iniciarSesion()">INGRESAR</button>
+                        </form>
+                        
+                        <!-- Enlace para mostrar el formulario de recuperación de contraseña -->
+                        <div id="linkRecuperarContrasena" style="display: {% if mensaje_alerta %}none{% endif %};">
+                            <a href="/reset_password/" >¿Olvidó su contraseña?</i></a>
+                        </div>
+                        <!-- Contenido de recuperación de contraseña (inicialmente oculto) -->
+                        <div id="recuperarContrasena" style="display: {% if mensaje_alerta %}none{% endif %};">
+                            <h2>Recuperar Contraseña</h2>
+                            <p></p>
+                            <!-- Formulario de recuperación de contraseña aquí -->
+                            <form id="formularioRecuperarContrasena">
+                                <input type="text" placeholder="Correo electrónico" />
+                                <div class="btns">
+                                    <button class="btn-regresar" type="button" onclick="iniciarSesion()"> <i class="fa-solid fa-chevron-left"></i> Atrás</button>
+                                    <button type="button" onclick="recuperarContrasena()"><i class="fa-solid fa-envelope"></i> Enviar correo </button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Enlace para cambiar a la sección de Registro -->
+                        <div id="registrar" style="display: {% if mensaje_alerta %}block{% endif %};">
+                            <h2>Registrar usuario</h2>
+                            <!-- Formulario de recuperación de contraseña aquí -->
+                            <form id="formularioRegistro" method="post" action="{% url 'registro' %}">
+                                {% csrf_token %}
+                                <input type="text" name="nombre" placeholder="Nombre"/>
+                                <input type="text" name="apellido" placeholder="Apellido"/>
+                                <input type="email" name="correo" placeholder="Correo electrónico" />
+                                <input type="password" name="contrasena" placeholder="Contraseña" />
+                                {% if mensaje_alerta %}
+                                    <p class="error" ><i class="fa-solid fa-circle-exclamation"></i> {{ mensaje_alerta }}</p>
+                                {% endif %}
+                                <div class="btns">
+                                    <button class="btn-regresar" type="button" onclick="iniciarSesion()"> <i class="fa-solid fa-chevron-left"></i> Atrás</button>
+                                    <button type="submit" onclick="registrarse()">Registrarme</button>
+                                </div>
+                            </form>
+                        </div>
+                        <!--<a href="#" onclick="mostrarRegistro()">¿No tienes cuenta? Regístrate</a>-->
+                        <div id="btn-registrar">
+                            <button id="button-registrarse" type="button" onclick="mostrarRegistro()" >REGISTRARSE</button>
+                        </div>
+                        <br id="espaciado"></br>
+                    </div>
+                    
+            </div>
+        </div>
+
+
+        <div class="contenido">
+
+            {% block content %}
+
+            {% endblock %}
+            
+            <div class="social-icons">
+                <a href="https://wa.me/593997434229" target="_blank">
+                    <img src="{% static 'img/whatsapp.png' %}" alt="WhatsApp">
+                </a>
+                <!--<a href="https://m.me/" target="_blank">
+                    <img src="{% static 'img/messenger.png' %}" alt="Messenger">
+                </a>-->
+            </div>              
+        </div>
+    </main>
+    
+    <footer>
+        <div class="footer-section">
+            <!--<img src="{% static 'img/logo.png' %}" alt="Logo de Mi Sitio">-->
+            <h1>PC Computers</h1>
+            <p>MÁS TECNOLOGÍA Y SOSTENIBILIDAD A TU ALCANCE</p>
+            <a class="footer-link" href="https://maps.app.goo.gl/qdJx2KQL4pcQPmoz7" target="_blank"> <i class="fa-solid fa-location-dot"></i> Páez 1232 entre Boyacá y Guabo</a>
+        </div>
+        <div class="footer-section">
+          <h2>Enlaces Rápidos</h2>
+          <a class="footer-link" href="#"><i class="fa-solid fa-shop"></i> Tienda</a>
+          <a class="footer-link" href="#"><i class="fa-solid fa-computer"></i> Servicios</a>
+          <a class="footer-link" href="#"><i class="fa-solid fa-user"></i> Mi cuenta</a>
+          <a class="footer-link" href="#"><i class="fa-regular fa-building"></i> Acerca de</a>
+        </div>
+        <div class="footer-section">
+          <h2>Redes Sociales</h2>
+          <a class="footer-link" href="#"><i class="fa-brands fa-square-facebook"></i> Facebook</a>
+          <a class="footer-link" href="#"><i class="fa-brands fa-instagram"></i> Instagram</a>
+          <a class="footer-link" href="#"><i class="fa-brands fa-tiktok"></i> TikTok</a>
+        </div>
+        <div class="footer-section">
+          <h2>Contacto</h2>
+          <a class="footer-link" href="#"><i class="fa-solid fa-phone"></i> 0997434229</a>
+          <a class="footer-link" href="#"><i class="fa-solid fa-envelope"></i> ventas@pccomputers-ec.com</a>
+        </div>
+      </footer>  
+        <p class="copyright-text">&copy; Copyright PC Computers &reg; Todos los derechos reservados 2023</p>
+       
+
+    <!--Script swiper-->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!--Link modal usuarios -->
+    <script src="{% static 'js/usuarios.js' %}"></script>
+</body>
+</html>

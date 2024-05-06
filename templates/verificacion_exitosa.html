@@ -1,0 +1,14 @@
+{% extends "paginaInicio.html" %}
+
+{% block title %}PC Computers - Correo verificado{% endblock %}
+
+{% block content %}
+{% load static %}
+    <div class="item-correoverificado">
+        <p><i class="fa-regular fa-circle-check"></i></p>
+        <br>
+        <h4>{{mensaje}}<a id="btn-iniciar" href="#" onclick="mostrarVentana()"> iniciar sesión.</a></h4>
+        <br>
+        <a id="btn-home" href="/">Ir al Inicio <i class="fa-solid fa-house"></i><a>
+    </div>
+{% endblock %} 

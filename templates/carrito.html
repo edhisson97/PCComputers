@@ -1,0 +1,110 @@
+{% extends "paginaInicio.html" %}
+
+{% block title %}PC Computers - Mi carrito{% endblock %}
+
+{% block content %}
+{% load static %}
+
+
+{% if productos_en_carrito %}
+<div class="container">
+    <!-- Primera Columna - Productos -->
+    <div class="products-column">
+        <h3 class="titulo-carrito">Mi carrito</h3>
+        {% for producto in productos_en_carrito %}
+        <div class="product">
+            <div class="product-info">
+                <h2>{{producto.marca}} {{producto.modelo}}</h2>
+                <p>{{producto.detalle}}</p>
+                {% if producto.precio_oferta == None%}
+                        <p class="etiqueta-precio">Precio: </p>
+                        <p class="precio">${{ producto.precio }}</p>
+                    {% else %}
+                        <p class="etiqueta-precio">Precio: </p>
+                        <p class="precio-tachado">${{ producto.precio }}</p>
+                        <p class="etiqueta-oferta"> Oferta: </p>
+                        <p class="precio">${{ producto.precio_oferta }}</p>
+                    {% endif %}
+                <div class="colors-selector">
+                    <!--<div class="color-capsule">
+                        {% for color in producto.colores_stock %}
+                            {%if color.stock > 0%}
+                                <div class="color-circle {% if forloop.first %}selected{% endif %}" data-color="{{ color.codigo_color }}" data-stock="{{ color_stock.stock }}" style="background-color: {{ color.codigo_color }};"></div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>-->
+                    <p id="color">Colores disponibles </p>
+                    <div class="color-capsule " id="color-capsule-{{producto.id}}"><!--{% if forloop.first %}selected{% endif %}-->
+                        {% for color_stock in producto.colores_stock %}
+                            {% if color_stock.stock > 0 %}
+                                <div class="color-circle {% if forloop.first %}selected{% endif %}" 
+                                     data-color="{{ color_stock.codigo_color }}" 
+                                     data-stock="{{ color_stock.stock }}" 
+                                     style="background-color: {{ color_stock.codigo_color }};" 
+                                     onclick="seleccionarColor(this)">
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <!--<p id="color">Selecciona un color </p>
+                    <select id="color-selector-{{producto.id}}" class="color-selector" data-producto-id="{{producto.id}}">
+                        {% for color_stock in producto.colores_stock %}
+                        
+                        <option value="{{ color_stock.codigo_color }}" data-stock="{{ color_stock.stock }}" style="background-color: #ffffff; color: #000000; outline: none;">{{color_stock.color}}</option>
+                            
+                        {% endfor %}
+                    </select>-->
+                </div>
+                <div class="cantidad-container">
+                    <p>Selecciona un color para escoger la cantidad</p>
+                    {% if producto.oferta%}
+                        <select id="cantidad-selector-{{producto.id}}" class="cantidad-selector" data-producto-id="{{producto.id}}" data-precio="{{ producto.precio_oferta }}" disabled>
+                            <option value="1">1</option>
+                        </select>
+                    {% else %}
+                        <select id="cantidad-selector-{{producto.id}}" class="cantidad-selector" data-producto-id="{{producto.id}}" data-precio="{{ producto.precio }}" disabled>
+                            <option value="1">1</option>
+                        </select>
+                    {% endif %}
+                </div>
+                <div id="acciones" style="flex: 0 0 auto; text-align: right;">
+                    <button data-producto-id="{{ producto.id }}" class="eliminar-producto-en-pagar" style="border: none;"> <i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="product-image">
+                <img src="{{producto.imagen}}" alt="{{producto.modelo}}">
+                
+            </div>
+        </div>
+        {% if not forloop.last %}
+                <div class="producto-separador" ></div>
+            {% endif %}
+        {% endfor %}
+      <!-- Agregar más productos según sea necesario -->
+
+    </div>
+    
+    <!-- Segunda Columna - Resumen de la Compra -->
+    <div class="summary-column">
+        <h3 class="titulo-carrito">Resumen de la Compra</h3>
+        <!-- Aquí puedes mostrar el resumen de la compra -->
+        <p class="detalles">Productos a comprar </p>
+        <p class="total-productos">{{totalp}}</p>
+        <p class="detalles">Costo de envío </p>
+        <p class="detalles-envio">$ 5.00</p>
+        <p class="total">Total</p>
+        <p class="total-valor">$ {{subtotal}}</p>
+        <button class="procederPago">Proceder con el pago</button>
+    </div>
+</div>
+
+{%else%}
+<div id="item-carritovacio">
+    <h4>Aún no se han agregado productos al carrito</h4>
+    <p><i class="fa-solid fa-cart-shopping"></i></p>
+    <a id="btn-inicio" href="/">Ir al Inicio <i class="fa-solid fa-house"></i><a>
+</div>
+{% endif %}
+
+
+{% endblock %} 

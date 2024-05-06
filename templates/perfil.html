@@ -1,0 +1,50 @@
+{% extends "paginaInicio.html" %}
+
+{% block title %}PC Computers - Mi perfil{% endblock %}
+
+{% block content %}
+{% load static %}
+{% if user.is_authenticated and user.is_active %}
+<div class="wrapper">
+    <div class="profile-container">
+        <div class="profile-picture">
+        <img src="{% if user.profile.picture %}{{ user.profile.picture.url }}{% else %}{% static 'img/default_profile.png' %}{% endif %}" alt="Foto de perfil" class="profile-img">
+        </div>
+        <div class="profile-details">
+            <h4>Mi Perfil - </h4><a href>editar <i class="fa-solid fa-pen-to-square"></i></a>
+            <h5>
+                {% if user.get_full_name %}
+                    {{ user.get_full_name }}
+                {% else %}
+                    {{ user }}
+                {% endif %}
+            </h5>
+            <p class="correo">{{ user.email }}</p>
+                {% if user.get_full_name %}
+                    <p class="leyenda">Hola <b>{{user.first_name}}</b>, en esta sección puedes puedes ver tus pedidos recientes, gestionar tus direcciones de envío y editar tu contraseña y los detalles de tu cuenta.</p>
+                {% else %}
+                    <p class="leyenda">Hola <b>{{user}}</b>, bienvenido a tu perfil.</p>
+                {% endif %}
+        </div>
+        <div class="button">
+            <a href="/cerrar-sesion/" class="logout-link">Cerrar Sesión</a>
+        </div>
+    </div>
+    {% if user.get_full_name %}
+        <div class="second-container">
+            <div class="sections-container">
+                <div class="section"><i class="fa-solid fa-truck-fast"></i> Mis Pedidos</div>
+                <div class="section"><i class="fa-solid fa-location-dot"></i> Dirección de Envío</div>
+                <div class="section"><i class="fa-solid fa-user-pen"></i> Editar Cuenta</div>
+                <div class="section"><i class="fa-solid fa-lock"></i> Cambiar Contraseña</div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+    <br>
+{% else %}
+<script>
+    window.location.href = "/";
+</script>
+{% endif %}
+{% endblock %} 

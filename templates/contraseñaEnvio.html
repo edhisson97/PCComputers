@@ -1,0 +1,17 @@
+{% extends "contraseñaPaginaInicio.html" %}
+
+{% block title %}PC Computers - Verificar correo{% endblock %}
+
+{% block content %}
+{% load static %}
+    <div class="item-verificarcorreo">
+        <p><i class="fa-solid fa-envelope"></i></p>
+        <br>
+        <h4>Le enviamos instrucciones por correo electrónico para configurar su contraseña, por favor ingrese a su correo para configurar una nueva contraseña.</h4>
+        <br>
+        <h4>Si no recibe un correo electrónico, asegúrese de haber ingresado la dirección con la que se registró y de verificar su bandeja de correo no deseado o spam.</h4>
+        <br>
+        <a id="btn-gmail" href="https://gmail.com" target="_blank">Gmail <i class="fa-brands fa-google"></i><a>
+        <a id="btn-outlook" href="https://login.live.com/" target="_blank">Outlook <i class="fa-brands fa-microsoft"></i><a>
+    </div>
+{% endblock %} 

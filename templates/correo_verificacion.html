@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Correo Electrónico</title>
+</head>
+<body>
+    {% csrf_token %}
+    <p>Hola estimad@ {{ usuario.username }},</p>
+    <p>Gracias por registrarte en nuestro sitio. Para completar el proceso de registro, por favor haz clic en el siguiente enlace para verificar tu correo electrónico:</p>
+    <a href="http://127.0.0.1:8000//verificar/{{ token }}" target="_blank">Verificar correo</a>
+    <p>ó</p>
+    <a href="http://127.0.0.1:8000//verificar/{{ token }}" target="_blank">http://127.0.0.1:8000//verificar/{{ token }}</a>
+    <p>Si no has solicitado este registro, simplemente ignora este correo electrónico.</p>
+    <p>Gracias,<br>El Equipo de PC Computers</p>
+</body>
+</html>

@@ -1,0 +1,105 @@
+{% extends "paginaInicio.html" %}
+
+{% block title %}PC Computers - Mantenimiento de equipos{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<header class="header-mantenimiento" >
+    <div class="imagen-fondo"></div> <!-- Capa semi-transparente con la imagen de fondo difuminada -->
+    <div class="contenido-header">
+        <h1>Mantenimiento y Reparación de Equipos de Cómputo</h1>
+        <p>Servicios profesionales para mantener tus equipos en óptimas condiciones</p>
+        <a href="/contactanos"><i class="fa-solid fa-phone"></i> Contáctanos</a>
+    </div>
+</header>
+<div class="container-mantenimiento">
+    <h6>HAZLE UN CHEQUEO PREVENTIVO A TU PC, REPARAMOS TU PC</h6>
+    <p>Ofrecemos un servicio de reparación de computadoras rápido, flexible y altamente eficiente. Poseemos un profundo entendimiento tanto en el aspecto técnico como en el software, lo que nos permite ofrecer soluciones integrales en el ámbito de la reparación de equipos. Utilizamos componentes originales y de alta calidad en todas nuestras reparaciones, y nuestro servicio técnico está diseñado para adaptarse a tus necesidades específicas.</p>
+    <div class="services">
+        <div class="service" onclick="openModal('piezas')">
+            <i class="fa-solid fa-right-left"></i>
+            <h2>Cambio de piezas</h2>
+        </div>
+        <div class="service" onclick="openModal('teclado')">
+            <i class="fa-regular fa-keyboard"></i>
+            <h2>Reparación de Teclado</h2>
+        </div>
+        <div class="service" onclick="openModal('carga')">
+            <i class="fa-solid fa-battery-quarter"></i>
+            <h2>Carga y batería</h2>
+        </div>
+        <div class="service" onclick="openModal('pantalla')">
+            <i class="fa-solid fa-tv"></i>
+            <h2>Pantalla</h2>
+        </div>
+        <div class="service" onclick="openModal('teclado')">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            <h2>Visagras</h2>
+        </div>
+        <div class="service" onclick="openModal('teclado')">
+            <i class="fa-solid fa-recycle"></i>
+            <h2>Roturas físicas</h2>
+        </div>
+        <div class="service" onclick="openModal('teclado')">
+            <i class="fa-regular fa-hard-drive"></i>
+            <h2>Disco duro</h2>
+        </div>
+        <div class="service" onclick="openModal('teclado')">
+            <i class="fa-solid fa-memory"></i>
+            <h2>Memoria ram</h2>
+        </div>
+        <div class="service" onclick="openModal('teclado')">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <h2>Sobrecalentamiento</h2>
+        </div>
+        <!-- Agrega más servicios aquí según tus necesidades -->
+    </div>
+    <h5>Reviviendo la potencia de tu PC, una reparación a la vez.</h5>
+</div>
+
+
+<!-- Modal -->
+<div id="modal-piezas" class="modal">
+    <div class="modal-content">
+        <div class="close-container"> <!-- Contenedor del botón de cierre -->
+            <span class="close" onclick="closeModal('piezas')">&times;</span>
+        </div>
+        <h2><i class="fa-solid fa-right-left"></i> Cambio de piezas</h2>
+        <p>Realizamos el cambio de todo tipo de componentes en PCs como: ventiladores, pasta termica, flexs, touchpad, base, y más.</p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/H3d9Mg-ZF0M?si=ekHV6_ZVRw_4tZSq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+</div>
+<div id="modal-teclado" class="modal">
+    <div class="modal-content">
+        <div class="close-container"> <!-- Contenedor del botón de cierre -->
+            <span class="close" onclick="closeModal('teclado')">&times;</span>
+        </div>
+        <h2><i class="fa-regular fa-keyboard"></i> Reparación de Teclado</h2>
+        <p>Damos mantenimiento y cambiamos el teclado de laptops.</p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/QCYOiK9QP08?si=n96ToWB0i-WvIiIH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+</div>
+<div id="modal-carga" class="modal">
+    <div class="modal-content">
+        <div class="close-container"> <!-- Contenedor del botón de cierre -->
+            <span class="close" onclick="closeModal('carga')">&times;</span>
+        </div>
+        <h2><i class="fa-solid fa-battery-quarter"></i> Carga y batería</h2>
+        <p>Reemplazamos el pin de carga y realizamos el cambio de batería de laptops.</p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/ORJBsiySYlE?si=2e1k7RCPafN_nib-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+</div>
+<div id="modal-pantalla" class="modal">
+    <div class="modal-content">
+        <div class="close-container"> <!-- Contenedor del botón de cierre -->
+            <span class="close" onclick="closeModal('pantalla')">&times;</span>
+        </div>
+        <h2><i class="fa-solid fa-tv"></i> Pantalla</h2>
+        <p>Realizamos el cambio de pantalla y mantenimiento de la misma.</p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/L5EW6JY0ou4?si=_3Be9QWoLjwjqiz0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+</div>
+
+
+{% endblock %} 

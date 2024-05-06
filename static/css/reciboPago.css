@@ -1,0 +1,106 @@
+body {
+    font-family: Arial, sans-serif;
+}
+.botones-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(240, 240, 240);
+    text-align: center;
+    z-index: 9999; /* Para que los botones estén encima del contenido */
+    border-bottom: 3px solid rgb(123, 123, 128); /* Borde de 1px de color azul en la parte inferior */
+  }
+  
+  .boton-gris {
+    background-color: grey;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+  }
+
+  .boton-gris:hover {
+    background-color: rgb(93, 93, 93);
+  }
+  
+  .boton-rojo {
+    background-color: rgb(255, 0, 0);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+  }
+
+  .boton-rojo:hover {
+    background-color: rgb(180, 0, 0);
+  }
+  
+  .boton-verde {
+    background-color: rgb(2, 105, 2);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+  } 
+  .boton-verde:hover {
+    background-color: rgb(0, 60, 0);
+  } 
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin-top: 110px;
+}
+.header {
+    /*text-align: center;
+    margin-bottom: 20px;*/
+    display: flex;
+}
+.logo {
+    width: 200px;
+    height: auto;
+    margin-left: 300px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.header h2 {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 100px; /* Empuja la imagen hacia la derecha */
+}
+.company-info {
+    margin: 20px;
+    border-radius: 20px;
+    border: 1px solid #a7a7a7;
+}
+.company-info p{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.customer-info {
+    margin: 20px;
+    border-radius: 20px;
+    border: 1px solid #a7a7a7;
+}
+.customer-info p {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+.total {
+    text-align: right;
+}

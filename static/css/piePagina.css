@@ -1,10 +1,11 @@
 footer {
-    background-color: #333;
+    background-color: #031E54;/*interfaz 1 #333*/
     color: #fff;
     padding: 20px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    padding-top: 3vh;
   }
   
   .footer-section {
@@ -52,7 +53,7 @@ footer {
     margin-bottom: 20px;
     text-align: center;
     font-size: 12px; /* Puedes ajustar el tamaño de fuente según tus preferencias */
-    background-color: #333;
+    background-color: #031E54;
     color: #fff;
   }
 

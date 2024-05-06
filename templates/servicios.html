@@ -1,0 +1,65 @@
+{% extends "paginaInicio.html" %}
+
+{% block title %}PC Computers - Servicios{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<h6 class="title-contact"> En Pc Computers puedes encontrar
+    <div class="social-links">
+        <a href="https://www.facebook.com/PcComputersNet" target="_blank"><i class="fa-brands fa-square-facebook"></i></a>
+        <a href="https://www.instagram.com/pccomputers.ec/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@pccomputers.ec" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+    </div>
+</h6>
+
+<div class="container-services">
+    <div class="servicio-mantenimiento">
+        <div class="info-mantenimiento">
+            <h3><i class="fa-solid fa-screwdriver-wrench"></i> Mantenimiento de Equipos</h3>
+            <span>Ofrecemos servicios de mantenimiento de equipos de cómputo diseñados para optimizar el rendimiento y prolongar la vida útil de tus herramientas digitales. Desde la resolución ágil de problemas hasta la prevención proactiva, nuestro equipo está comprometido a mantener tus dispositivos en su mejor forma. Confía en nosotros para brindarte tranquilidad digital mientras nosotros cuidamos de tus herramientas, para que tú puedas enfocarte en lo que realmente importa.</span>
+            <a href="/servicios/mantenimiento">Más información <i class="fa-solid fa-angle-right"></i></a>
+        </div>
+        <div class="img-mantenimiento">
+            <img src="{% static 'img/servicios/mantenimiento1.webp' %}">
+            <img src="{% static 'img/servicios/mantenimiento2.webp' %}">
+        </div>
+    </div>
+    <div class="servicio-desarrollo">
+        <div class="img-desarrollo">
+            <img src="{% static 'img/servicios/desarrollo2.webp' %}">
+            <img src="{% static 'img/servicios/desarrollo3.webp' %}">
+        </div>
+        <div class="info-desarrollo">
+            <h3> <i class="fa-solid fa-code"></i> Desarrollo de Aplicaciones Web</h3>
+            <span>Nos especializamos en el desarrollo de aplicaciones web, donde cada línea de código es una oportunidad para dar vida a innovadoras soluciones. Desde la conceptualización hasta la implementación, transformamos visiones en experiencias interactivas y funcionales. Bienvenido a un viaje donde cada clic cuenta, y donde tu presencia en la web se convierte en una historia única y cautivadora. Descubre cómo podemos tejer la magia digital para tu proyecto.</span>
+            <a href="/servicios/desarrollo-web">Más información <i class="fa-solid fa-angle-right"></i></a>
+        </div>
+    </div>
+    <div class="servicio-analisis">
+        <div class="info-analisis">
+            <h3><i class="fa-solid fa-magnifying-glass-chart"></i> Análisis de Datos</h3>
+            <span>Nos especializamos en el análisis de datos, transformando números en conocimiento significativo para impulsar decisiones estratégicas. Nuestro equipo de expertos trabaja en la extracción, interpretación y presentación de datos, brindándote una visión clara y perspicaz de tu información. Desde patrones ocultos hasta tendencias emergentes, te guiamos a través del vasto mundo de datos para convertirlos en herramientas poderosas que impulsen tu éxito.</span>
+            <a href="#">Más información <i class="fa-solid fa-angle-right"></i></a>
+        </div>
+        <div class="img-analisis">
+            <img src="{% static 'img/servicios/analisis1.webp' %}">
+            <img src="{% static 'img/servicios/analisis2.webp' %}">
+        </div>
+    </div>
+    <div class="servicio-capacitaciones">
+        <div class="img-capacitaciones">
+            <img src="{% static 'img/servicios/capacitaciones.webp' %}">
+            <img src="{% static 'img/servicios/capacitaciones1.webp' %}">
+        </div>
+        <div class="info-capacitaciones">
+            <h3> <i class="fa-solid fa-chalkboard-user"></i> Cursos y Capacitaciones</h3>
+            <span>Brindamos capacitaciones especializadas en una variedad de áreas, incluyendo Desarrollo y Diseño Web, Análisis de Datos, Gestión de Redes Sociales y otras disciplinas afines.</span>
+            <a href="/servicios/desarrollo-web">Más información <i class="fa-solid fa-angle-right"></i></a>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %} 

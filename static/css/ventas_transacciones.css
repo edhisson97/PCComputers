@@ -1,0 +1,99 @@
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff; /* Fondo blanco */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  }
+
+  .section {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Fondo gris claro */
+  }
+
+  .sales-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .conteo h2 {
+    color: #4CAF50; /* Verde */
+    text-align: center;
+    font-size: 25px;
+  }
+
+  .conteo i{
+    text-align: center;
+    color: #4CAF50; /* Verde */
+    font-size: 25px;
+  }
+
+  .total h2 {
+    color: #e84c30; /* Verde */
+    text-align: center;
+    font-size: 25px;
+  }
+  
+  .conteo p, .total p{
+    font-size: 20px;
+    text-align: center;
+    color: #747474;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f2f2f2; /* Fondo gris claro */
+    color: #555; /* Color de texto gris oscuro */
+    font-weight: normal;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f6f6f6; /* Fondo gris más claro para filas pares */
+  } 
+
+  .options-container {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e3e3e6;
+    display: flex;
+}
+.etiqueta-filtrar{
+    font-size: 14px;
+    padding-right: 20px;
+}
+
+.option-button {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 0px 5px;
+    text-decoration: none;
+    color: #131313;
+    background-color: transparent;
+    /*border: 1px solid #dadada;*/
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.option-button:hover {
+    color: #031E54;
+    border-bottom: 2px solid #031E54;
+    background-color: rgb(242, 242, 242);
+}

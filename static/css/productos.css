@@ -1,0 +1,656 @@
+.category-section {
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 2px solid #ddd;
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.category-list {
+    white-space: nowrap;
+    overflow-x: auto; /* Agrega una barra de desplazamiento horizontal en toda la sección */
+    display: flex; /* Utiliza un contenedor flex para las categorías */
+}
+
+.category-list::-webkit-scrollbar {
+    width: 6px; /* Ancho de la barra de desplazamiento */
+    height: 6px; /* Altura de la barra de desplazamiento */
+}
+
+.category-list::-webkit-scrollbar-thumb {
+    background: #ddd; /* Color del pulgar de la barra de desplazamiento */
+    border-radius: 3px; /* Bordes redondeados del pulgar */
+}
+
+.category {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 2px solid transparent;
+    min-width: 100px; /* Establece un ancho mínimo para las categorías */
+}
+
+.category.selected {
+    border-color:  #c53c32;
+}
+
+.category.active {
+    border-color: #c53c32 ;
+}
+
+@media screen and (max-width: 600px) {
+    .category {
+        min-width: auto; /* Elimina el ancho mínimo en pantallas más pequeñas */
+    }
+}
+@media screen and (min-width: 768px) {
+    .category-list {
+        overflow-x: auto; /* Muestra una barra de desplazamiento en pantallas grandes */
+        scrollbar-width: thin; /* Establece el grosor de la barra de desplazamiento */
+        scrollbar-color: #ddd transparent; /* Cambia el color de la barra de desplazamiento */
+    }
+
+    .see-more-button {
+        display: none; /* Oculta el botón en pantallas grandes */
+    }
+}
+
+/**********************/
+/*tarjetas productos*/
+
+.productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.producto {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.producto img {
+    max-width: 100%;
+    height: auto;
+    max-height: 90px;
+    border-radius: 1px;
+}
+
+.info {
+    padding: 15px 0;
+}
+
+.info h3 {
+    font-size: 15px;
+    margin: 5px 0;
+}
+
+.info p {
+    font-size: 13px;
+    color: #777;
+    margin: 5px 0;
+}
+
+.info .precio {
+    font-size: 13px;
+    color: #383838;
+    margin: 5px 0;
+    display: inline-block;
+}
+
+.info .precio-tachado {
+    font-size: 13px;
+    color: #383838;
+    margin: 5px 0;
+    text-decoration: line-through;
+    display: inline-block;
+}
+
+.info .etiqueta-oferta {
+    font-size: 13px;
+    color: #ffffff; /* Cambia el color según tus preferencias */
+    background-color: #ff5733;
+    border-radius: 4px;
+    padding: 0 3px; /* Añade 3px de padding en los lados izquierdo y derecho */
+    display: inline-block;
+}
+
+.precio-y-comprar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#miModal .modal-contenido .etiqueta-precio {
+    font-size: 15px;
+    color: #343434; /* Cambia el color según tus preferencias */
+    display: inline-block;
+    margin-right: 10px;  /* Ajusta el margen derecho según sea necesario */
+}
+
+#miModal .modal-contenido .precio-tachado {
+    font-size: 1.25rem;
+    color: #343434; /* Cambia el color según tus preferencias */
+    display: inline-block;
+    margin-right: 10px;  /* Ajusta el margen derecho según sea necesario */
+    text-decoration: line-through;
+}
+
+#miModal .modal-contenido .etiqueta-oferta {
+    font-size: 1.25rem;
+    color: #ffffff; /* Cambia el color según tus preferencias */
+    background-color: #ff5733;
+    border-radius: 4px;
+    padding: 0 3px; /* Añade 3px de padding en los lados izquierdo y derecho */
+    display: inline-block;
+    margin-right: 10px;  /* Ajusta el margen derecho según sea necesario */
+}
+
+#miModal .modal-contenido .precio {
+    font-size: 1.25rem;
+    color: #ff5733; /* Cambia el color según tus preferencias */
+    display: inline-block;
+    margin-right: 10px;  /* Ajusta el margen derecho según sea necesario */
+}
+/*capsula de colores*/
+#miModal .modal-contenido .color-capsule {
+    display: inline-flex;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+#miModal .modal-contenido .color-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 2px auto;
+    margin-left: 4px;
+    margin-right: 4px;
+    cursor: pointer;
+    border: 1px solid #8d8d8d;
+}
+
+#miModal .modal-contenido .color-circle.selected {
+    border: 2px solid #08cfd9a4; /* Color del contorno cuando está seleccionado */
+    transform: scale(1.2); /* Hace que el círculo sea un 20% más grande cuando está seleccionado */
+}
+
+#miModal .modal-contenido .color-circle:hover {
+    border: 2px solid #08cfd9a4; /* Color del contorno al pasar el mouse */
+    transform: scale(1.2);
+}
+
+
+#miModal .modal-contenido .comprar {
+    display: block;
+    margin: auto;
+    max-width: 200px;
+    margin-bottom: 20px;
+}
+
+#miModal .modal-contenido .producto-agotado {
+    background-color: #9e9e9e; /* Color de fondo rojo claro (puedes ajustar según tu preferencia) */
+    color: #fff; /* Color del texto blanco */
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px; /* Bordes redondeados */
+    font-size: 12px; /* Tamaño del texto */
+    display: block;
+    margin: auto;
+    max-width: 200px;
+    margin-bottom: 20px;
+}
+
+.botones .producto-agotado{
+    margin-left: 13px;
+    display: inline;
+    color: #f61212;
+    font-size: 12px;
+}
+
+button:hover {
+    background-color: #e64a2e; /* Color del botón al pasar el mouse */
+}
+
+@media (max-width: 768px) {
+    .productos {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    .botones {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .ver-detalles,
+    .comprar {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Estilos para la ventana modal */
+
+#modalFondo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);  /* Fondo oscuro detrás del modal */
+    z-index: 98;
+}
+
+#miModal{
+    /* Estilos específicos para el modal */
+    display: none;
+    overflow-y: auto; /* Permite el desplazamiento vertical */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; /* Ancho fijo del modal */
+    height: 600px; /* Altura fija del modal */
+    overflow: hidden; /* Oculta el contenido que sobresale del modal */
+    border: none;
+    background-color: rgb(255, 252, 252);  /* Fondo oscuro detrás del modal */
+    border-radius: 20px;
+    z-index: 99;
+    overflow-y: auto;
+}
+#miModal .galeria {
+    display: flex;
+    align-items: center; /* Centra verticalmente el contenido */
+}
+
+#miModal .galeria .img_container {
+    /* Ajusta el tamaño según sea necesario */
+    width: 70%;
+    height: 100%;
+    overflow: hidden; /* Evita que las miniaturas afecten el tamaño de la imagen principal */
+}
+
+#miModal .galeria .thumbnail_container {
+    display: flex;
+    flex-direction: column; /* Muestra las miniaturas en una columna */
+    margin-left: 20px; /* Ajusta el espacio entre la imagen principal y las miniaturas */
+}
+
+#miModal .galeria .thumbnail_container .img_container img {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    object-fit: contain;
+    margin-bottom: 10px; /* Ajusta el espacio entre las miniaturas */
+    transition: transform 0.3s ease;
+}
+
+#miModal .galeria .thumbnail_container .img_container img:hover {
+    transform: scale(1.2);
+}
+
+#miModal .modal-contenido img {
+    max-width: 100%;
+    max-height: 350px;
+    height: 350px;
+    object-fit: contain;
+    border-radius: 15px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+#miModal .galeria .thumbnail_container{
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+
+#miModal .cerrar-modal {
+    /* Estilos específicos para el botón de cerrar del modal */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #000;
+}
+
+#miModal .cerrar-modal:hover {
+    color: #ff5733;
+}
+
+#miModal .modal-contenido h3{
+    font-size: 20px;
+}
+
+#miModal .modal-contenido .detalle{
+    font-size: 17px;
+}
+
+#miModal .modal-contenido .descripcion{
+    font-size: 15px;
+    text-align: left;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.mensaje {
+    text-align: center;
+    font-size: 45px;
+    background: linear-gradient(135deg, #c8c8c8, #737373);
+    -webkit-background-clip: text;
+    color: transparent;
+    padding: 30px;
+    border-radius: 50px;
+}
+.triste {
+    text-align: center;
+    font-size: 60px;
+    color: #888;
+}
+
+@media (max-width: 860px) {
+    #miModal{
+        width: 600px; /* Ancho fijo del modal */
+        height: 600px; /* Altura fija del modal */
+    }
+    #miModal .modal-contenido img {
+        max-height: 250px;
+        height: 250px;
+    }
+    #miModal .galeria .thumbnail_container .img_container img {
+        width: 50px;
+        height: 50px;
+    }
+    #miModal .modal-contenido .etiqueta-precio {
+        font-size: 1rem;
+    }
+    
+    #miModal .modal-contenido .precio-tachado {
+        font-size: 1rem;
+    }
+    
+    #miModal .modal-contenido .etiqueta-oferta {
+        font-size: 1rem;
+    }
+    
+    #miModal .modal-contenido .precio {
+        font-size: 1rem;
+    }
+    
+    .mensaje {
+        font-size: 35px;
+        border-radius: 40px;
+    }
+}
+
+@media (max-width: 660px) {
+    #miModal{
+        width: 500px; /* Ancho fijo del modal */
+        height: 500px; /* Altura fija del modal */
+    }
+    #miModal .modal-contenido img {
+        max-height: 150px;
+        height: 150px;
+    }
+    #miModal .galeria .thumbnail_container .img_container img {
+        width: 40px;
+        height: 40px;
+    }
+    .mensaje {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 530px) {
+    #miModal{
+        width: 400px; /* Ancho fijo del modal */
+        height: 600px; /* Altura fija del modal */
+    }
+    #miModal .modal-contenido img {
+        max-height: 140px;
+        height: 140px;
+    }
+    #miModal .galeria .thumbnail_container .img_container img {
+        width: 40px;
+        height: 40px;
+    }
+    .mensaje {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 425px) {
+    #miModal{
+        width: 340px; /* Ancho fijo del modal */
+        height: 600px; /* Altura fija del modal */
+    }
+    #miModal .modal-contenido img {
+        max-height: 150px;
+        height: 150px;
+    }
+    #miModal .galeria .thumbnail_container .img_container img {
+        width: 40px;
+        height: 40px;
+    }
+    #miModal .galeria{
+        flex-direction: column;
+    }
+    #miModal .galeria .thumbnail_container{
+        display: flex;
+        flex-direction: row;
+    }
+}
+
+/*para altura del navegador*/
+@media (max-height: 610px) {
+    #miModal{
+        height: 500px;
+    }
+}
+@media (max-height: 510px) {
+    #miModal{
+        height: 400px;
+    }
+}
+@media (max-height: 410px) {
+    #miModal{
+        height: 300px;
+    }
+}
+
+/*personalizar barra de desplazamiento del modal*/
+#miModal::-webkit-scrollbar {
+    width: 12px;
+}
+
+#miModal::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 6px;
+}
+
+#miModal::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+/* Estilos para los botones */
+
+.comprar {
+    background-color:#c53c32;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.ver-carrito {
+    background-color:#c53c32;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.ver-detalles {
+    background-color: #031E54;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.ver-detalles:hover,
+.comprar:hover {
+    background-color: #afaeae;
+}
+
+/*********** drpdown precios, marca***************/
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 3vh;
+    margin-left: 70px;
+
+}
+
+.custom-dropdown-btn {
+    background-color: #ffffff;
+    font-size: 14px;
+    color: #3a3a3a;
+    border: 1px solid #ccc; /* Borde gris */
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 7px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra difuminada */
+}
+
+.custom-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.custom-dropdown-content a {
+    color: #333;
+    font-size: 14px;
+    padding: 12px 16px;
+    display: block;
+    text-decoration: none;
+}
+
+.custom-dropdown-content a:hover {
+    background-color: #031E54;
+    color: #f9f9f9;
+}
+
+.custom-dropdown-btn:hover {
+    background-color: transparent;
+}
+
+.custom-dropdown-content .no-hover:hover {
+    background-color: transparent;
+}
+
+.custom-dropdown:hover .custom-dropdown-content {
+    display: block;
+}
+
+
+/* Media query para pantallas más pequeñas */
+@media (max-width: 600px) {
+    .custom-dropdown {
+        margin-left: 40px;
+    }
+
+    .custom-dropdown-btn {
+        padding: 5px;
+        font-size: 12px;
+    }
+
+    .custom-dropdown-content a{
+        font-size: 12px;
+    }
+
+    .custom-dropdown-btn-mobile {
+        display: inline-block;
+        padding: 5px;
+        font-size: 12px;
+    }
+
+}
+
+@media (max-width: 420px) {
+    .custom-dropdown {
+        margin-left: 20px;
+    }
+}
+
+@media (max-width: 380px) {
+    .custom-dropdown {
+        margin-left: 10px;
+        margin-right: 5px;
+    }
+}
+
+/****************titulo en descuentos y mas**************/
+.category-section .titulo-descuentos {
+    color: transparent; /* Puedes cambiar el color a tu preferencia */
+    background: linear-gradient(135deg, #031E54, #c53c32);
+    -webkit-background-clip: text;
+    font-size: 2em; /* Puedes ajustar el tamaño del texto según tus preferencias */
+    text-align: center;
+    font-family: 'Pacifico', cursive; /* Fuente manuscrita */
+}
+
+.options-container {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e3e3e6;
+    display: flex;
+}
+.etiqueta-filtrar{
+    font-size: 12px;
+    padding-right: 20px;
+}
+
+.option-button {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 0px 5px;
+    text-decoration: none;
+    color: #131313;
+    background-color: transparent;
+    /*border: 1px solid #dadada;*/
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.option-button:hover {
+    color: #031E54;
+    border-bottom: 2px solid #031E54;
+    background-color: rgb(242, 242, 242);
+}

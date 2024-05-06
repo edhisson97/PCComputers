@@ -1,0 +1,175 @@
+/*los contenidos estan contemplados en el modal producto producto.css*/
+.contenedor-principal {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.contenedor-articulo{
+    width: 70%;
+    border: 1px solid #cccccc;
+    border-radius: 20px;
+    box-sizing: border-box;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.galeria {
+    display: flex;
+    align-items: center; /* Centra verticalmente el contenido */
+}
+
+.galeria .img_container {
+    /* Ajusta el tamaño según sea necesario */
+    width: 70%;
+    height: 100%;
+    overflow: hidden; /* Evita que las miniaturas afecten el tamaño de la imagen principal */
+}
+
+.galeria .thumbnail_container {
+    display: flex;
+    flex-direction: column; /* Muestra las miniaturas en una columna */
+    margin-left: 20px; /* Ajusta el espacio entre la imagen principal y las miniaturas */
+}
+
+.galeria .thumbnail_container .img_container img {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    object-fit: contain;
+    margin-bottom: 10px; /* Ajusta el espacio entre las miniaturas */
+    transition: transform 0.3s ease;
+}
+
+.galeria .thumbnail_container .img_container img:hover {
+    transform: scale(1.2);
+}
+
+.img_container img {
+    max-width: 100%;
+    max-height: 350px;
+    height: 350px;
+    object-fit: contain;
+    border-radius: 15px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+
+.galeria .thumbnail_container{
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+h3{
+    font-size: 20px;
+}
+
+.detalle{
+    font-size: 17px;
+}
+
+.descripcion{
+    font-size: 15px;
+    text-align: left;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.contenedor-sugeridos {
+    width: 25%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sugeridos-inner {
+    display: flex;
+    flex-direction: column;
+}
+
+.contenedor-sugeridos h3 {
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #dadada;
+    text-align: center;
+    font-size: 15px;
+}
+
+.filtrar-container {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 5px;
+  }
+
+.filtrar-container p{
+    font-size: 15px;
+    margin-left: 10px;
+  }
+  
+.filtrar-container select {
+    padding: 3px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+  }
+
+.articulo-sugerido {
+    margin-bottom: 10px; /* Espacio entre cada artículo sugerido */
+    border: 1px solid #cccccc;
+    border-radius: 20px;
+    cursor: pointer;
+
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.articulo-sugerido.mostrar {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.articulo-sugerido:hover {
+    background-color: #cccccc;
+}
+
+.articulo-sugerido img {
+    max-width: 300px; 
+    height: auto; 
+    max-height: 90px; 
+    border-radius: 1px;
+    display: block; /* Para centrar en navegadores más antiguos */
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.detalles-sugeridos {
+    padding: 10px;
+    text-align: center;
+}
+
+.detalles-sugeridos h4{
+    font-size: 16px;
+}
+
+.detalles-sugeridos p{
+    font-size: 13px;
+}
+
+@media (max-width: 768px) {
+    .contenedor-comprar{
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .contenedor-articulo,
+    .contenedor-sugeridos {
+        width: 100%; /* En pantallas más pequeñas, ocupan el 100% del ancho */
+    }
+}

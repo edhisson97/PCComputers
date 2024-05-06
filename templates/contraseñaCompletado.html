@@ -1,0 +1,14 @@
+{% extends "contraseñaPaginaInicio.html" %}
+
+{% block title %}PC Computers - Contraseña cambiada exitosamente{% endblock %}
+
+{% block content %}
+{% load static %}
+    <div class="item-correoverificado">
+        <p><i class="fa-regular fa-circle-check"></i></p>
+        <br>
+        <h4>La contraseña se ha restablecido correctamente! Por favor inicie sesión.</h4>
+        <br>
+        <a id="btn-ingresar" href="#" onclick="mostrarVentana()"><i class="fa-solid fa-user"></i> Iniciar Sesión</a>
+    </div>
+{% endblock %} 

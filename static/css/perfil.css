@@ -1,0 +1,136 @@
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+.profile-container {
+    text-align: center;
+    margin-right: 10px; /* Agrega margen derecho para espaciar los contenedores */
+    border: 1px solid #959595;
+    border-radius: 10px;
+    width: 400px;
+    height: 370px;
+    box-sizing: border-box;
+    padding: 20px;
+  }
+  
+  .profile-picture {
+    border-radius: 50%;
+    overflow: hidden;
+    width: 75px;
+    height: 75px;
+    margin: 0 auto;
+    margin-top: 10px;
+  }
+  
+  .profile-img {
+    margin-top: 10px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .profile-details {
+    margin: 10px;
+  }
+
+  .profile-details h4{
+    display: inline;
+    color: #6a6a6a;
+    font-size: 16px;
+  }
+
+  .profile-details a{
+    display: inline;
+    text-decoration: none;
+    color: #206bff;
+  }
+
+  .profile-details h5{
+    font-size: 19px;
+    margin-top: 20px;
+  }
+
+  .profile-details .correo{
+    font-size: 16px;
+  }
+
+  .profile-details .leyenda{
+    font-size: 13px;
+    text-align: justify;
+  }
+  
+  .button {
+    margin: 20px;
+  }
+  
+  .logout-link {
+    text-decoration: none;
+    color: #fff;
+    background-color: #031E54;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+
+  .logout-link:hover {
+    color: #fff;
+    background-color: #949494;
+  }
+
+  .second-container {
+    box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+    padding: 20px; /* Ajusta el relleno según sea necesario */
+    border: 1px solid #959595;
+    border-radius: 10px;
+    width: 200px;
+    height: 370px;
+  }
+
+  .sections-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 10px;
+    color: #565656;
+    background-color: #f9f9f9;
+  }
+
+  .section:hover {
+    background-color: #dddddd;
+    color: #031E54;
+  }
+  .section i {
+    font-size: 25px; /* Ajusta el tamaño del icono según sea necesario */
+
+  }
+
+  @media (max-width: 700px) {
+    .profile-container,
+    .second-container {
+      width: 100%;
+      margin: 0 0 10px 0; /* Restablece el margen entre los contenedores en dispositivos móviles */
+    }
+  }
+
+  @media (max-width: 450px) {
+    .profile-picture {
+        margin-top: 0px;
+    }
+  }
+
+  @media (max-width: 415px) {
+    .profile-container {
+        height: 400px;
+    }
+  }

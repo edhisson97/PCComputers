@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="HTML Masters">
+
+    <!--Link css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/barraNavegacion.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/piePagina.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ventas_inicio.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ventas_transacciones.css' %}">
+
+
+    <!-- Agrega estos enlaces a los archivos CSS y JS de Slick Carousel 
+<link rel="stylesheet" type="text/css" href="ruta/a/slick.css"/>
+<link rel="stylesheet" type="text/css" href="ruta/a/slick-theme.css"/>
+<script type="text/javascript" src="ruta/a/slick.min.js"></script>-->
+    
+    <!--Link bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!--Font awesome-->
+    <script src="https://kit.fontawesome.com/91363630b1.js" crossorigin="anonymous"></script>
+    <!--jQuery-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <title>{% block title %} Pc Computers - ventas{% endblock %}</title>
+    {% load static %}
+    <link rel="shortcut icon" type="image/logo1.png" href="{% static 'img/logo1.png' %}">
+</head>
+<body>
+    
+    <header>
+        <nav>
+            <input type="checkbox" id="check">
+            <label for="check" class="checkbtn">
+                <i class="fa-solid fa-bars"></i>
+            </label>
+            <label class="brand">
+                <div class="logo">
+                    <a href="/">
+                        <img src="{% static 'img/logo.png' %}" alt="Logo de Mi Sitio">
+                    </a>
+                </div>
+            </label>
+            <ul>
+                <li><a href="/ventas"><i class="fa-solid fa-cash-register"></i> Facturación</a></li>
+                <li><a href="/ventas/transacciones"><i class="fa-solid fa-right-left"></i> Transacciones</a></li>
+                <li><a href="/"><i class="fa-solid fa-user"></i> {{user}}</a></li>
+                
+                {% if user.is_authenticated %}
+                    <li id="users-btn-perfil"><a href="/cerrar-sesion/" ><i class="fa-solid fa-right-from-bracket"></i> Salir</a></li>
+                {% endif %}    
+                
+                <li id="espacio"><br></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <!--<div id="modalFondoBusqueda" style="display: none;"></div>
+        <div id="miModalBusqueda" class="modal">
+            <div class="modal-contenido">
+                <span class="cerrar-modal">&times;</span>
+
+                <div class="centered-modal">
+                    <div class="modal-search-bar">
+                        <input type="text" name="buscador" id="buscador" placeholder="Buscar en Pc Computers">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div id="mensajeNoProductos" style="display: none;">Lo siento, no se encontraron resultados para tu busqueda. <i class="fa-regular fa-face-frown"></i></div>
+                <div id="listaArticulos">
+                    {% if todosProductos %}
+                        {% for prod in todosProductos %}
+                                <div class="articulo" data-id="{{ prod.id }}">
+                                    <div class="detalles">
+                                        <h3>{{ prod.marca }} {{ prod.modelo }}</h3>
+                                        <p>{{ prod.detalle }}</p>
+                                    </div>
+                                    <div class="img-container">
+                                    {% if prod.imagenes %}
+                                        <img src={{ prod.imagenes.first.imagen.url }} alt="Categoría 5"></a>
+                                    {% endif %}
+                                    </div>
+                                </div>
+                                
+                        {% endfor %}
+                    {% else %}
+
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>-->
+
+
+        <div class="contenido">
+
+            {% block content %}
+
+            {% endblock %}
+                          
+        </div>
+        <div id="notification" class="notification">
+            <p id="notification-text"> </p>
+        </div>
+    </main>
+    
+    <!--<footer>
+        <div class="footer-section">
+            <h1>PC Computers</h1>
+            <p>MÁS TECNOLOGÍA Y SOSTENIBILIDAD A TU ALCANCE</p>
+            <a class="footer-link" href="https://maps.app.goo.gl/qdJx2KQL4pcQPmoz7" target="_blank"> <i class="fa-solid fa-location-dot"></i> Páez 1232 entre Boyacá y Guabo</a>
+        </div>
+        <div class="footer-section">
+          <h2>Enlaces Rápidos</h2>
+          <a class="footer-link" href="/"><i class="fa-solid fa-shop"></i> Tienda</a>
+          <a class="footer-link" href="/servicios/"><i class="fa-solid fa-computer"></i> Servicios</a>
+          <a class="footer-link" href="#"><i class="fa-solid fa-user"></i> Mi cuenta</a>
+          <a class="footer-link" href="#"><i class="fa-regular fa-building"></i> Acerca de</a>
+        </div>
+        <div class="footer-section">
+          <h2>Redes Sociales</h2>
+          <a class="footer-link" href="https://www.facebook.com/PcComputersNet" target="_blank"><i class="fa-brands fa-square-facebook"></i> Facebook</a>
+          <a class="footer-link" href="https://www.instagram.com/pccomputers.ec/" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a>
+          <a class="footer-link" href="https://www.tiktok.com/@pccomputers.ec" target="_blank"><i class="fa-brands fa-tiktok"></i> TikTok</a>
+        </div>
+        <div class="footer-section">
+          <h2>Contacto</h2>
+          <a class="footer-link" href="#"><i class="fa-solid fa-phone"></i> 0997434229</a>
+          <a class="footer-link" href="#"><i class="fa-solid fa-envelope"></i> ventas@pccomputers-ec.com</a>
+        </div>
+      </footer>  -->
+        <p class="copyright-text">&copy; Copyright PC Computers &reg; Todos los derechos reservados 2024</p>
+       
+
+    <!--Script swiper-->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!--Link bar productos-->
+    <script src="{% static 'js/bar-productos.js' %}"></script>
+    <script src="{% static 'js/facturacion.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow: auto; /* Establecer a "auto" por defecto */
+}
+
+.contenedor {
+    position: relative;
+    background-color: #f4f4f4;
+}
+
+.ventana-emergente {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.ventana-emergente.mostrar {
+    overflow: hidden; /* Deshabilitar el scrollbar cuando la ventana emergente está activa */
+}
+
+.contenido-ventana {
+    display: flex;
+    overflow: auto; 
+    flex-direction: row; /* Ajuste para que las columnas estén en horizontal */
+    background: linear-gradient(to left, rgb(199, 199, 199), #ffffff);
+    width: 400px; /* Ajusta según sea necesario */
+    height: 500px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.cerrar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/******************CONTENIDO DENTRRO DEL MODAL******/
+.columna {
+    flex: 1;
+    padding: 40px;
+    text-align: center;
+}
+
+/* Estilos de los formularios */
+form {
+    margin-bottom: 15px;
+}
+
+.columna h4{
+    margin-bottom: 40px;
+    color: #031E54;
+}
+
+#formularioInicioSesion h2{
+    font: caption;
+    font-size: 20px;
+    color: #031E54;
+    margin-bottom: 0px;
+}
+
+/* Estilos de los botones de redes sociales 
+.columna .button-g {
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 25px;
+    margin-right: 10px;
+    width: 150px;
+    height: 35px;
+    line-height: 35px; 
+    border-radius: 17px;
+    background-color: rgb(255, 24, 24);
+    color: rgb(255, 255, 255);
+    border: 20px;
+}
+
+.columna .button-g:hover {
+    background-color: rgb(255, 255, 255);
+    color: rgb(255, 24, 24);
+}
+
+.columna .button-f {
+    text-align: center;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: rgb(25, 87, 213);
+    color: rgb(255, 255, 255);
+    border: none;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.columna .button-f:hover {
+    background-color: rgb(255, 255, 255);
+    color: rgb(25, 87, 213);
+}
+
+*/
+
+
+#formularioInicioSesion input {
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 40px;
+    padding-right: 10px;
+    margin-top: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+#formularioInicioSesion input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+#formularioInicioSesion .icono-input {
+    position: absolute;
+    padding: 10px;
+    left: 7px;
+    top:37px;
+    transform: translateY(-50%);
+    color: #777;
+}
+
+.error{
+    color: rgb(210, 12, 12);
+    font-size: 14px;
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+#formularioInicioSesion button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#formularioInicioSesion button:hover {
+    background-color: rgb(255, 24, 24);
+}
+
+#formularioInicioSesion .mensaje-error{
+    margin-top: 3px;
+    color: red;
+    font-size: 10px;
+    text-align: right;
+}
+
+#linkRecuperarContrasena a {
+    display: block;
+    text-align: center;
+    color: #878787;
+    text-decoration: none;
+}
+
+#linkRecuperarContrasena a:hover {
+    color: #3498db;
+}
+
+#button-registrarse {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    bottom: 10px;
+    margin-top: 30px;
+    border: 1px solid #3498db;
+    background-color: white;
+    color: #3498db;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#button-registrarse:hover {
+    border: 1px solid #858585;
+    background-color: #858585;
+    color: white;
+}
+
+#espaciado{
+    display: none;
+    border-top: 10px;
+}
+
+/* Estilo para mostrar y ocultar la sección de recuperación de contraseña */
+#recuperarContrasena {
+    display: none;
+    border:none;
+    background-color: rgb(243, 243, 243);
+    padding: 10px;
+}
+
+#formularioRecuperarContrasena{
+    display: flex;
+    flex-direction: column;
+}
+
+#formularioRecuperarContrasena .btns{
+    display: flex;
+    gap: 10px;
+}
+
+#recuperarContrasena h2{
+    font: caption;
+    font-size: 18px;
+    color: #031E54;
+}
+
+#recuperarContrasena input {
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 40px;
+    padding-right: 10px;
+    border: 1px solid #3498db;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+#recuperarContrasena input:focus {
+    outline: none;
+    border-color: #3498db;
+    cursor: pointer;
+}
+
+#recuperarContrasena button {
+    width: 60%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #3498db;
+    border: 1px solid #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+#recuperarContrasena button:hover {
+    background-color: rgb(255, 24, 24);
+    border: 1px solid rgb(255, 24, 24);
+    cursor: pointer;
+}
+
+#recuperarContrasena .btn-regresar {
+    width: 60%;
+    padding: 10px;
+    /*margin-top: 15px;*/
+    background-color: #7a7a7a;
+    border: 1px solid #7a7a7a;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+#recuperarContrasena .btn-regresar:hover {
+    background-color: rgb(255, 255, 255);
+    border: 1px solid #3498db;
+    color: #777;
+
+}
+
+/* Estilo para mostrar y ocultar la sección de registro */
+#registrar {
+    display: none;
+    border:none;
+    background-color: rgb(243, 243, 243);
+    padding: 10px;
+}
+
+#formularioRegistro{
+    display: flex;
+    flex-direction: column;
+}
+
+#formularioRegistro .btns{
+    display: flex;
+    gap: 10px;
+}
+
+#registrar h2{
+    font: caption;
+    font-size: 18px;
+    color: #031E54;
+}
+
+#formularioRegistro input {
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 40px;
+    padding-right: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #858585;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+#formularioRegistro input:focus {
+    outline: none;
+    border-color: #3498db;
+    cursor: pointer;
+}
+
+#formularioRegistro button {
+    width: 60%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+#formularioRegistro button:hover {
+    background-color: rgb(255, 24, 24);
+    border: 1px solid rgb(255, 24, 24);
+    cursor: pointer;
+}
+
+#formularioRegistro .btn-regresar {
+    width: 60%;
+    padding: 10px;
+    /*margin-top: 15px;*/
+    background-color: #7a7a7a;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+#formularioRegistro .btn-regresar:hover {
+    background-color: rgb(255, 255, 255);
+    border: 1px solid #3498db;
+    color: #777;
+
+}
+
+@media(max-width:430px){
+    .contenido-ventana {
+        width: 380px; /* Ajusta según sea necesario */
+    }
+}
+
+@media(max-width:400px){
+    .contenido-ventana {
+        width: 350px; /* Ajusta según sea necesario */
+    }
+}
+
+@media(max-height:510px){
+    .contenido-ventana {
+        height: 460px; /* Ajusta según sea necesario */
+    }
+}
+
+@media(max-height:470px){
+    .contenido-ventana {
+        height: 420px; /* Ajusta según sea necesario */
+    }
+}
+
+@media(max-height:420px){
+    .contenido-ventana {
+        height: 380px; /* Ajusta según sea necesario */
+    }
+}
+
+@media(max-height:390px){
+    .contenido-ventana {
+        height: 340px; /* Ajusta según sea necesario */
+    }
+}
+@media(max-height:350px){
+    .contenido-ventana {
+        height: 300px; /* Ajusta según sea necesario */
+    }
+}

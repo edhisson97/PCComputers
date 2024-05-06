@@ -1,0 +1,46 @@
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #fff;
+    padding: 10px;
+    max-width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(255, 83, 83, 0.275); /* Sombra para dar la sensación de flotar */
+    transform: translate(0, -20px); /* Efecto de elevación */
+    z-index: 9999; /* Asegura que esté en la capa superior */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.notification.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+#notification-text{
+    color: rgb(65, 65, 65);
+    font-size: 18px;
+    margin: 10px;
+}
+
+@media (max-width: 650px) {
+    .notification {
+        left: 10px;
+    }
+    #notification-text{
+        font-size: 13px;
+        margin: 7px;
+    }
+}

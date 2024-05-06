@@ -1,0 +1,34 @@
+.item-correoverificado{
+    text-align: center;
+    justify-content: center;
+    max-width: 600px;
+    margin: auto;
+}
+
+.item-correoverificado h4{
+    text-align: justify;
+    color: #979898;
+    font-size: 17px;
+}
+
+.item-correoverificado p{
+    margin-top: 40px;
+    text-align: center;
+    color: #0ad20a;
+    font-size: 100px;
+}
+
+#btn-home {
+    display: inline-block;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    padding: 8px 20px;
+    background-color: #031E54; /* Color de fondo del botón */
+    color: #fff; /* Color del texto del botón */
+    text-decoration: none;
+    border-radius: 20px;
+}
+
+#btn-home:hover {
+    background-color: rgb(180, 181, 182); /* Color de fondo del botón */
+}

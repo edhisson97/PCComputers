@@ -1,0 +1,201 @@
+{% extends "paginaInicio.html" %}
+
+{% block title %}PC Computers - Productos{% endblock %}
+
+{% block content %}
+{% load static %}
+
+{% if elimina_localstorage %} 
+<script>
+    // Eliminar la variable 'selectedCategoryId' de localStorage
+    localStorage.removeItem('selectedCategoryId');//es la subcategoria no categoria
+    localStorage.removeItem('selectedMarca');
+    localStorage.removeItem('selectedOption');
+
+
+</script>
+{% endif %}
+
+<div class="category-section">
+    <div class="category-list">
+        <div class="category selected" data-categoria-id="{{ categoria_actual }}">TODO</div>
+        {% for subc in subcategoria %}
+            <div class="category" data-subcategoria-id="{{ subc.id }}" data-categoria-id="{{ categoria_actual }}">{{ subc.nombre }}</div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<div class="custom-dropdown" id="precioDropdown">
+    <button class="custom-dropdown-btn">Clasificar por precio <i class="fa-solid fa-chevron-down"></i></button>
+    <div class="custom-dropdown-content">
+        <a href="#" data-option="Todo" data-categoria-id="{{ categoria_actual }}">Todo</a>
+        <a href="#" data-option="MenorPrecio" data-categoria-id="{{ categoria_actual }}">Menor Precio</a>
+        <a href="#" data-option="MayorPrecio" data-categoria-id="{{ categoria_actual }}">Mayor Precio</a>
+        <a href="#" data-option="Ofertas" data-categoria-id="{{ categoria_actual }}">Ofertas</a>
+    </div>
+</div>
+
+<div class="custom-dropdown" id="marcaDropdown">
+    <button class="custom-dropdown-btn">Clasificar por marca <i class="fa-solid fa-chevron-down"></i></button>
+    <div class="custom-dropdown-content">
+        <a href="#" data-option="" data-categoria-id="{{ categoria_actual }}">Todas las marcas</a>
+        {% for m in marca %}
+            <a href="#" data-option="{{ m.id }}" data-categoria-id="{{ categoria_actual }}">{{ m.nombre }}</a>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+{% if productos %}
+<div class="productos">
+    {% for prod in productos %}
+        <div class="producto">
+            
+            {% if prod.imagenes %}
+                <img src={{ prod.imagenes.first.imagen.url }} alt="Categoría 5"></a>
+            {% endif %}
+            <div class="info">
+                <h3>{{ prod.marca }} - {{ prod.modelo }}</h3>
+                <p>{{ prod.detalle }}</p>
+                {% if prod.oferta == False %}
+                    <p class="precio">${{ prod.precio }}</p>
+                {% else %}
+                    <p class="precio-tachado">${{ prod.precio }}</p>
+                    <p class="etiqueta-oferta"> Oferta: </p>
+                    <p class="precio">${{ prod.precio_oferta }}</p>
+                {% endif %}
+            </div>
+            <div class="botones">
+                <button class="ver-detalles">Detalles</button>
+                <!--<button class="comprar">Comprar <i class="fa-solid fa-cart-shopping"></i></button>-->
+                {% if prod.colores.exists %}
+                        {% if prod.colores.all.0.stock > 0 or prod.colores.all.1.stock > 0 or prod.colores.all.2.stock > 0 or prod.colores.all.3.stock or prod.colores.all.4.stock > 0 %}
+                            <button class="comprar" data-product-id="{{prod.id}}" data-product-marca="{{prod.marca}}" data-product-modelo="{{prod.modelo}}">Comprar <i class="fa-solid fa-cart-shopping"></i></button>
+                        {% else %}
+                            <p class="producto-agotado"> Producto agotado </p>
+                        {% endif %}
+                    {% else %}
+                        <p class="producto-agotado"> Producto agotado </p>
+                {% endif %}
+            </div>
+            <div id="modalFondo" style="display: none;"></div>
+            <div id="miModal" class="modal">
+                <div class="modal-contenido">
+                    <span class="cerrar-modal">&times;</span>
+                    <!--<img src="{% static 'img/categorias/hp envy.png' %}" alt="Categoría 1">-->
+                    {% if prod.imagenes %}
+                    <div class="galeria">
+                        <div class="img_container">
+                            <img class="main_img" src="{{ prod.imagenes.first.imagen.url }}" >
+                        </div>
+                        <div class="thumbnail_container" >
+                            {% for imagen in prod.imagenes.all %}
+                                <div class="img_container">
+                                    <img class="thumbnail" src="{{ imagen.imagen.url }}" alt="" onclick="cambiarImagen('{{ imagen.imagen.url }}', this.closest('.modal'))">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <h3>{{ prod.marca }} - {{ prod.modelo }}</h3>
+                    <p class="detalle">{{ prod.detalle }}</p>
+                    {% if prod.oferta == False %}
+                        <p class="etiqueta-precio">Precio: </p>
+                        <p class="precio">${{ prod.precio }}</p>
+                    {% else %}
+                        <p class="etiqueta-precio">Precio: </p>
+                        <p class="precio-tachado">${{ prod.precio }}</p>
+                        <p class="etiqueta-oferta"> Oferta: </p>
+                        <p class="precio">${{ prod.precio_oferta }}</p>
+                    {% endif %}
+                    {% if prod.colores.all %}
+                        <p class="etiqueta-precio"> Disponible en </p>
+                        <div class="color-capsule">
+                            {% for color in prod.colores.all %}
+                                {%if color.stock > 0%}
+                                    {% if color.imagen %}
+                                        <div class="color-circle" data-color="{{ color.codigo_color }}" style="background-color: {{ color.codigo_color }};" onclick="cambiarImagen('{{ color.imagen.url }}', this.closest('.modal'))"></div>
+                                    {%else%}
+                                        <div class="color-circle" data-color="{{ color.codigo_color }}" style="background-color: {{ color.codigo_color }};" onclick="cambiarImagen('{{ prod.imagenes.first.imagen.url }}', this.closest('.modal'))"></div>
+                                    {%endif%}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <!--<script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                // Agregar eventos de clic a los colores de la paleta
+                                var colorPalettes = document.querySelectorAll('.colors-palette');
+                                colorPalettes.forEach(function (colorPalette) {
+                                    colorPalette.addEventListener('click', function (event) {
+                                        var colorDiv = event.target.closest('.color');
+                                        if (colorDiv) {
+                                            actualizarStockYCantidad(colorDiv);
+                                        }
+                                    });
+                                });
+                            
+                                // Llamada inicial para establecer el stock y la cantidad predeterminados
+                                colorPalettes.forEach(function (colorPalette) {
+                                    var primerColor = colorPalette.querySelector('.color');
+                                    if (primerColor) {
+                                        // Si hay al menos un color, activar el selector de cantidad para el primer color
+                                        actualizarStockYCantidad(primerColor);
+                                    }
+                                });
+                            });
+                            
+                            function actualizarStockYCantidad(colorDiv) {
+                                var productoId = colorDiv.closest('.colors-palette').id.split('-')[2];
+                                var cantidadSelector = document.getElementById('cantidad-selector-' + productoId);
+                                var stock = parseInt(colorDiv.dataset.stock);
+                            
+                                // Actualizar el stock y habilitar el selector de cantidad
+                                cantidadSelector.innerHTML = '';
+                                for (var i = 1; i <= stock; i++) {
+                                    var opcion = document.createElement('option');
+                                    opcion.value = i;
+                                    opcion.text = i;
+                                    cantidadSelector.appendChild(opcion);
+                                }
+                                cantidadSelector.disabled = false;
+                            
+                                // Actualizar el estilo de fondo del color seleccionado
+                                colorDiv.closest('.colors-palette').querySelector('.color.selected')?.classList.remove('selected');
+                                colorDiv.classList.add('selected');
+                            }
+                            
+                        </script>-->
+                    {% endif %}
+
+                    {% if prod.colores.exists %}
+                        {% if prod.colores.all.0.stock > 0 or prod.colores.all.1.stock > 0 or prod.colores.all.2.stock > 0 or prod.colores.all.3.stock or prod.colores.all.4.stock > 0 %}
+                            <br><button class="comprar" data-product-id="{{prod.id}}" data-product-marca="{{prod.marca}}" data-product-modelo="{{prod.modelo}}" data-color-seleccionado="{{ color.codigo_color }}">Comprar <i class="fa-solid fa-cart-shopping"></i></button>
+                        {% else %}
+                            <p class="producto-agotado">Producto Agotado <i class="fa-regular fa-face-frown-open"></i></p>
+                        {% endif %}
+                    {% else %}
+                        <p class="producto-agotado">Producto Agotado <i class="fa-regular fa-face-frown-open"></i></p>
+                    {% endif %}
+                    
+                    <p class="descripcion">{{ prod.descripcion }}</p>
+                    <!--<div class="video-container">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/XHTrLYShBRQ?si=7tsYyQVN7PFyEfht" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% else %}
+    <div class="mensaje">
+        Lo siento, no hay artículos disponibles en esta sección. Por favor, revisa otras secciones. 
+    </div>
+    <div class="triste">
+        <i class="fa-regular fa-face-frown-open"></i>
+    </div>
+{% endif %}
+<br>
+
+{% endblock %} 
