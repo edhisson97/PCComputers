@@ -1,0 +1,555 @@
+{% extends "ventas.html" %}
+
+{% block title %}PC Computers - Servicios{% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+    .search-bar-registros {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40px;/*interfaz 1 30px interfaz 2 40px*/
+        width: 450px;/*interfaz 1 150px interfaz 2 450px*/
+        background-color: #e4e4e4;
+        border-radius: 20px; /* Redondea las esquinas */
+        transition: transform 0.3s, border-radius 0.3s; /* Agregamos transiciones suaves */
+        cursor: pointer;
+        margin-bottom: 10px;
+      }
+    
+      .search-bar-registros i {
+        color: rgb(35, 4, 148); /* Cambia el color del icono según tus preferencias */
+        margin-right: 11px; /* Espacio entre el icono y el input */
+      }
+    
+      .search-bar-registros i:hover {
+        color: rgb(255, 0, 0); /* Cambia el color a azul en hover */
+      }
+      
+      .search-bar-registros input {
+        border: none;
+        background: transparent;
+        font-size: 13px;/*Interfaz 1 10px Interfaz 2 15px*/
+        outline: none;
+        margin-top: 3px;
+        margin-bottom: 3px;
+        margin-left: 13px;
+        margin-right: 10px;
+        width: 70%;
+        transition: width 0.3s;
+      }
+      
+      .search-bar-registros:hover {
+        transform: scale(1.05); /* Escalamos al 110% del tamaño original en hover */
+        border-radius: 20px; /* Quitamos el redondeo en hover */
+      }
+      
+      .search-bar-registros input:focus {
+        width: 75%; /* Expandimos el input al 100% al enfocarlo */
+      }
+    
+    .container h6{
+        margin-top: 20px;
+        margin-bottom: 20px;
+        color: #b6b6b8;
+    }
+</style>
+<h3>Registro de servicios </h3>
+
+<div class="container">
+    
+    <div class="centered-modal">
+        <div class="centered">
+            <div class="search-bar-registros">
+                <input type="text" name="buscador" id="buscador" placeholder="Buscar servicio...">
+                <i class="fas fa-search" id="barra-busqueda"></i>
+            </div>
+        </div>
+    </div>
+    {% if busqueda %}
+        <h6><i class="fa-solid fa-magnifying-glass"></i> &nbsp; Los resultados para la búsqueda "{{busqueda}}" son los siguientes</h6>
+    {% endif %}
+    <div class="options-container">
+      <p class="etiqueta-filtrar">Filtrar: </p>
+
+      <a href="/ventas/servicio/todos_registros?option=todo" class="option-button" >TODO</a>
+      <a href="/ventas/servicio/todos_registros?option=pendiente" class="option-button" >Pendiente</a>
+      <a href="/ventas/servicio/todos_registros?option=terminados" class="option-button" >Terminados</a>
+      <a href="/ventas/servicio/todos_registros?option=hoy" class="option-button" >Hoy</a>
+      <a href="/ventas/servicio/todos_registros?option=semana" class="option-button" >Última semana</a>
+      <a href="/ventas/servicio/todos_registros?option=mes" class="option-button" >Este mes</a>
+    </div>
+    
+    <div class="section table-container">
+      <h4>Transacciones {% if option == None%} (todos los registros) {% elif option == 'hoy' %} (hoy) {% elif option == 'semana' %} (Última semana) {% elif option == 'mes' %} (Este mes) {% elif option == 'pendiente' %} (Pendientes) {% elif option == 'terminado' %} (Terminados) {% elif option == 'todo' %} (Todas las transacciones){%endif%}</h4>
+      
+        <table class="table table-striped" id="tabla-productos">
+            <thead>
+            <tr>
+                <th scope="col">Estado</th>
+                <th scope="col">ID </th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Problema</th>
+                <th scope="col">Saldo Pendiente</th>
+                
+            </tr>
+            </thead>
+            <tbody id="productos-tbody">
+            
+
+            {% for servicioT in registros%}
+                <tr>
+                    {% if servicioT.estado == 'pendiente'%}
+                        <td style="background-color: orange; color: black;">Pendiente</td>
+                    {% elif servicioT.estado == 'terminado' %}
+                        <td style="background-color: green; color: white;">Terminado</td>
+                    {% else %}
+                        <td style="background-color: red; color: white;">Anulado</td>
+                    {% endif %}
+                    <td scope="col">{{servicioT.id}}</td>
+                    <td scope="col">{{servicioT.usuario.first_name}} {{servicioT.usuario.last_name}}</td>
+                    <td scope="col">{{servicioT.fecha_ingreso}}</td>
+                    <td scope="col">{{servicioT.equipo}} - {{servicioT.marca}} {{servicioT.modelo}} {{servicioT.serie}}</td>
+                    <td scope="col">{{servicioT.descripcion_problema}}</td>
+                    {% if servicioT.estado == 'pendiente' %}
+                        <td scope="col">${{servicioT.saldo}}</td>
+                    {% else %}
+                        <td scope="col"></td>
+                    {% endif %}
+                    <td scope="col"><button type="button" class="btn btn-primary abrir-modal" data-toggle="modal" data-target="#miModalBusqueda{{ servicioT.id }}"><i class="fa-solid fa-eye"></i></button></td>
+
+                    <!-- Modal específico para este registro -->
+                    <div id="miModalBusqueda{{ servicioT.id }}" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title">Detalles del Servicio</h5>
+                            </div>
+                            <div class="modal-body">
+                            <!-- Aquí se llenarán los detalles del servicio específico -->
+                                <div class="form-group">
+                                    <label for="fecha_ingreso">Fecha de Ingreso:</label>
+                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioT.fecha_ingreso}}" disabled>
+                                    <label for="fecha_ingreso">Fecha de Entrega:</label>
+                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioT.fecha_entrega}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fecha_ingreso">Datos del cliente:</label>
+                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioT.usuario.first_name}} {{servicioT.usuario.last_name}} - {{servicioT.usuario.email}}" disabled>
+                                </div>
+                                <!-- Fila 2: Tipo de servicio y equipo a revisar -->
+                                <div class="form-group">
+                                    <label for="tipo_servicio">Tipo de Servicio:</label>
+                                    <input type="text" id="tipo_servicio" name="tipo_servicio" class="form-control" value="{{servicioT.tipo_servicio}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="equipo">Equipo a Revisar:</label>
+                                    <input type="text" id="equipo" name="equipo"  class="form-control" value="{{servicioT.equipo}}" disabled>
+                                </div>
+                
+                                <!-- Fila 3: Marca, modelo, serie -->
+                                <div class="form-group">
+                                    <label for="marca">Marca:</label>
+                                    <input type="text" id="marca"  name="marca" class="form-control" value="{{servicioT.marca}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="modelo">Modelo:</label>
+                                    <input type="text" id="modelo" name="modelo"  class="form-control" value="{{servicioT.modelo}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="serie">Serie:</label>
+                                    <input type="text" id="serie" name="serie"  class="form-control" value="{{servicioT.serie}}" disabled>
+                                </div>
+                                {% if servicioT.estado == 'pendiente'%}
+                                    <!-- Fila 4: Descripción del problema -->
+                                    <div class="form-group">
+                                        <label for="descripcion_problema">Descripción del Problema:</label>
+                                        <textarea id="descripcion_problema_finalizado_{{ servicioT.id }}" name="descripcion_problema_finalizado"  class="form-control" rows="2" required>{{servicioT.descripcion_problema}}</textarea>
+                                    </div>
+                    
+                                    <!-- Fila 5: Solución -->
+                                    <div class="form-group">
+                                        <label for="solucion">Solución:</label>
+                                        <textarea id="solucion_finalizado_{{ servicioT.id }}" name="solucion_finalizado" class="form-control"  rows="2"  required>{%if servicioT.solucion%}{{servicioT.solucion}}{%endif%}</textarea>
+                                    </div>
+                                {% else %}
+                                    <!-- Fila 4: Descripción del problema -->
+                                    <div class="form-group">
+                                        <label for="descripcion_problema">Descripción del Problema:</label>
+                                        <textarea id="descripcion_problema_finalizado" name="descripcion_problema_finalizado"  class="form-control" rows="2" disabled>{{servicioT.descripcion_problema}}</textarea>
+                                    </div>
+                    
+                                    <!-- Fila 5: Solución -->
+                                    <div class="form-group">
+                                        <label for="solucion">Solución:</label>
+                                        <textarea id="solucion_finalizado" name="solucion_finalizado" class="form-control"  rows="2"  disabled>{{servicioT.solucion}}</textarea>
+                                    </div>
+                                {% endif %}
+                
+                                <!-- Fila 6: Técnico asignado y usuario que recibe -->
+                                <div class="form-group">
+                                    <label for="tecnico_asignado">Técnico Asignado:</label>
+                                    <input type="text" id="tecnico_asignado" name="tecnico_asignado" class="form-control" value="{{servicioT.tecnico_asignado}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usuario_recepta">Usuario receptor del equipo:</label>
+                                    <input type="text" id="usuario_recepta" name="usuario_recepta" class="form-control" value="{{servicioT.usuario_recepta}}" disabled>
+                                </div>
+                                {% if servicioT.estado == 'pendiente'%}
+                                    <div class="form-group">
+                                        <label for="costo">Costo real:</label>
+                                        <p>Costo inicial sin descuento $ {{servicioT.costo_sin_descuento}}</p>
+                                        <input type="number" id="costo_finalizado_{{ servicioT.id }}" name="costo_finalizado" class="form-control" value="{{servicioT.costo|stringformat:".2f"}}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="abono">Saldo pendiente:</label>
+                                        <input type="number" id="abono_finalizado_{{ servicioT.id }}" name="abono_finalizado" class="form-control" value="{{servicioT.saldo|stringformat:".2f"}}" disabled>
+                                    </div>
+                                {% else %}
+                                    <!-- Fila 7: Costo y abono -->
+                                    <div class="form-group">
+                                        <label for="costo">Costo:</label>
+                                        <input type="text" id="costo_finalizado" name="costo_finalizado" class="form-control" step="0.01" value="{{servicioT.costo}}" disabled>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="form-group">
+                                    <label for="abono">Descuento:</label>
+                                    <p>* Por cada 3 servicios realizados por el cliente se aplica una tasa de descuento.</p>
+                                    {% if servicioT.numero_reparacion == 3%}
+                                        <input type="text" name="abono_finalizado" class="form-control" value="SERVICIO # {{servicioT.numero_reparacion}} - APLICA A UNA TASA DEL {{porcentaje_descuento}}% DE DESCUENTO"style="background-color:green; color: white;" disabled>
+                                    {% else %}
+                                        <input type="text" name="abono_finalizado" class="form-control" value="SERVICIO # {{servicioT.numero_reparacion}} - NO APLICA DESCUENTO" disabled>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                {% if servicioT.estado == 'pendiente'%}
+                                    {% if servicio.saldo == 0 %}
+                                        <button type="button" class="btn btn-success finalizar-servicio-btnc" data-id="{{ servicioT.id }}">Finalizar servicio</button>
+                                    {% endif %}
+                                    <button type="button" class="btn btn-primary abonar-servicio-btn" data-id="{{ servicioT.id }}" onclick="redirectToView(this)">Abonos</button>
+                                    <button type="button" class="btn btn-secondary actualizar-servicio-btn" data-id="{{ servicioT.id }}">Guardar cambios</button>
+                                    <button type="button" class="btn btn-danger cancelar-servicio-btn" data-id="{{ servicioT.id }}">Anular servicio</button>
+                                {% else %}
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                </tr>
+
+                
+                
+
+            {%endfor%}
+            </tbody>
+        </table>
+
+    </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+        $('.finalizar-servicio-btnc').on('click', function() {
+            var servicioId = $(this).data('id');
+            var costo = $('#costo_finalizado_'+servicioId).val();
+            var abono = $('#abono_finalizado_'+servicioId).val();
+            var solucion = $('#solucion_finalizado_'+servicioId).val();
+            var problema = $('#descripcion_problema_finalizado_'+servicioId).val();
+
+            // Comprobar si el saldo es mayor que 0
+            // Comprobar si el saldo es mayor que 0
+            if (abono > 0) {
+                alert('No se puede finalizar el servicio porque el cliente aun tiene un saldo pendiente de $' + abono+ '.');
+                return; // Salir de la función si el saldo no es 0
+            }
+            if (solucion == '') {
+                alert('Debe agregar una solución para finalizar el servicio.');
+                return; // Salir de la función si el saldo no es 0
+            }
+
+            if (confirm('¿Estás seguro de finalizar este servicio?')) {
+
+                
+
+                var csrftoken = getCookie('csrftoken');
+                
+                // Ejemplo de solicitud AJAX usando jQuery
+                $.ajax({
+                    type: 'POST', // o 'PUT', dependiendo de tu API
+                    url: '/ventas/servicio/finalizar-servicio', // URL de tu endpoint para finalizar el servicio
+                    headers: {
+                        'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
+                    },
+                    data: {
+                        id: servicioId,
+                        costo: costo,
+                        abono: abono,
+                        solucion: solucion,
+                        problema: problema,
+                        estado: 'terminado'
+                    },
+                    
+                    success: function(response) {
+                        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal
+                        //$('#miModalBusqueda' + servicioId).modal('hide');
+                        // Actualizar la interfaz de usuario si es necesario
+                        if (response && response.encoded_path) {
+                            // Construir la URL para redirigir con el encoded_path
+                            var encodedPath = encodeURIComponent(response.encoded_path);
+                            var urlRedirect = '/ventas/servicio/generardescarga_pdf/' + encodedPath + '/';
+                
+                            // Redirigir a la nueva página con el encoded_path en la URL
+                            window.location.href = urlRedirect;
+                        } else {
+                            console.error('No se recibió el encoded_path del servidor.');
+                            // Manejar el caso donde no se recibió correctamente el encoded_path del servidor
+                            // Por ejemplo, mostrar un mensaje de error al usuario
+                            alert('Ocurrio un error al descargar el pdf');
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error al finalizar servicio:', error);
+                        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+                    }
+                });
+            } else {
+                // No hacer nada si el usuario hace clic en 'Cancelar'
+                console.log('El usuario canceló la operación.');
+            }
+
+        });
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Busca el nombre del cookie
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $('#barra-busqueda').on('click', function() {
+            console.log('dentro de buscar');
+            // Capturar el valor del campo de búsqueda
+            var query = $('#buscador').val().trim();
+    
+            if (query.length === 0) {
+                alert('Por favor ingrese un término de búsqueda.');
+                return;
+            }
+            // Crear un formulario dinámicamente
+            var form = $('<form></form>');
+            form.attr('method', 'POST'); // o 'GET' si prefieres
+            form.attr('action', '/ventas/servicio/todos_registros'); // URL a la que se enviarán los datos
+            
+            // Agregar un campo de búsqueda al formulario
+            var input = $('<input>').attr('type', 'hidden').attr('name', 'query').val(query);
+            form.append(input);
+            
+            // Agregar el token CSRF si usas un framework como Django
+            var csrftoken = getCookie('csrftoken');
+            var csrfInput = $('<input>').attr('type', 'hidden').attr('name', 'csrfmiddlewaretoken').val(csrftoken);
+            form.append(csrfInput);
+            
+            // Enviar el formulario
+            $('body').append(form);
+            form.submit();
+
+        });
+
+        $('.cancelar-servicio-btn').on('click', function() {
+            if (confirm('¿Estás seguro de cancelar y dar por finalizado el servicio? ')) {
+                var servicioId = $(this).data('id');
+
+                var csrftoken = getCookie('csrftoken');
+                
+                // Ejemplo de solicitud AJAX usando jQuery
+                $.ajax({
+                    type: 'POST', // o 'PUT', dependiendo de tu API
+                    url: '/ventas/servicio/cancelar-servicio', // URL de tu endpoint para finalizar el servicio
+                    headers: {
+                        'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
+                    },
+                    data: {
+                        id: servicioId
+                    },
+                    
+                    success: function(response) {
+                        
+                        alert('Servicio cancelado exitosamente.');
+                        // Redirigir a una nueva página
+                        window.location.href = '/ventas/servicio/todos_registros';
+
+                    },
+                    error: function(error) {
+                        console.error('Error al finalizar servicio:', error);
+                        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+                        alert('Ocurrio un error al cancelar el servicio, inténtelo en unos instantes!');
+                    }
+                });
+            }
+        });
+
+        $('.actualizar-servicio-btn').on('click', function() {
+            var servicioId = $(this).data('id');
+            var costo = $('#costo_finalizado_'+servicioId).val();
+            var abono = $('#abono_finalizado_'+servicioId).val();
+            var solucion = $('#solucion_finalizado_'+servicioId).val();
+            var problema = $('#descripcion_problema_finalizado_'+servicioId).val();
+
+            if (confirm('¿Estás seguro de actualizar los datos ingresados del servicio?')) {
+
+                
+
+                var csrftoken = getCookie('csrftoken');
+                
+                // Ejemplo de solicitud AJAX usando jQuery
+                $.ajax({
+                    type: 'POST', // o 'PUT', dependiendo de tu API
+                    url: '/ventas/servicio/finalizar-servicio', // URL de tu endpoint para finalizar el servicio
+                    headers: {
+                        'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
+                    },
+                    data: {
+                        id: servicioId,
+                        costo: costo,
+                        abono: abono,
+                        solucion: solucion,
+                        problema: problema,
+                        estado: 'pendiente'
+                    },
+                    
+                    success: function(response) {
+                        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal
+                        //$('#miModalBusqueda' + servicioId).modal('hide');
+                        // Actualizar la interfaz de usuario si es necesario
+                        if (response && response.encoded_path) {
+                            // Construir la URL para redirigir con el encoded_path
+                            var encodedPath = encodeURIComponent(response.encoded_path);
+                            var urlRedirect = '/ventas/servicio/generardescarga_pdf/' + encodedPath + '/';
+                
+                            // Redirigir a la nueva página con el encoded_path en la URL
+                            window.location.href = urlRedirect;
+                        } else {
+                            console.error('No se recibió el encoded_path del servidor.');
+                            // Manejar el caso donde no se recibió correctamente el encoded_path del servidor
+                            // Por ejemplo, mostrar un mensaje de error al usuario
+                            alert('Ocurrio un error al descargar el pdf');
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error al finalizar servicio:', error);
+                        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+                    }
+                });
+            } else {
+                // No hacer nada si el usuario hace clic en 'Cancelar'
+                console.log('El usuario canceló la operación.');
+            }
+
+        });
+    });
+
+    // Función para obtener el valor del cookie CSRF (para Django)
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Función para validar los campos antes de enviar el formulario
+    function validarCampo(input) {
+        if (input.value.trim() === '') {
+            input.classList.add('is-invalid');
+            return false; // El campo está vacío, no es válido
+        } else {
+            input.classList.remove('is-invalid');
+            return true; // El campo tiene contenido, es válido
+        }
+    }
+    
+    function validarFormulario() {
+        var formulario = document.getElementById('miFormulario');
+        var inputs = formulario.querySelectorAll('input[required], select[required], textarea[required]');
+        var isValid = true;
+    
+        inputs.forEach(function(input) {
+            if (!validarCampo(input)) {
+                isValid = false;
+            }
+        });
+    
+        if (!isValid) {
+            alert('Por favor, complete todos los campos antes de generar el registro.');
+            return false; // Evitar el envío del formulario si no todos los campos están completos
+        }
+    
+        if (confirm('¿Está seguro de que desea generar el registro?')) {
+            // Si el usuario confirma, enviar el formulario
+            formulario.submit();
+        }
+    
+        return false; // Evitar el envío del formulario si no se confirma la acción
+    }
+
+    // Asignar esta función al evento click del botón "Generar"
+    document.querySelector('.guardar-modal').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevenir el comportamiento predeterminado del botón (enviar formulario)
+        validarFormulario(); // Llamar a la función de validación
+    });
+
+    function redirect() {
+        window.location.href = '/ventas/registro_servicios';
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const abrirModalButtons = document.querySelectorAll('.abrir-modal');
+
+        abrirModalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modalId = this.getAttribute('data-modal-id');
+                const modal = document.getElementById(modalId);
+
+                if (modal) {
+                    modal.style.display = 'block';  // Mostrar el modal
+                }
+            });
+        });
+
+    });
+
+
+    
+    
+
+    function redirectToView(button) {
+        var id = button.getAttribute('data-id');
+        var url = `/ventas/registro_servicios/abono/${id}`; // Aquí construyes la URL con el ID
+        window.location.href = url;   // Rediriges a la URL construida
+    }
+
+    
+</script>
+{% endblock %} 

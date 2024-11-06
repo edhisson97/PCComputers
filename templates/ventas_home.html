@@ -1,0 +1,54 @@
+{% extends "ventas.html" %}
+
+{% block title %}PC Computers - Ventas{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container-inicio">
+    <h3 class="title_operacion">Bienvenid@ al Módulo <br> Ventas {{user}}</h3>
+    <div class="container_operaciones">
+        <div class="box" onclick="location.href='/ventas/facturacion';" style="cursor:pointer;">
+          <i class="fa-solid fa-cash-register"></i>
+          <div>Facturación</div>
+        </div>
+        <div class="box" onclick="location.href='/ventas/transacciones';" style="cursor:pointer;">
+          <i class="fa-solid fa-right-left"></i>
+          <div>Ventas realizadas</div>
+        </div>
+        <div class="box" onclick="location.href='/ventas/pagospendientes';" style="cursor:pointer;">
+          <i class="fa-solid fa-dollar-sign"></i>
+          <div>Pagos pendientes</div>
+        </div>
+        <div class="box" onclick="location.href='/ventas/registro_servicios';" style="cursor:pointer;">
+          <i class="fa-solid fa-desktop"></i>
+          <div>Servicios</div>
+        </div>
+        <div class="box" onclick="location.href='/ventas/servicio/todos_registros';" style="cursor:pointer;">
+          <i class="fa-solid fa-file-lines"></i>
+          <div>Registros de servicios</div>
+        </div>
+        <div class="box" onclick="location.href='/ventas/servicio/politica';" style="cursor:pointer;">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div>Política de servicios</div>
+        </div>
+        <div class="box" onclick="location.href='/ventas/gastos';" style="cursor:pointer;">
+          <i class="fa-solid fa-wallet"></i>
+          <div>Gastos/Ingresos</div>
+        </div>
+        <div class="box" onclick="location.href='/ventas/caja';" style="cursor:pointer;">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <div>Comprobar mi caja</div>
+        </div>
+        <!--<div class="box" onclick="location.href='pagina3.html';" style="cursor:pointer;">
+            <i class="fa-solid fa-right-left"></i>
+          <div>Transacciones</div>
+        </div>-->
+        <div class="box" onclick="location.href='pagina3.html';" style="cursor:pointer;">
+          <i class="fa-solid fa-user"></i>
+          <div>{{user}}</div>
+        </div>
+      </div>
+</div>
+
+{% endblock %} 

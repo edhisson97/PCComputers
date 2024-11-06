@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Descargar PDF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .message {
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2); /* Sombra para efecto de flotación */
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .countdown {
+            font-size: 30px;
+            font-weight: bold;
+            color: red;
+        }
+        .footer {
+            margin-top: 20px;
+        }
+        .footer p {
+            font-size: 30px;
+            margin-bottom: 50px;
+            margin-top:100px;
+            font-style: italic; /* Aplica cursiva */
+        }
+        .footer img {
+            width: 150px; /* Ajusta el tamaño según sea necesario */
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="message">El registro se generó con éxito y se envió al correo del cliente. <br>La página se redireccionará en <span class="countdown">5</span> segundos...</div>
+
+    <div class="footer">
+        <p>El equipo de PcComputers</p>
+        {% load static %}
+        <img src="{% static 'img/logo.png' %}" alt="Logo de Mi Sitio">
+    </div>
+
+    <script>
+        // Función para descargar el PDF automáticamente
+        function descargarPDF(encodedPath) {
+            var link = document.createElement('a');
+            link.href = '/ventas/servicio/descargar_pdf/' + encodedPath + '/';
+            link.download = 'recibo_recepcion_equipo.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Obtener la ruta codificada del archivo desde el contexto de Django
+        var encodedPath = '{{ encoded_path }}';
+        //alert('servicio agregado');
+        // Llamar a la función de descarga al cargar la página
+        window.onload = function() {
+            descargarPDF(encodedPath);
+
+            // Configurar el conteo regresivo y la redirección de la página
+            var countdownElement = document.querySelector('.countdown');
+            var countdown = 5;
+            var interval = setInterval(function() {
+                countdown--;
+                countdownElement.textContent = countdown;
+                if (countdown === 0) {
+                    clearInterval(interval);
+                    window.location.href = '/ventas/registro_servicios';
+                }
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container mt-5">
+  <h2>Lista de Gastos</h2>
+  <!-- Botón para abrir modal de nuevo gasto -->
+  {%if caja.estado == 'abierta' %}
+    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#modalNuevoGasto">
+        <i class="fas fa-plus"></i> Nuevo Gasto
+    </button>
+
+    <button type="button" class="btn btn-secondary mb-3" data-toggle="modal" data-target="#modalNuevoGasto">
+        <i class="fas fa-plus"></i> Nuevo Ingreso
+    </button>
+
+  {%else%}
+    <div class="alerta">
+        <p class="alerta-icono"><i class="fa-solid fa-ban"></i></p>
+        <p class="alerta-leyenda">Apertura la caja para agregar nuevos gastos.</p>
+    </div>
+  {%endif%}
+
+  <!-- Tabla de Gastos -->
+  <table class="table">
+      <thead>
+          <tr>
+              <th>#</th>
+              <th>Valor</th>
+              <th>Descripción</th>
+              <th>Fecha/Hora</th>
+              <th>Usuario</th>
+          </tr>
+      </thead>
+      <tbody>
+          <!-- Ejemplo de datos estáticos -->
+           {% for gasto in gastos%}
+            <tr>
+                <td>{{gasto.id}}</td>
+                <td>{{gasto.valor}}</td>
+                <td>{{gasto.descripcion}}</td>
+                <td>{{gasto.fecha_hora}}</td>
+                <td>{{gasto.usuario}}</td>
+            </tr>
+          {% endfor %}
+          <!-- Puedes usar un bucle de Django para mostrar los gastos dinámicamente -->
+      </tbody>
+  </table>
+</div>
+
+<!-- Modal para Nuevo Gasto -->
+<div class="modal fade" id="modalNuevoGasto" tabindex="-1" role="dialog" aria-labelledby="modalNuevoGastoLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <form action="/operacion/gastos" method="POST"> <!-- Ajusta la acción y el método según tu aplicación -->
+              {% csrf_token %}
+              <div class="modal-header">
+                  <h5 class="modal-title" id="modalNuevoGastoLabel">Nuevo Gasto</h5>
+                  <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>-->
+              </div>
+              <div class="modal-body">
+                  <div class="form-group">
+                      <label for="valor">Valor:</label>
+                      <input type="number" class="form-control" id="valor" name="valor" step="0.01" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="descripcion">Descripción:</label>
+                      <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Guardar</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS (jQuery debe estar incluido antes) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %} 

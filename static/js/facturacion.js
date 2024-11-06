@@ -304,7 +304,7 @@ function actualizarTabla(){
             rowTotal.append('<td></td>');
             rowTotal.append('<td></td>');
             rowTotal.append('<td><b>Total</b></td>');
-            rowTotal.append('<td><b>'+response.total+'</b></td>');
+            rowTotal.append('<td><b id="totalValue">'+response.total+'</b></td>');
             tbody.append(rowTotal);
 
         },
@@ -341,6 +341,23 @@ function enviarFormularioConLocalStorage() {
     // Obtener el valor seleccionado
     var tipoPagoSeleccionado = tipoPagoSelect.value;
 
+    var tipoVentaSelect = document.getElementById('tipoVenta');
+
+    var usuarioVendedorSelect = document.getElementById('usuarioVendedor');
+
+
+    // Recuperar el texto del valor total de la venta 'totalValue'
+    var totalText = $('#totalValue').text();
+    // Convertir el texto a un número 
+    var totalVenta = parseFloat(totalText.replace(/[^0-9.-]+/g, ''));
+   
+
+
+    // Obtener el valor seleccionado
+    var tipoVentaSeleccionado = tipoVentaSelect.value;
+
+    let enviar = true;
+
     // Verificar si hay productos guardados en el localStorage
     if (productosGuardados) {
        
@@ -365,8 +382,8 @@ function enviarFormularioConLocalStorage() {
 
         if (formularioLleno) {
             // Preguntar al usuario si desea enviar el formulario
-            var confirmacion = confirm('¿Estás seguro de que deseas generar la venta?');
-            if (confirmacion) {
+            
+            
                 
 
                 // Crear un campo oculto para los productos y agregarlo al formulario
@@ -383,6 +400,21 @@ function enviarFormularioConLocalStorage() {
                 campoTipoPago.value = tipoPagoSeleccionado;
                 formulario.appendChild(campoTipoPago);
 
+                
+                // Crear un campo oculto para tipo venta
+                var campoTipoVenta = document.createElement('input');
+                campoTipoVenta.type = 'hidden';
+                campoTipoVenta.name = 'tipoVenta';
+                campoTipoVenta.value = tipoVentaSeleccionado;
+                formulario.appendChild(campoTipoVenta);
+
+                 // Crear un campo oculto para usuario vendedor
+                 var campoUsuarioVendedor = document.createElement('input');
+                 campoUsuarioVendedor.type = 'hidden';
+                 campoUsuarioVendedor.name = 'usuarioVendedor';
+                 campoUsuarioVendedor.value = usuarioVendedorSelect.value;
+                 formulario.appendChild(campoUsuarioVendedor);
+
                 // Comprobar si el tipo de pago es 'Cheque'
                 if (tipoPagoSeleccionado === 'Cheque') {
                     var numeroChequeInput = document.getElementById('numeroChequeInput');
@@ -392,12 +424,194 @@ function enviarFormularioConLocalStorage() {
                     numeroCheque.name = 'numeroCheque';
                     numeroCheque.value = numeroChequeInput.value;
                     formulario.appendChild(numeroCheque);
-                } else {
-                    var numeroCheque = document.createElement('input');
-                    numeroCheque.type = 'hidden';
-                    numeroCheque.name = 'numeroCheque';
-                    numeroCheque.value = 'x';
-                    formulario.appendChild(numeroCheque);
+
+                    //para el nombre del banco
+                    var bancoSelect = document.getElementById('banco');
+
+                    // Obtener el valor seleccionado
+                    var bancoSeleccionado = bancoSelect.value;
+
+                    if (bancoSeleccionado === 'Otro') {
+                        var otroBanco = document.getElementById('otroBanco');
+
+                        var nombreBanco = document.createElement('input');
+                        nombreBanco.type = 'hidden';
+                        nombreBanco.name = 'nombreBanco';
+                        nombreBanco.value = otroBanco.value;
+                        formulario.appendChild(nombreBanco);
+                    }else{
+                        // Crear un campo oculto para tipo pago
+                        var nombreBanco = document.createElement('input');
+                        nombreBanco.type = 'hidden';
+                        nombreBanco.name = 'nombreBanco';
+                        nombreBanco.value = bancoSeleccionado;
+                        formulario.appendChild(nombreBanco);
+                    }
+                } if (tipoPagoSeleccionado === 'Combinado' && tipoVentaSeleccionado === 'Contado'){
+                    var totalCombinado = 0;
+                    // Obtener todos los inputs dentro del contenedor de 'combinado'
+                    // Obtener todos los checkboxes y sus inputs correspondientes
+                    var checkboxes = document.querySelectorAll('#combinado input[type="checkbox"]');
+                    checkboxes.forEach(function(checkbox) {
+                        if (checkbox.checked) {
+                            var inputId = checkbox.id.replace('check', 'input'); // Convertir el id del checkbox en id del input
+                            var input = document.getElementById(inputId);
+                            totalCombinado += parseFloat(input.value) || 0;
+                        }
+                    });
+                    if(totalCombinado === totalVenta){
+                        // Obtener referencias a los elementos
+                        const checkbox1 = document.getElementById('check1');
+                        const checkbox2 = document.getElementById('check2');
+                        const checkbox3 = document.getElementById('check3');
+                        const checkbox4 = document.getElementById('check4');
+                        const checkbox5 = document.getElementById('check5');
+
+                        const input1 = document.getElementById('input1');
+                        const input2 = document.getElementById('input2');
+                        const input3 = document.getElementById('input3');
+                        const input4 = document.getElementById('input4');
+                        const input5 = document.getElementById('input5');
+
+                        const seleccionados = [];
+        
+                        if (checkbox1.checked) {
+                            seleccionados.push({
+                                tipo: 'Efectivo',
+                                valor: input1.value
+                            });
+                        }
+                        
+                        if (checkbox2.checked) {
+                            seleccionados.push({
+                                tipo: 'Tarjeta de Crédito',
+                                valor: input2.value
+                            });
+                        }
+                        
+                        if (checkbox3.checked) {
+                            seleccionados.push({
+                                tipo: 'Cheque',
+                                valor: input3.value
+                            });
+                        }
+
+                        if (checkbox4.checked) {
+                            seleccionados.push({
+                                tipo: 'Transferencia',
+                                valor: input4.value
+                            });
+                        }
+
+                        if (checkbox5.checked) {
+                            seleccionados.push({
+                                tipo: 'Tarjeta de Débito',
+                                valor: input5.value
+                            });
+                        }
+
+                        // Serializar el array de objetos a formato JSON
+                        const combinadosJson = JSON.stringify(seleccionados);
+
+                        var combinados = document.createElement('input');
+                        combinados.type = 'hidden';
+                        combinados.name = 'combinado';
+                        combinados.value = combinadosJson;
+                        formulario.appendChild(combinados);
+                    } else {
+                        alert('La suma de los montos combinados debe ser igual al monto total de la venta $'+totalVenta+'!');
+                        enviar = false;
+                    }
+
+                } if (tipoPagoSeleccionado === 'Combinado' && tipoVentaSeleccionado === 'Crédito'){
+                    //var abonoInput = document.getElementById('abono');
+                    var totalCombinado = 0;
+                    // Obtener todos los inputs dentro del contenedor de 'combinado'
+                    // Obtener todos los checkboxes y sus inputs correspondientes
+                    var checkboxes = document.querySelectorAll('#combinado input[type="checkbox"]');
+                    checkboxes.forEach(function(checkbox) {
+                        if (checkbox.checked) {
+                            var inputId = checkbox.id.replace('check', 'input'); // Convertir el id del checkbox en id del input
+                            var input = document.getElementById(inputId);
+                            totalCombinado += parseFloat(input.value) || 0;
+                        }
+                    });
+                    if (totalCombinado < totalVenta){
+                        //if(totalCombinado === abonoInput){
+                            // Obtener referencias a los elementos
+                            const checkbox1 = document.getElementById('check1');
+                            const checkbox2 = document.getElementById('check2');
+                            const checkbox3 = document.getElementById('check3');
+                            const checkbox4 = document.getElementById('check4');
+                            const checkbox5 = document.getElementById('check5');
+
+                            const input1 = document.getElementById('input1');
+                            const input2 = document.getElementById('input2');
+                            const input3 = document.getElementById('input3');
+                            const input4 = document.getElementById('input4');
+                            const input5 = document.getElementById('input5');
+
+                            const seleccionados = [];
+            
+                            if (checkbox1.checked) {
+                                seleccionados.push({
+                                    tipo: 'Efectivo',
+                                    valor: input1.value
+                                });
+                            }
+                            
+                            if (checkbox2.checked) {
+                                seleccionados.push({
+                                    tipo: 'Tarjeta de Crédito',
+                                    valor: input2.value
+                                });
+                            }
+                            
+                            if (checkbox3.checked) {
+                                seleccionados.push({
+                                    tipo: 'Cheque',
+                                    valor: input3.value
+                                });
+                            }
+
+                            if (checkbox4.checked) {
+                                seleccionados.push({
+                                    tipo: 'Transferencia',
+                                    valor: input4.value
+                                });
+                            }
+
+                            if (checkbox5.checked) {
+                                seleccionados.push({
+                                    tipo: 'Tarjeta de Débito',
+                                    valor: input5.value
+                                });
+                            }
+
+                            // Serializar el array de objetos a formato JSON
+                            const combinadosJson = JSON.stringify(seleccionados);
+
+                            var combinados = document.createElement('input');
+                            combinados.type = 'hidden';
+                            combinados.name = 'combinado';
+                            combinados.value = combinadosJson;
+                            formulario.appendChild(combinados);
+                        
+                    } else {
+                            alert('El total de los montos *combinados* sumados es $'+totalCombinado+' que debe ser inferior al total de venta!');
+                            enviar = false;
+                        }
+
+                }if (tipoPagoSeleccionado !== 'Combinado' && tipoVentaSeleccionado === 'Crédito'){
+                    
+                    var abono = document.getElementById('abono');
+                    // Crear un campo oculto para los productos y agregarlo al formulario
+                    var abonoInput = document.createElement('input');
+                    abonoInput.type = 'hidden';
+                    abonoInput.name = 'abono';
+                    abonoInput.value = abono.value;
+                    formulario.appendChild(abonoInput);
+
                 }
 
 
@@ -412,10 +626,13 @@ function enviarFormularioConLocalStorage() {
                         formulario.appendChild(campo);
                     }
                 }
-
-                // Enviar el formulario
-                formulario.submit();
-            }
+                if (enviar === true) {
+                    var confirmacion = confirm('¿Estás seguro de que deseas generar la venta?');
+                    if (confirmacion) {
+                        // Enviar el formulario
+                        formulario.submit();
+                    }
+                }
         } else {
             alert('Por favor, completa todos los campos del formulario antes de generar la venta.');
         }
@@ -528,7 +745,7 @@ function closeModalCliente() {
         mensajeUsuarioIngresado.classList.add("alert-success"); // Agregar la clase de alerta verde
 
          // Mostrar los datos del cliente en un nuevo div
-         datosCliente.innerHTML = "<h6>Factura a favor de: </h6><br>" +
+         datosCliente.innerHTML = "<h6>Transacción a favor de: </h6><br>" +
          "<strong>" + apellidos + " " +nombre + "</strong> - "+ cedula +"<br>" +
          "Dirección: " + ciudad +" / "+direccion +"<br>"+
          "Envío: "+direccionEnvio +"<br>"+
@@ -603,7 +820,12 @@ function autocompletarCampos() {
 /*****numero de cheque */
 function mostrarNumeroCheque() {
     var tipoPago = document.getElementById("tipoPago").value;
+    var mostarPago = document.getElementById("tipoPago");
+    var tipoVenta = document.getElementById("tipoVenta").value;
     var numeroChequeDiv = document.getElementById("numeroCheque");
+    var combinadoDiv = document.getElementById("combinado");
+    var creditoDiv = document.getElementById("credito");
+    var PagoCredito = document.getElementById("pagoCredito");
 
     // Si se selecciona "Cheque", muestra el campo para el número de cheque, de lo contrario, ocúltalo
     if (tipoPago === "Cheque") {
@@ -611,4 +833,353 @@ function mostrarNumeroCheque() {
     } else {
         numeroChequeDiv.style.display = "none";
     }
+    if (tipoPago === "Combinado") {
+        combinadoDiv.style.display = "block";
+    } else {
+        combinadoDiv.style.display = "none";
+    }
+    
+
+    //si se selecciona tipo de venta credito, debe desaparecer las demas opciones
+    if (tipoVenta === "Crédito" && tipoPago !== "Combinado") {
+        creditoDiv.style.display = "block";
+    } else {
+        mostarPago.style.display = "block";
+        creditoDiv.style.display = "none";
+    }
 }
+
+
+/*************************************************** */
+/******************PARA DEUDAS PENDIENTES************* */
+/*************************************************** */
+
+function buscarDeuda() {
+    var cedula = document.getElementById('cedula').value;
+    
+    var divRegistro = document.getElementById("registro");
+
+    // Enviar solicitud AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/buscar_deuda/?cedula=' + cedula, true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Manejar la respuesta
+                var datosCliente = JSON.parse(xhr.responseText);
+                mostrarDatosCliente(datosCliente);
+            } else {
+                // Manejar errores
+                console.error('Error al buscar cliente');
+                var divUsuarioNoEncontrado = document.getElementById("mensajeUsuarioNoDeuda");
+                divUsuarioNoEncontrado.textContent = "Usuario no encontrado en la Base de Datos.";
+                divUsuarioNoEncontrado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
+                divUsuarioNoEncontrado.classList.remove("alert-success"); // Remover la clase de alerta verde
+                divUsuarioNoEncontrado.classList.add("alert-danger"); // Agregar la clase de alerta roja
+
+                divRegistro.style.display = "none";
+                var datosClienteDiv = document.getElementById('datosCliente');
+                datosClienteDiv.innerHTML = ''; // Limpiar contenido anterior
+            }
+        }
+    };
+
+    xhr.send();
+}
+
+function mostrarDatosCliente(datosCliente) {
+    var datosClienteDiv = document.getElementById('datosCliente');
+    datosClienteDiv.innerHTML = ''; // Limpiar contenido anterior
+
+    var divRegistro = document.getElementById("registro");
+
+    // Crear elementos HTML con los datos del cliente
+    var nombreApellido = document.createElement('h6');
+    nombreApellido.textContent = datosCliente.nombre + ' ' + datosCliente.apellido+' / C.I.: '+datosCliente.cedula+' email: '+datosCliente.email;
+    var totaldeuda = document.createElement('p');
+    totaldeuda.textContent = 'Total deuda: '+datosCliente.total;
+    var saldo = document.createElement('h6');
+    saldo.textContent = 'Total saldo pendiente: '+datosCliente.saldo;
+    datosClienteDiv.appendChild(nombreApellido);
+    datosClienteDiv.appendChild(totaldeuda);
+    datosClienteDiv.appendChild(saldo);
+    
+    // Agrega aquí más elementos HTML para mostrar más datos del cliente
+
+    var divUsuarioNoEncontrado = document.getElementById("mensajeUsuarioNoDeuda");
+
+    if (datosCliente.deuda==='no') {
+        console.log("Usuario encontrado:", datosCliente);
+        divUsuarioNoEncontrado.textContent = "El usuario " + datosCliente.nombre+" "+datosCliente.apellido+" no cuenta con deudas pendientes.";
+        divUsuarioNoEncontrado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
+        divUsuarioNoEncontrado.classList.remove("alert-danger"); // Remover la clase de alerta roja
+        divUsuarioNoEncontrado.classList.add("alert-success"); // Agregar la clase de alerta verde
+
+        divRegistro.style.display = "none";
+        var datosClienteDiv = document.getElementById('datosCliente');
+        datosClienteDiv.innerHTML = ''; // Limpiar contenido anterior
+        
+    } else {
+        divUsuarioNoEncontrado.textContent = "El usuario " + datosCliente.nombre+" "+datosCliente.apellido+" tiene la deuda detallada a continuación";
+        divUsuarioNoEncontrado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
+        divUsuarioNoEncontrado.classList.remove("alert-success"); // Remover la clase de alerta verde
+        divUsuarioNoEncontrado.classList.add("alert-danger"); // Agregar la clase de alerta roja
+        
+        divRegistro.style.display = "block";
+
+         // Asumiendo que datosDeuda es un array de objetos con las deudas
+         var tbody = document.getElementById('pendiente-tbody');
+         tbody.innerHTML = ''; // Limpiar filas existentes
+         datosCliente.detalleDeuda.forEach(function(pendiente) {
+             var fila = document.createElement('tr');
+             fila.innerHTML = '<th scope="col"> Factura: $' + pendiente.total + '</th>' +
+                                 '<th scope="col">' + pendiente.saldo + '</th>';
+             tbody.appendChild(fila);
+         });
+
+
+         var selectFactura = document.getElementById('factura');
+        // Limpiar opciones existentes
+        selectFactura.innerHTML = '';
+        // Añadir nuevas opciones
+        datosCliente.detalleDeuda.forEach(function(pendiente) {
+            var option = document.createElement('option');
+            option.value = pendiente.id; // Suponiendo que pendiente.id es el valor que deseas asociar a la opción
+            option.textContent = 'Factura #'+pendiente.numero_factura+' : $' + pendiente.total +' - Saldo: ' + pendiente.saldo;
+            option.dataset.id = pendiente.id;
+            option.dataset.total = pendiente.total;
+            option.dataset.saldo = pendiente.saldo;
+            selectFactura.appendChild(option);
+        });
+
+
+
+        // Asumiendo que datosDeuda es un array de objetos con las deudas
+        var tbody = document.getElementById('deudas-tbody');
+        tbody.innerHTML = ''; // Limpiar filas existentes
+        datosCliente.todosRegistros.forEach(function(registro) {
+            var fecha = new Date(registro.fecha_hora);
+            var opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false };
+            var fechaFormateada = fecha.toLocaleString('es-ES', opcionesFecha);
+
+
+            var fila = document.createElement('tr');
+            fila.innerHTML = '<th scope="col">' + registro.id + '</th>' +
+                                '<th scope="col">' + registro.numero_factura + '</th>' +
+                                '<th scope="col">' + fechaFormateada + '</th>' +
+                                '<th scope="col">' + registro.total_vendido + '</th>' +
+                                '<th scope="col">' + registro.adelanto + '</th>';
+            tbody.appendChild(fila);
+        });
+
+
+        // Asumiendo que datosDeuda es un array de objetos con las deudas
+        var tbody = document.getElementById('pagos-tbody');
+        tbody.innerHTML = ''; // Limpiar filas existentes
+        datosCliente.registrosPagos.forEach(function(pago) {
+            var fecha = new Date(pago.fecha_hora);
+            var opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false };
+            var fechaFormateada = fecha.toLocaleString('es-ES', opcionesFecha);
+
+
+            var fila = document.createElement('tr');
+            fila.innerHTML = '<th scope="col">' + pago.id +'</th>' +
+                                '<th scope="col">' +pago.numero_factura+'</th>' +
+                                '<th scope="col">' + fechaFormateada + '</th>' +
+                                '<th scope="col">' + pago.cuota + '</th>';
+            tbody.appendChild(fila);
+        });
+
+        
+    }
+}
+
+function agregarpago() {
+    // Obtener el valor del campo de pago
+    var pagoInput = document.getElementById("pago").value;
+    var cedulaInput = document.getElementById("cedula").value;
+    // Obtener los datos almacenados en el dataset de la opción seleccionada
+    var selectFactura = document.getElementById('factura');
+
+    // Obtener la opción seleccionada
+    var opcionSeleccionada = selectFactura.options[selectFactura.selectedIndex];
+    // Obtener los datos almacenados en el dataset de la opción seleccionada
+    var dataFactura = opcionSeleccionada.dataset;
+
+    // Ahora puedes acceder a los valores del dataset
+    var id = dataFactura.id;
+    var total = dataFactura.total;
+    var saldo = dataFactura.saldo;
+    
+    var tipoPago = document.getElementById('tipoPago').value;
+
+    //verifico los montos en el tipo de pago combinado
+    if (tipoPago === 'Combinado'){
+        var totalCombinado = 0;
+        // Obtener todos los inputs dentro del contenedor de 'combinado'
+        // Obtener todos los checkboxes y sus inputs correspondientes
+        var checkboxes = document.querySelectorAll('#combinado input[type="checkbox"]');
+        checkboxes.forEach(function(checkbox) {
+            if (checkbox.checked) {
+                var inputId = checkbox.id.replace('check', 'input'); // Convertir el id del checkbox en id del input
+                var input = document.getElementById(inputId);
+                totalCombinado += parseFloat(input.value) || 0;
+            }
+        });
+    }
+
+     if (totalCombinado > saldo){
+        alert('La suma de los montos combinados excede al saldo pendiente.');
+        return; // Evita el envío del formulario
+      }
+
+    // Validar si el campo está vacío o no es un número
+    if (tipoPago !== 'Combinado'){
+        if (pagoInput === "" || isNaN(pagoInput)) {
+            alert("Por favor, ingrese un monto válido. ");
+            return;
+        }
+        if (parseFloat(pagoInput) > parseFloat(saldo)) {
+            alert("Por favor, ingresa un valor menor o igual al saldo de ($"+saldo+") que el cliente debe cancelar en la factura "+id+".");
+            return;
+        }
+    }
+
+    if (tipoPago === 'Transferencia'){
+        var numeroTransferencia = document.getElementById('numeroTransferencia').value;
+        if(numeroTransferencia){
+            alert('Por favor ingrese el número de transferencia.');
+            return;
+        }
+    }
+
+    if (tipoPago === 'Cheque'){
+        var cheque = document.getElementById('numeroCheque').value;
+        if(cheque){
+            alert('Por favor ingrese el número de cheque.')
+            return;
+        }
+        var banco = document.getElementById('banco').value;
+        if(banco ==="Otro"){
+            var banco = document.getElementById('otroBanco').value;
+        }
+    }
+    // Verificar si el pago es mayor que el saldo
+    
+
+    // Confirmar la transacción
+    var confirmacion = confirm("¿Está seguro de realizar el pago por $" + pagoInput + " del cliente con identidad "+cedulaInput+"?");
+
+    if (confirmacion) {
+        // Obtener el token CSRF
+        var csrfToken = obtenerCSRFToken();
+        
+        // Si la validación pasa, crear un objeto FormData para enviar los datos
+        var formData = new FormData();
+        formData.append("pago", pagoInput);
+        formData.append("total", total);
+        formData.append("cedula", cedulaInput);
+        formData.append("idDeuda", id);
+        formData.append("tipoPago", tipoPago);
+        formData.append("csrfmiddlewaretoken", csrfToken); // Incluir el token CSRF en el formulario
+
+        if (tipoPago === "Combinado"){
+            const checkbox1 = document.getElementById('check1');
+            if (checkbox1.checked) {
+                const input1 = checkbox1.nextElementSibling.nextElementSibling;
+                if (input1){
+                    formData.append("efectivo", input1.value);
+                }
+            }
+            const checkbox2 = document.getElementById('check2');
+            if (checkbox2.checked) {
+                const input2 = checkbox2.nextElementSibling.nextElementSibling;
+                if (input2){
+                    formData.append("tCredito", input2.value);
+                }
+            }
+            const checkbox3 = document.getElementById('check3');
+            if (checkbox3.checked) {
+                const input3 = checkbox3.nextElementSibling.nextElementSibling;
+                if (input3){
+                    formData.append("cheque", input3.value);
+                }
+            }
+            const checkbox4 = document.getElementById('check4');
+            if (checkbox4.checked) {
+                const input4 = checkbox4.nextElementSibling.nextElementSibling;
+                if (input4){
+                    formData.append("transferencia", input4.value);
+                }
+            }
+            const checkbox5 = document.getElementById('check5');
+            if (checkbox5.checked) {
+                const input5 = checkbox5.nextElementSibling.nextElementSibling;
+                if (input5){
+                    formData.append("tDebito", input5.value);
+                }
+            }
+            
+        }
+        if(tipoPago === 'Transferencia'){
+            formData.append("ntransferencia", numeroTransferencia);
+        }
+        if(tipoPago === 'Cheque'){
+            formData.append("ncheque", cheque);
+            formData.append("banco", banco);
+        }
+
+        // Enviar la solicitud POST al servidor utilizando AJAX
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "agregarpago/", true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    console.log(response); // Verifica la respuesta en la consola del navegador
+                    
+                    var link = document.createElement('a');
+                    link.href = 'data:application/pdf;base64,' + response.pdf_base64;
+                    link.download = response.filename;
+                    document.body.appendChild(link);
+                    
+                    // Simular clic en el enlace para descargar automáticamente
+                    link.click();
+                    
+                    // Remover el enlace del DOM después de la descarga
+                    document.body.removeChild(link);
+
+                    alert("¡Transacción realizada exitosamente!");
+
+                    // Recargar la página actual
+                    window.location.reload();
+                } else {
+                    // Manejar errores si la solicitud falla
+                    alert("Error al agregar el pago. Por favor, inténtalo de nuevo.");
+                }
+            }
+        };
+        // Enviar el formulario
+        xhr.send(formData);
+        //alert("¡Transacción realizada exitosamente!");
+    } else {
+        alert("Transacción cancelada.");
+    }
+}
+
+function obtenerCSRFToken() {
+    var csrfToken = null;
+    var cookies = document.cookie.split("; ");
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].split("=");
+        if (cookie[0] === "csrftoken") {
+            csrfToken = cookie[1];
+            break;
+        }
+    }
+    return csrfToken;
+}
+
+

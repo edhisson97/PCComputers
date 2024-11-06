@@ -1,0 +1,104 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="container-inicio">
+  <h3 class="title_operacion">Panel para apertura de caja</h3>
+  <div class="container_operaciones">
+      
+    <div class="box" onclick="location.href='/operacion/caja?numero=Caja_1';" style="cursor:pointer;{%if caja1.estado == 'abierta'%}background: rgb(6, 138, 6); color:white;{%endif%}">
+      <i class="fa-solid fa-cash-register"></i>
+      <div>Caja 1</div>
+      {%if caja1.estado == 'abierta'%}
+        <div>ABIERTA</div>
+        <div>{{caja1.cajero.username}}</div>
+      {%else%}
+        <div>CERRADA</div>
+      {%endif%}
+    </div>
+    <div class="box" onclick="location.href='/operacion/caja?numero=Caja_2';" style="cursor:pointer;{%if caja2.estado == 'abierta'%}background: rgb(6, 138, 6); color:white;{%endif%}">
+      <i class="fa-solid fa-cash-register"></i>
+      <div>Caja 2</div>
+      {%if caja2.estado == 'abierta'%}
+        <div>ABIERTA</div>
+        <div>{{caja2.cajero.username}}</div>
+      {%else%}
+        <div>CERRADA</div>
+      {%endif%}
+    </div>
+    <div class="box" onclick="location.href='/operacion/caja?numero=Caja_3';" style="cursor:pointer;{%if caja3.estado == 'abierta'%}background: rgb(6, 138, 6); color:white;{%endif%}">
+      <i class="fa-solid fa-cash-register"></i>
+      <div>Caja 3</div>
+      {%if caja3.estado == 'abierta'%}
+        <div>ABIERTA</div>
+        <div>{{caja3.cajero.username}}</div>
+      {%else%}
+        <div>CERRADA</div>
+      {%endif%}
+    </div>
+    <div class="box" onclick="location.href='/operacion/caja?numero=Caja_4';" style="cursor:pointer;{%if caja4.estado == 'abierta'%}background: rgb(6, 138, 6); color:white;{%endif%}">
+      <i class="fa-solid fa-cash-register"></i>
+      <div>Caja 4</div>
+      {%if caja4.estado == 'abierta'%}
+        <div>ABIERTA</div>
+        <div>{{caja4.cajero.username}}</div>
+      {%else%}
+        <div>CERRADA</div>
+      {%endif%}
+    </div>
+    <div class="box" onclick="location.href='/operacion/caja?numero=Caja_5';" style="cursor:pointer;{%if caja5.estado == 'abierta'%}background: rgb(6, 138, 6); color:white;{%endif%}">
+      <i class="fa-solid fa-cash-register"></i>
+      <div>Caja 5</div>
+      {%if caja5.estado == 'abierta'%}
+        <div>ABIERTA</div>
+        <div>{{caja5.cajero.username}}</div>
+      {%else%}
+        <div>CERRADA</div>
+      {%endif%}
+    </div>
+    <div class="box" onclick="location.href='/operacion/caja?numero=Caja_6';" style="cursor:pointer;{%if caja6.estado == 'abierta'%}background: rgb(6, 138, 6); color:white;{%endif%}">
+      <i class="fa-solid fa-cash-register"></i>
+      <div>Caja 6</div>
+      {%if caja6.estado == 'abierta'%}
+        <div>ABIERTA</div>
+        <div>{{caja6.cajero.username}}</div>
+      {%else%}
+        <div>CERRADA</div>
+      {%endif%}
+    </div>
+    <div class="box" onclick="location.href='/operacion/caja?numero=Caja_7';" style="cursor:pointer; {%if caja7.estado == 'abierta'%}background: rgb(6, 138, 6); color:white;{%endif%}">
+      <i class="fa-solid fa-cash-register"></i>
+      <div>Caja 7</div>
+      {%if caja7.estado == 'abierta'%}
+        <div>ABIERTA</div>
+        <div>{{caja7.cajero.username}}</div>
+      {%else%}
+        <div>CERRADA</div>
+      {%endif%}
+    </div>
+    <div class="box" onclick="location.href='/operacion/caja?numero=Caja_8';" style="cursor:pointer; {%if caja8.estado == 'abierta'%}background: rgb(6, 138, 6); color:white;{%endif%}">
+      <i class="fa-solid fa-cash-register"></i>
+      <div>Caja 8</div>
+      {%if caja8.estado == 'abierta'%}
+        <div>ABIERTA</div>
+        <div>{{caja8.cajero.username}}</div>
+      {%else%}
+        <div>CERRADA</div>
+      {%endif%}
+    </div>
+    <div class="box" onclick="location.href='/operacion/caja?numero=Caja_9';" style="cursor:pointer; {%if caja9.estado == 'abierta'%}background: rgb(6, 138, 6); color:white;{%endif%}">
+      <i class="fa-solid fa-cash-register"></i>
+      <div>Caja 9</div>
+      {%if caja9.estado == 'abierta'%}
+        <div>ABIERTA</div>
+        <div>{{caja9.cajero.username}}</div>
+      {%else%}
+        <div>CERRADA</div>
+      {%endif%}
+    </div>
+    
+</div>
+
+{% endblock %} 

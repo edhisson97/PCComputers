@@ -6,7 +6,8 @@
 {% load static %}
 
 <div class="container-inicio">
-    <h3 class="title">Facturación de venta</h3>
+    <h3 class="title">Módulo de Facturación</h3>
+    {%if caja.estado == 'abierta' %}
     <div class="seccion-datos">
         
         <h5>Datos del cliente</h5>
@@ -39,8 +40,6 @@
                             </select>
                             <label for="cedula">Número de Cédula</label>
                             <input type="text" id="cedula" name="cedula" required onkeyup="buscarCliente()" data-usuarios="{{ usuarios }}">
-                            <label for="celular">Celular</label>
-                            <input type="text" id="celular" name="celular" required>
                         </div>
                         <div class="form-row">
                             <label for="nombres">Nombres</label>
@@ -57,8 +56,14 @@
                         <div class="form-row">
                             <label for="direccion">Dirección</label>
                             <input type="text" id="direccion" name="direccion" required>
+                            
+                        </div>
+                        
+                        <div class="form-row">
                             <label for="direccion">Dirección de envío</label>
                             <input type="text" id="direccionEnvio" name="direccionEnvio" required>
+                            <label for="celular">Celular</label>
+                            <input type="text" id="celular" name="celular" required>
                         </div>
                         <h6>Otras configuraciones</h6>
                         <div class="form-row">
@@ -77,6 +82,7 @@
             <button class="generar-venta" onclick="enviarFormularioConLocalStorage()">Generar venta <i class="fa-solid fa-check"></i></button>
             <button class="cancelar">Limpiar <i class="fa-solid fa-ban"></i></button>
         </di>-->
+    
     </div>
     <div class="seccion-productos">
         <h4>Productos </h4>
@@ -179,14 +185,32 @@
         </table>
         <!--<button class="limpiar"> Limpiar <i class="fa-solid fa-trash"></i></button>-->
         <div class="seccion-button">
-            <div class="form-row-pago">
-                <label for="tipoPago">Tipo pago</label>
-                <select name="tipoPago" id="tipoPago" onchange="mostrarNumeroCheque()">
+            <div class="form-row-venta">
+                <label for="tipoPago">Tipo venta</label>
+                <select name="tipoPago" id="tipoVenta" style="display: block;" onchange="mostrarNumeroCheque()">
                     <option value="Contado">Contado</option>
                     <option value="Crédito">Crédito</option>
+                    <option value="Apartado">Apartado</option>
+                </select>
+            </div>
+            <div class="form-row-pago">
+                <label for="tipoPago">Tipo pago</label>
+                <select name="tipoPago" id="tipoPago" style="display: block;" onchange="mostrarNumeroCheque()">
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
                     <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                    <option value="Tarjeta de Débito">Tarjeta de Débito</option>
                     <option value="Cheque">Cheque</option>
-                    <option value="Combinado (Crédito/Contado)">Combinado</option>
+                    <option value="Combinado">Combinado</option>
+                </select>
+                <!--<input type="text" id="pagoCredito" value="Crédito" style="display: none;" disabled>-->
+            </div>
+            <div class="form-row-pago">
+                <label for="tipoPago">Usuario vendedor</label>
+                <select name="usuarioVendedor" id="usuarioVendedor" style="display: block;">
+                    {% for vendedor in usuarios_vendedores %}
+                        <option value="{{vendedor}}">{{vendedor}}</option>
+                    {% endfor %}
                 </select>
             </div>
             <button class="generar-venta" onclick="enviarFormularioConLocalStorage()">Generar venta <i class="fa-solid fa-check"></i></button>
@@ -194,10 +218,127 @@
             <button class="cancelar">Limpiar <i class="fa-solid fa-ban"></i></button>
         </div>
         <div id="numeroCheque" style="display: none;">
+            <label for="banco">Entidad Bancaria: </label>
+            <select name="Banco" id="banco">
+                <option value="Banco de Machala">Banco de Machala</option>
+                <option value="Banco de Pichincha">Banco de Pichincha</option>
+                <option value="BanEcuador">BanEcuador</option>
+                <option value="Banco de Guayaquil">Banco de Guayaquil</option>
+                <option value="Banco del Pacifico">Banco del Pacífico</option>
+                <option value="Banco Internacional">Banco Internacional</option>
+                <option value="Banco Produbanco">Produbanco</option>
+                <option value="Banco Bolivariano">Banco Bolivariano</option>
+                <option value="Banco del Austro">Banco del Austro</option>
+                <option value="Otro">Otro (Especificar)</option>
+            </select><br>
+            <label for="otroBanco" style="display: none;">Nombre del Banco</label>
+            <input type="text" id="otroBanco" name="otroBanco" style="display: none;">
             <label for="numeroCheque"># de Cheque</label>
             <input type="text" id="numeroChequeInput" name="numeroCheque">
         </div>
+        <div id="combinado" style="display: none;">
+            <div>
+                <label for="Efectivo">Efectivo</label>
+                <input type="checkbox" id="check1">
+                <label for="Valor">Valor</label>
+                <input type="text" id="input1" disabled>
+            </div>
+            <div>
+                <label for="Tcredito">T de Crédito</label>
+                <input type="checkbox" id="check2">
+                <label for="Valor">Valor</label>
+                <input type="text" id="input2" disabled>
+            </div>
+            <div>
+                <label for="Cheque">Cheque</label>
+                <input type="checkbox" id="check3">
+                <label for="Valor">Valor</label>
+                <input type="text" id="input3" disabled>
+            </div>
+            <div>
+                <label for="Transferencia">Transferencia</label>
+                <input type="checkbox" id="check4" name="check4">
+                <label for="Valor">Valor</label>
+                <input type="text" id="input4" name="input4" disabled>
+            </div>
+            <div>
+              <label for="Tdebito">Tarjeta de Débito</label>
+              <input type="checkbox" id="check5" name="check5">
+              <label for="Valor">Valor</label>
+              <input type="text" id="input5" name="input5" disabled>
+            </div>
+        </div>
+        <div id="credito" style="display: none;">
+            <label for="credito">Abono: </label>
+            <input type="text" id="abono" name="abono">
+        </div>
+        <script>
+            document.getElementById('banco').addEventListener('change', function() {
+                var otroBancoInput = document.getElementById('otroBanco');
+                var otroBancoLabel = document.querySelector('label[for="otroBanco"]');
+                if (this.value === 'Otro') {
+                    otroBancoInput.style.display = 'inline';
+                    otroBancoLabel.style.display = 'inline';
+                } else {
+                    otroBancoInput.style.display = 'none';
+                    otroBancoLabel.style.display = 'none';
+                }
+            });
+            //para el checklist 
+            // Obtener elementos del DOM
+            var check1 = document.getElementById("check1");
+            var input1 = document.getElementById("input1");
+            var check2 = document.getElementById("check2");
+            var input2 = document.getElementById("input2");
+            var check3 = document.getElementById("check3");
+            var input3 = document.getElementById("input3");
+            var check4 = document.getElementById("check4");
+            var input4 = document.getElementById("input4");
+            var check5 = document.getElementById("check5");
+            var input5 = document.getElementById("input5");
+
+            // Función para habilitar o deshabilitar el campo de entrada correspondiente
+            function toggleInput(check, input) {
+                input.disabled = !check.checked;
+                if (!check.checked) {
+                    input.value = ""; // Limpiar el valor si se deshabilita el campo
+                }
+            }
+
+            // Agregar event listeners para cada checkbox
+            check1.addEventListener("change", function() {
+                toggleInput(check1, input1);
+            });
+            check2.addEventListener("change", function() {
+                toggleInput(check2, input2);
+            });
+            check3.addEventListener("change", function() {
+                toggleInput(check3, input3);
+            });
+            check4.addEventListener("change", function() {
+                toggleInput(check4, input4);
+            });
+            check5.addEventListener("change", function() {
+                toggleInput(check5, input5);
+            });
+
+            //para permitir solo valores numericos en abono
+            document.getElementById('abono').addEventListener('input', function(event) {
+                const regex = /^\d*\.?\d*$/; // Expresión regular para permitir números con decimales o enteros
+                const input = event.target.value;
+                
+                if (!regex.test(input)) {
+                    event.target.value = input.substring(0, input.length - 1); // Eliminar el último caracter ingresado si no cumple con la expresión regular
+                }
+            });
+        </script>
     </div>
+    {%else%}
+    <div class="alerta">
+        <p class="alerta-icono"><i class="fa-solid fa-ban"></i></p>
+        <p class="alerta-leyenda">Por favor solicita a tu supervisor que inicialice la caja para aperturar el módulo de Facturación y realizar ventas.</p>
+    </div>
+    {%endif%}
 </div>
 
 {% endblock %} 

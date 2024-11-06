@@ -1,0 +1,937 @@
+{% extends "ventas.html" %}
+
+{% block title %}PC Computers - Servicios{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container-inicio">
+    <h3 class="title">Módulo de Servicios</h3>
+    {%if caja.estado == 'abierta' %}
+    <div class="seccion-datos">
+        
+        <h5>Datos del cliente</h5>
+        <div id="mensajeUsuarioIngresado" class="alert alert-warning" role="alert">
+            <i class="fa-solid fa-triangle-exclamation"></i> Los datos del cliente aún no han sido agregados.
+        </div>
+
+        <div id="datosCliente"></div>
+
+
+        <button class="buscar-cliente" onclick="openModalCliente()">Buscar cliente <i class="fa-solid fa-users"></i></button>
+        
+        <form action="servicio/recibo" id="miFormulario" method="post">
+            {% csrf_token %}
+
+            <div id="modalFondoBusqueda" onclick="closeModalCliente()" style="display: none;"></div>
+            <div class="modal-contenido-cliente" id="modalContenidoCliente" style="display: none;">
+                <span class="cerrar-modal" onclick="closeModalCliente()">&times;</span>
+                        <h5>Datos del cliente </h5>
+                        
+                        <div id="mensajeUsuarioNoEncontrado" style="display: none;" class="alert alert-warning" role="alert">
+                            No se encontró el usuario...
+                        </div>
+
+                        <div class="form-row">
+                            <!--<label for="tipo">Tipo </label>
+                            <select name="tipo" id="tipo" onchange="autocompletarCampos()">
+                                <option value="cliente">Cliente</option>
+                                <option value="consumidor">Consumidor Final</option>
+                            </select>-->
+                            <label for="cedula">Número de Cédula</label>
+                            <input type="text" id="cedula" name="cedula" required onkeyup="buscarCliente()" data-usuarios="{{ usuarios }}">
+                            <label for="celular">Celular</label>
+                            <input type="text" id="celular" name="celular" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="nombres">Nombres</label>
+                            <input type="text" id="nombre" name="nombre" required>
+                            <label for="apellidos">Apellidos</label>
+                            <input type="text" id="apellidos" name="apellidos" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="ciudad">Ciudad</label>
+                            <input type="text" id="ciudad" name="ciudad" required>
+                            <label for="email">Correo Electrónico</label>
+                            <input type="text" id="email" name="email" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="direccion">Dirección</label>
+                            <input type="text" id="direccion" name="direccion" required>
+                            <label for="direccion">Dirección de envío</label>
+                            <input type="text" id="direccionEnvio" name="direccionEnvio" required>
+                        </div>
+                        <div class="form-row">
+                            
+                            
+                        </div>
+                        
+            </div>
+
+            
+        
+        <!--<div class="seccion-button">
+            <button class="generar-venta" onclick="enviarFormularioConLocalStorage()">Generar venta <i class="fa-solid fa-check"></i></button>
+            <button class="cancelar">Limpiar <i class="fa-solid fa-ban"></i></button>
+        </di>-->
+    
+    </div>
+    <a href="/ventas/servicio/politica" style="text-decoration: none; float: right;">Política de servicios/Costos</a>
+    <div class="seccion-productos">
+        <h4>Servicios Registrados </h4>
+
+        <button class="agregarProducto" id="mostrarModal"><i class="fa-solid fa-plus"></i> Nuevo Servicio </button>
+
+        <div id="modalFondoBusqueda" style="display: none;"></div>
+        <div id="miModalBusqueda" class="modal">
+            <div class="modal-contenido">
+                <span class="cerrar-modal">&times;</span>
+                <h2>Registro de Servicio</h2>
+
+                <!-- Fila 1: Fecha de ingreso y fecha de entrega -->
+                <div class="form-group">
+                    <label for="fecha_ingreso">Fecha de Ingreso:</label>
+                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{fecha}}" disabled>
+                </div>
+
+                <!-- Fila 2: Tipo de servicio y equipo a revisar -->
+                <div class="form-group">
+                    <label for="tipo_servicio">Tipo de Servicio:</label>
+                    <select id="tipo_servicio" name="tipo_servicio" class="form-control" required>
+                        <option value="mantenimiento">Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="equipo">Equipo a Revisar:</label>
+                    <select id="tipo_equipo" name="tipo_equipo" class="form-control" required>
+                        <option value="" disabled selected hidden>Selecciona una opción &nbsp; <i class="fa-solid fa-caret-down"></i></option>
+                        <!--<option value="Laptop">Laptop</option>
+                        <option value="AIO">All in One (todo en uno)</option>
+                        <option value="Escritorio">De Escritorio</option>
+                        <option value="Impresora">Impresora</option>-->
+                        {%for equipo in equipos%}
+                            <option value="{{equipo.nombre}}">{{equipo.nombre}}</option>
+                        {%endfor%}
+                        <option value="Otro">Otro (especificar)</option>
+                    </select>
+                    <input type="hidden" id="descripcionEquipo-data" value='{{ descripcionEquipo|safe }}'>
+                    <script>
+                        const descripcionEquipos = [
+                            {% for descripcion in descripcionEquipo %}
+                                { "equipo": "{{ descripcion.equipo }}", "problema": "{{ descripcion.problema }}", "costo":"{{ descripcion.costo}}"},
+                            {% endfor %}
+                        ];
+                    </script>
+                </div>
+                <div class="form-group" id="otro_equipo" style="display: none; color: red;">
+                    <label for="otro_equipo_texto">* Especificar (otro equipo):</label>
+                    <input type="text" id="otro_equipo_texto" name="otro_equipo_texto" class="form-control">
+                </div>
+                <!-- Fila 3: Marca, modelo, serie -->
+                <div class="form-group">
+                    <label for="marca">Marca:</label>
+                    <input type="text" id="marca" placeholder="Asus" name="marca" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="modelo">Modelo:</label>
+                    <input type="text" id="modelo" name="modelo" placeholder="Zenbook 14" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="serie">Serie:</label>
+                    <input type="text" id="serie" name="serie" placeholder="1569AT85" class="form-control">
+                </div>
+                <div class="form-group" id="problemas_equipos" style="display: none;">
+                    <label for="problemas_pc">Problema a resolver:</label>
+                    <select id="problemas_resolver" name="problemas_resolver" class="form-control" required>
+                        <option value="" disabled selected hidden>Selecciona una opción &nbsp; <i class="fa-solid fa-caret-down"></i></option>
+                        
+                    </select>
+                </div>
+                <!-- Fila 4: Descripción del problema -->
+                <!--<div class="form-group" id="problemas_laptop_container" style="display: none;">
+                    <label for="problemas_laptop">Problemas para Laptop:</label>
+                    <select id="problemas_laptop" name="problemas_laptop" class="form-control" required>
+                        <option value="" disabled selected hidden>Selecciona una opción &nbsp; <i class="fa-solid fa-caret-down"></i></option>
+                        <option value="Formateo e instalación de S.O. y aplicaciones">Formateo e instalación de S.O. y aplicaciones</option>
+                        <option value="Crackeo de OFFICE">Crackeo de OFFICE</option>
+                        <option value="Instalación de OFFICE">Instalación de OFFICE</option>
+                        <option value="Instalación MAGIS TV">Instalación MAGIS TV</option>
+                        <option value="Crackeo de licencia WINDOWS">Crackeo de licencia WINDOWS</option>
+                        <option value="Reconstrucción de bases">Reconstrucción de bases</option>
+                        <option value="Mantenimiento de bisagras">Mantenimiento de bisagras</option>
+                        <option value="Cambio de teclado (interno y con suelda)">Cambio de teclado (interno y con suelda)</option>
+                        <option value="Cambio de teclado (sobrepuesto)">Cambio de teclado (sobrepuesto)</option>
+                        <option value="Mantenimiento físico (limpieza + cambio de pasta térmica)">Mantenimiento físico (limpieza + cambio de pasta térmica)</option>
+                        <option value="Cambio de batería (interna)">Cambio de batería (interna)</option>
+                        <option value="Cambio de batería (sobrepuesta)">Cambio de batería (sobrepuesta)</option>
+                        <option value="Instalacion de algun software especifico">Instalacion de algun software especifico</option>
+                        <option value="Cambio de pantalla">Cambio de pantalla</option>
+                        <option value="Respaldo y restauracion de informacion">Respaldo y restauracion de informacion</option>
+                        <option value="Reparar disco (Deteccion y correccion de pistas y sectores)">Reparar disco (Deteccion y correccion de pistas y sectores)</option>
+                        <option value="Reparacion de mainboard">Reparacion de mainboard</option>
+                        <option value="Actualizar o reparar la BIOS">Actualizar o reparar la BIOS</option>
+                        <option value="otro_problema_laptop">Otro problema (especificar)</option>
+                        
+                    </select>
+                </div>
+                
+                <div class="form-group" id="problemas_pc_container" style="display: none;">
+                    <label for="problemas_pc">Problemas para PC escritorio:</label>
+                    <select id="problemas_pc" name="problemas_pc" class="form-control" required>
+                        <option value="" disabled selected hidden>Selecciona una opción &nbsp; <i class="fa-solid fa-caret-down"></i></option>
+                        <option value="Formateo e instalación de S.O. y aplicaciones">Formateo e instalación de S.O. y aplicaciones</option>
+                        <option value="Crackeo de OFFICE">Crackeo de OFFICE</option>
+                        <option value="Instalación de OFFICE">Instalación de OFFICE</option>
+                        <option value="Instalación MAGIS TV">Instalación MAGIS TV</option>
+                        <option value="Crackeo de licencia WINDOWS">Crackeo de licencia WINDOWS</option>
+                        <option value="Mantenimiento físico (limpieza + cambio de pasta térmica)">Mantenimiento físico (limpieza + cambio de pasta térmica)</option>
+                        <option value="Respaldo y restauracion de informacion">Respaldo y restauracion de informacion</option>
+                        <option value="Reparar disco (Deteccion y correccion de pistas y sectores)">Reparar disco (Deteccion y correccion de pistas y sectores)</option>
+                        <option value="otro_problema_escritorio">Otro problema (especificar)</option>
+                        
+                    </select>
+                </div>
+
+                <div class="form-group" id="problemas_aio_container" style="display: none;">
+                    <label for="problemas_aio">Problemas para All in One:</label>
+                    <select id="problemas_aio" name="problemas_aio" class="form-control" required>
+                        <option value="" disabled selected hidden>Selecciona una opción &nbsp; <i class="fa-solid fa-caret-down"></i></option>
+                        <option value="Formateo e instalación de S.O. y aplicaciones">Formateo e instalación de S.O. y aplicaciones</option>
+                        <option value="Crackeo de OFFICE">Crackeo de OFFICE</option>
+                        <option value="Instalación de OFFICE">Instalación de OFFICE</option>
+                        <option value="Instalación MAGIS TV">Instalación MAGIS TV</option>
+                        <option value="Crackeo de licencia WINDOWS">Crackeo de licencia WINDOWS</option>
+                        <option value="Instalacion de algun software especifico">Instalacion de algun software especifico</option>
+                        <option value="Respaldo y restauracion de informacion">Respaldo y restauracion de informacion</option>
+                        <option value="Reparar disco (Deteccion y correccion de pistas y sectores)">Reparar disco (Deteccion y correccion de pistas y sectores)</option>
+                        <option value="otro_problema_aio">Otro problema (especificar)</option>
+                        
+                    </select>
+                </div>
+                
+                <div class="form-group" id="problemas_impresora_container" style="display: none;">
+                    <label for="problemas_impresora">Problemas para Impresora:</label>
+                    <select id="problemas_impresora" name="problemas_impresora" class="form-control">
+                        <option value="" disabled selected hidden>Selecciona una opción &nbsp; <i class="fa-solid fa-caret-down"></i></option>
+                        <option value="Cambio de almohadillas (Incluye instalación y costo de almohadillas)">Cambio de almohadillas (Incluye instalación y costo de almohadillas)</option>
+                        <option value="Reseteo de contadores">Reseteo de contadores</option>
+                        <option value="Purga de aire de dumpers">Purga de aire de dumpers</option>
+                        <option value="Limpieza de cabezal con liquido especial">Limpieza de cabezal con liquido especial</option>
+                        <option value="Mantenimiento o cambio de cabezal">Mantenimiento o cambio de cabezal</option>
+                        <option value="Cambio de flex ligero">Cambio de flex ligero</option>
+                        <option value="Cambio de flex que incluye desarmado total">Cambio de flex que incluye desarmado total</option>
+                        <option value="Cambio de baterías ups">Cambio de baterías ups</option>
+                        <option value="Retirar objetos extraños">Retirar objetos extraños</option>
+                        <option value="Reparar placa">Reparar placa</option>
+                        <option value="Cambio de sensor">Cambio de sensor</option>
+                        <option value="Cambio de bomba (incluye repuesto)">Cambio de bomba (incluye repuesto)</option>
+                        <option value="Reparacion de bomba">Reparacion de bomba</option>
+                        <option value="Mantenimiento o cambio del sistema de  mangueras">Mantenimiento o cambio del sistema de  mangueras </option>
+                        <option value="Correccion de hardware mal armado, mal calibrado">Correccion de hardware mal armado, mal calibrado</option>
+                        <option value="otro_problema_impresora">Otro problemas (especificar)</option>
+                        
+                    </select>
+                </div>-->
+                
+                <div class="form-group" id="descripcion_otro" style="display: none; color: red;">
+                    <label for="descripcion_otro">* Especificar (Descripción del problema):</label>
+                    <textarea id="descripcion_otro" name="descripcion_otro" placeholder="" class="form-control" rows="4"></textarea>
+                </div>
+
+                <!-- Fila 5: Solución -->
+                <div class="form-group">
+                    <label for="solucion">Posible solución:</label>
+                    <textarea id="solucion" name="solucion" class="form-control" placeholder="Cambiar pila de BIOS" rows="4"></textarea>
+                </div>
+
+                <!-- Fila 6: Técnico asignado y usuario que recibe -->
+                <div class="form-group">
+                    <label for="tecnico_asignado">Técnico Asignado:</label>
+                    {%if tecnicos%}
+                        <select id="tecnico_asignado" name="tecnico_asignado" class="form-control" required>
+                            <!--<option value="">Seleccione...</option>-->
+                            {%for tecnico in tecnicos%}
+                                <option value="{{ tecnico.first_name }} {{ tecnico.last_name }} ({{tecnico.username}})">{{ tecnico.first_name }} {{ tecnico.last_name }} ({{tecnico.username}})</option>
+                            {%endfor%}
+                        </select>
+                    {%else%}
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Solicita a tu administrador que agregue al menos un usuario al grupo de tecnicos para continuar.
+                    </div>
+                    {%endif%}
+                </div>
+                <div class="form-group">
+                    <label for="usuario_recepta">Usuario receptor del equipo:</label>
+                    <input type="text" id="usuario_recepta" name="usuario_recepta" class="form-control" value="{{user}}" disabled>
+                </div>
+
+                <!-- Fila 7: Costo y abono -->
+                <div class="form-group">
+                    <label for="costo">Costo Aproximado:</label>
+                    <p>* Este valor es editable al valor final de reparacion del equipo</p>
+                    <input type="number" id="costo" name="costo" class="form-control" step="0.01" value="0.00" required>
+                </div>
+                
+                <!-- Botones -->
+                <div class="btn-container">
+                    <br>
+                    <button type="button" class="btn btn-primary guardar-modal">Generar</button>
+                    <button type="button" class="btn btn-secondary cancelar-modal" onclick="redirect()">Cancelar servicio</button>
+                </div>
+                
+            </div>
+        </div>
+    </form>
+        
+
+        <table class="table table-striped" id="tabla-productos">
+            <thead>
+              <tr>
+                
+                <th scope="col">Estado</th>
+                <th scope="col">ID</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Problema</th>
+                <th scope="col">Saldo Pendiente</th>
+                
+              </tr>
+            </thead>
+            <tbody id="productos-tbody">
+              {% for servicioP in serviciosPendientes%}
+                <tr>
+                    <!--{% if servicioP.estado == 'pendiente'%}-->
+                        <td style="background-color: orange; color: black;">Pendiente</td>
+                    <!--{% else %}
+                        <td style="background-color: green;">Terminado</td>
+                    {% endif %}-->
+                    <td scope="col">{{servicioP.id}} </td>
+                    <td scope="col">{{servicioP.usuario.first_name}} {{servicioP.usuario.last_name}}</td>
+                    <td scope="col">{{servicioP.fecha_ingreso}}</td>
+                    <td scope="col">{{servicioP.equipo}} - {{servicioP.marca}} {{servicioP.modelo}} {{servicioP.serie}}</td>
+                    <td scope="col">{{servicioP.descripcion_problema}}</td>
+                    <td scope="col">${{servicioP.saldo}}</td>
+                    
+                    <td scope="col"><button type="button" class="btn btn-primary abrir-modal" data-toggle="modal" data-target="#miModalBusqueda{{ servicioP.id }}"><i class="fa-solid fa-eye"></i></button></td>
+
+                    <!-- Modal específico para este registro -->
+                    <div id="miModalBusqueda{{ servicioP.id }}" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title">Servicio pendiente</h5>
+                            </div>
+                            <div class="modal-body">
+                            <!-- Aquí se llenarán los detalles del servicio específico -->
+                                <div class="form-group">
+                                    <label for="fecha_ingreso">Fecha de Ingreso:</label>
+                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioP.fecha_ingreso}}" disabled>
+                                    <label for="fecha_ingreso">Fecha de Entrega:</label>
+                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{fecha}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fecha_ingreso">Datos del cliente:</label>
+                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioP.usuario.first_name}} {{servicioP.usuario.last_name}} - {{servicioP.usuario.email}}" disabled>
+                                </div>
+                                <!-- Fila 2: Tipo de servicio y equipo a revisar -->
+                                <div class="form-group">
+                                    <label for="tipo_servicio">Tipo de Servicio:</label>
+                                    <input type="text" id="tipo_servicio" name="tipo_servicio" class="form-control" value="{{servicioP.tipo_servicio}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="equipo">Equipo a Revisar:</label>
+                                    <input type="text" id="equipo" name="equipo"  class="form-control" value="{{servicioP.equipo}}" disabled>
+                                </div>
+                
+                                <!-- Fila 3: Marca, modelo, serie -->
+                                <div class="form-group">
+                                    <label for="marca">Marca:</label>
+                                    <input type="text" id="marca"  name="marca" class="form-control" value="{{servicioP.marca}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="modelo">Modelo:</label>
+                                    <input type="text" id="modelo" name="modelo"  class="form-control" value="{{servicioP.modelo}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="serie">Serie:</label>
+                                    <input type="text" id="serie" name="serie"  class="form-control" value="{{servicioP.serie}}" disabled>
+                                </div>
+                
+                                <!-- Fila 4: Descripción del problema -->
+                                <div class="form-group">
+                                    <label for="descripcion_problema">Descripción del Problema:</label>
+                                    <textarea id="descripcion_problema_finalizado_{{ servicioP.id }}" name="descripcion_problema_finalizado"  class="form-control" rows="2" required>{{servicioP.descripcion_problema}}</textarea>
+                                </div>
+                
+                                <!-- Fila 5: Solución -->
+                                <div class="form-group">
+                                    <label for="solucion">Solución:</label>
+                                    <textarea id="solucion_finalizado_{{ servicioP.id }}" name="solucion_finalizado" class="form-control"  rows="2"  required>{%if servicioP.solucion%}{{servicioP.solucion}}{%endif%}</textarea>
+                                </div>
+                
+                                <!-- Fila 6: Técnico asignado y usuario que recibe -->
+                                <div class="form-group">
+                                    <label for="tecnico_asignado">Técnico Asignado:</label>
+                                    <input type="text" id="tecnico_asignado" name="tecnico_asignado" class="form-control" value="{{servicioP.tecnico_asignado}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usuario_recepta">Usuario receptor del equipo:</label>
+                                    <input type="text" id="usuario_recepta" name="usuario_recepta" class="form-control" value="{{servicioP.usuario_recepta}}" disabled>
+                                </div>
+                
+                                <!-- Fila 7: Costo y abono -->
+                                <div class="form-group">
+                                    <label for="costo">Costo real:</label>
+                                    <p>Costo inicial sin descuento $ {{servicioP.costo_sin_descuento}}</p>
+                                    <input type="number" id="costo_finalizado_{{ servicioP.id }}" name="costo_finalizado" class="form-control" value="{{servicioP.costo|stringformat:".2f"}}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="abono">Saldo pendiente:</label>
+                                    <input type="number" id="abono_finalizado_{{ servicioP.id }}" name="abono_finalizado" class="form-control" value="{{servicioP.saldo|stringformat:".2f"}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="abono">Descuento:</label>
+                                    <p>* Por cada 3 servicios realizados por el cliente se aplica una tasa de descuento.</p>
+                                    {% if servicioP.numero_reparacion == 3%}
+                                        <input type="text" name="abono_finalizado" class="form-control" value="SERVICIO # {{servicioP.numero_reparacion}} - APLICA A UNA TASA DEL {{porcentaje_descuento}}% DE DESCUENTO"style="background-color:green; color: white;" disabled>
+                                    {% else %}
+                                        <input type="text" name="abono_finalizado" class="form-control" value="SERVICIO # {{servicioP.numero_reparacion}} - NO APLICA DESCUENTO" disabled>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                {% if servicio.saldo == 0 %}
+                                <button type="button" class="btn btn-success finalizar-servicio-btn" data-id="{{ servicioP.id }}">Finalizar servicio</button>
+                                {% endif %}
+                                <button type="button" class="btn btn-primary abonar-servicio-btn" data-id="{{ servicioP.id }}" onclick="redirectToView(this)">Abonos</button>
+                                <button type="button" class="btn btn-secondary actualizar-servicio-btn" data-id="{{ servicioP.id }}">Actualizar cambios</button>
+                                <!--<button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>-->
+                                <button type="button" class="btn btn-danger cancelar-servicio-btn" data-id="{{ servicioP.id }}">Anular servicio</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                </tr>
+
+                
+                
+
+              {%endfor%}
+
+              {% for servicioT in serviciosTerminados%}
+                <tr>
+                    <!--{% if servicioP.estado == 'pendiente'%}
+                        <td style="background-color: orange; color: black;">Pendiente</td>
+                    {% else %}-->
+                        <td style="background-color: green; color: white;">Terminado</td>
+                    <!--{% endif %}-->
+                    <td scope="col">{{servicioT.id}} </td>
+                    <td scope="col">{{servicioT.usuario.first_name}} {{servicioT.usuario.last_name}}</td>
+                    <td scope="col">{{servicioT.fecha_ingreso}}</td>
+                    <td scope="col">{{servicioT.equipo}} - {{servicioT.marca}} {{servicioT.modelo}} {{servicioT.serie}}</td>
+                    <td scope="col">{{servicioT.descripcion_problema}}</td>
+                    <td scope="col"> </td>
+                    <td scope="col"><button type="button" class="btn btn-primary abrir-modal" data-toggle="modal" data-target="#miModalBusqueda{{ servicioT.id }}"><i class="fa-solid fa-eye"></i></button></td>
+
+                    <!-- Modal específico para este registro -->
+                    <div id="miModalBusqueda{{ servicioT.id }}" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title">Detalles del Servicio</h5>
+                            </div>
+                            <div class="modal-body">
+                            <!-- Aquí se llenarán los detalles del servicio específico -->
+                                <div class="form-group">
+                                    <label for="fecha_ingreso">Fecha de Ingreso:</label>
+                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioT.fecha_ingreso}}" disabled>
+                                    <label for="fecha_ingreso">Fecha de Entrega:</label>
+                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioT.fecha_entrega}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fecha_ingreso">Datos del cliente:</label>
+                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioT.usuario.first_name}} {{servicioT.usuario.last_name}} - {{servicioT.usuario.email}}" disabled>
+                                </div>
+                
+                                <!-- Fila 2: Tipo de servicio y equipo a revisar -->
+                                <div class="form-group">
+                                    <label for="tipo_servicio">Tipo de Servicio:</label>
+                                    <input type="text" id="tipo_servicio" name="tipo_servicio" class="form-control" value="{{servicioT.tipo_servicio}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="equipo">Equipo a Revisar:</label>
+                                    <input type="text" id="equipo" name="equipo"  class="form-control" value="{{servicioT.equipo}}" disabled>
+                                </div>
+                
+                                <!-- Fila 3: Marca, modelo, serie -->
+                                <div class="form-group">
+                                    <label for="marca">Marca:</label>
+                                    <input type="text" id="marca"  name="marca" class="form-control" value="{{servicioT.marca}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="modelo">Modelo:</label>
+                                    <input type="text" id="modelo" name="modelo"  class="form-control" value="{{servicioT.modelo}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="serie">Serie:</label>
+                                    <input type="text" id="serie" name="serie"  class="form-control" value="{{servicioT.serie}}" disabled>
+                                </div>
+                
+                                <!-- Fila 4: Descripción del problema -->
+                                <div class="form-group">
+                                    <label for="descripcion_problema">Descripción del Problema:</label>
+                                    <textarea id="descripcion_problema_finalizado" name="descripcion_problema_finalizado"  class="form-control" rows="2" disabled>{{servicioT.descripcion_problema}}</textarea>
+                                </div>
+                
+                                <!-- Fila 5: Solución -->
+                                <div class="form-group">
+                                    <label for="solucion">Solución:</label>
+                                    <textarea id="solucion_finalizado" name="solucion_finalizado" class="form-control"  rows="2"  disabled>{{servicioT.solucion}}</textarea>
+                                </div>
+                
+                                <!-- Fila 6: Técnico asignado y usuario que recibe -->
+                                <div class="form-group">
+                                    <label for="tecnico_asignado">Técnico Asignado:</label>
+                                    <input type="text" id="tecnico_asignado" name="tecnico_asignado" class="form-control" value="{{servicioT.tecnico_asignado}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usuario_recepta">Usuario receptor del equipo:</label>
+                                    <input type="text" id="usuario_recepta" name="usuario_recepta" class="form-control" value="{{servicioT.usuario_recepta}}" disabled>
+                                </div>
+                
+                                <!-- Fila 7: Costo y abono -->
+                                <div class="form-group">
+                                    <label for="costo">Costo:</label>
+                                    <input type="text" id="costo_finalizado" name="costo_finalizado" class="form-control" step="0.01" value="{{servicioT.costo}}" disabled>
+                                </div>
+                                <!--
+                                <div class="form-group">
+                                    <label for="abono">Valor cancelado:</label>
+                                    <input type="text" id="abono_finalizado" name="abono_finalizado" class="form-control" step="0.01" value="{{servicioT.abono}}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="abono">Saldo:</label>
+                                    <input type="text" id="abono_finalizado" name="abono_finalizado" class="form-control" step="0.01" value="{{servicioT.saldo}}" disabled>
+                                </div>-->
+                                
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                </tr>
+
+                
+                
+
+              {%endfor%}
+            </tbody>
+        </table>
+        <!--<button class="limpiar"> Limpiar <i class="fa-solid fa-trash"></i></button>-->
+        <div class="seccion-button">
+            <!--<button class="descuento" onclick="actualizarTabla()">Actualizar <i class="fa-solid fa-rotate"></i></button>-->
+            <button type="button" class="btn btn-primary" onclick="window.location.href='/ventas/servicio/todos_registros'">Todos Registros</button> &ensp;
+            <button class="cancelar">Limpiar <i class="fa-solid fa-ban"></i></button>
+        </div>
+        
+    </div>
+    {%else%}
+    <div class="alerta">
+        <p class="alerta-icono"><i class="fa-solid fa-ban"></i></p>
+        <p class="alerta-leyenda">Por favor solicita a tu supervisor que inicialice la caja para aperturar el módulo de Facturación y realizar ventas.</p>
+    </div>
+    {%endif%}
+
+
+
+    <div class="modal fade" id="modalCancelar" tabindex="-1" role="dialog" aria-labelledby="modalNuevoGastoLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalNuevoGastoLabel">Servicio cancelado exitosamente!</h5>
+                        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>-->
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <h6 id="modalMensaje">Aquí va el mensaje personalizado.</h6>
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="modal-footer">
+                        <!--<button type="button" class="btn btn-secondary" onclick="window.location.href='/ventas/gastos'">Devolver Abono</button>-->
+                        <button type="button" class="btn btn-primary" onclick="window.location.href='/ventas/servicio/todos_registros'">Salir</button>
+                    </div>
+                
+            </div>
+        </div>
+      </div>
+      
+</div>
+<script>
+    // Función para validar los campos antes de enviar el formulario
+    function validarCampo(input) {
+        if (input.value.trim() === '') {
+            input.classList.add('is-invalid');
+            return false; // El campo está vacío, no es válido
+        } else {
+            input.classList.remove('is-invalid');
+            return true; // El campo tiene contenido, es válido
+        }
+    }
+    
+    function validarFormulario() {
+        var formulario = document.getElementById('miFormulario');
+        var inputs = formulario.querySelectorAll('input[required], select[required], textarea[required]');
+        var isValid = true;
+    
+        inputs.forEach(function(input) {
+            if (!validarCampo(input)) {
+                isValid = false;
+            }
+        });
+    
+        if (!isValid) {
+            alert('Por favor, complete todos los campos antes de generar el registro.');
+            return false; // Evitar el envío del formulario si no todos los campos están completos
+        }
+    
+        if (confirm('¿Está seguro de que desea generar el registro?')) {
+            // Si el usuario confirma, enviar el formulario
+            formulario.submit();
+        }
+    
+        return false; // Evitar el envío del formulario si no se confirma la acción
+    }
+
+    // Asignar esta función al evento click del botón "Generar"
+    document.querySelector('.guardar-modal').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevenir el comportamiento predeterminado del botón (enviar formulario)
+        validarFormulario(); // Llamar a la función de validación
+    });
+
+    function redirect() {
+        window.location.href = '/ventas/registro_servicios';
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const abrirModalButtons = document.querySelectorAll('.abrir-modal');
+
+        abrirModalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modalId = this.getAttribute('data-modal-id');
+                const modal = document.getElementById(modalId);
+
+                if (modal) {
+                    modal.style.display = 'block';  // Mostrar el modal
+                }
+            });
+        });
+
+    });
+
+
+    $(document).ready(function() {
+        $('.finalizar-servicio-btn').on('click', function() {
+            var servicioId = $(this).data('id');
+            var costo = $('#costo_finalizado_'+servicioId).val();
+            var abono = $('#abono_finalizado_'+servicioId).val();
+            var solucion = $('#solucion_finalizado_'+servicioId).val();
+            var problema = $('#descripcion_problema_finalizado_'+servicioId).val();
+
+            // Comprobar si el saldo es mayor que 0
+            // Comprobar si el saldo es mayor que 0
+            if (abono > 0) {
+                alert('No se puede finalizar el servicio porque el cliente aun tiene un saldo pendiente de $' + abono+ '.');
+                return; // Salir de la función si el saldo no es 0
+            }
+            if (solucion == '') {
+                alert('Debe agregar una solución para finalizar el servicio.');
+                return; // Salir de la función si el saldo no es 0
+            }
+
+            if (confirm('¿Estás seguro de finalizar este servicio?')) {
+
+                
+
+                var csrftoken = getCookie('csrftoken');
+                
+                // Ejemplo de solicitud AJAX usando jQuery
+                $.ajax({
+                    type: 'POST', // o 'PUT', dependiendo de tu API
+                    url: '/ventas/servicio/finalizar-servicio', // URL de tu endpoint para finalizar el servicio
+                    headers: {
+                        'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
+                    },
+                    data: {
+                        id: servicioId,
+                        costo: costo,
+                        abono: abono,
+                        solucion: solucion,
+                        problema: problema,
+                        estado: 'terminado'
+                    },
+                    
+                    success: function(response) {
+                        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal
+                        //$('#miModalBusqueda' + servicioId).modal('hide');
+                        // Actualizar la interfaz de usuario si es necesario
+                        if (response && response.encoded_path) {
+                            // Construir la URL para redirigir con el encoded_path
+                            var encodedPath = encodeURIComponent(response.encoded_path);
+                            var urlRedirect = '/ventas/servicio/generardescarga_pdf/' + encodedPath + '/';
+                
+                            // Redirigir a la nueva página con el encoded_path en la URL
+                            window.location.href = urlRedirect;
+                        } else {
+                            console.error('No se recibió el encoded_path del servidor.');
+                            // Manejar el caso donde no se recibió correctamente el encoded_path del servidor
+                            // Por ejemplo, mostrar un mensaje de error al usuario
+                            alert('Ocurrio un error al descargar el pdf');
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error al finalizar servicio:', error);
+                        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+                    }
+                });
+            } else {
+                // No hacer nada si el usuario hace clic en 'Cancelar'
+                console.log('El usuario canceló la operación.');
+            }
+
+        });
+
+        $('.cancelar-servicio-btn').on('click', function() {
+            if (confirm('¿Estás seguro de cancelar y dar por finalizado el servicio? ')) {
+                var servicioId = $(this).data('id');
+
+                var csrftoken = getCookie('csrftoken');
+                
+                // Ejemplo de solicitud AJAX usando jQuery
+                $.ajax({
+                    type: 'POST', // o 'PUT', dependiendo de tu API
+                    url: '/ventas/servicio/cancelar-servicio', // URL de tu endpoint para finalizar el servicio
+                    headers: {
+                        'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
+                    },
+                    data: {
+                        id: servicioId
+                    },
+                    
+                    success: function(response) {
+                        if (response.devolver_abono == 'no'){
+                            alert('Servicio cancelado exitosamente.');
+                            // Redirigir a una nueva página
+                            window.location.href = '/ventas/servicio/todos_registros';
+                        }else{
+                            var mensajePersonalizado = 'Se debe realizar una devolución por $'+response.valor+' al usuario '+ response.datos+'.';
+                            $('#modalMensaje').text(mensajePersonalizado);
+
+                            // Crear el botón con los atributos data
+                            var button = $('<button>', {
+                                type: 'button',
+                                class: 'btn btn-secondary',
+                                text: 'Devolver Abono',
+                                'data-valor': response.valor,
+                                'data-datos': response.datos,
+                                click: function() {
+                                    // Puedes manejar el clic aquí si lo necesitas
+                                    devolverDinero();
+                                    //window.location.href = '/ventas/gastos';
+                                }
+                            });
+
+                            $('#modal-footer').empty().append(button);
+                            $('#modalCancelar').modal('show');
+                        }
+
+                    },
+                    error: function(error) {
+                        console.error('Error al finalizar servicio:', error);
+                        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+                        alert('Ocurrio un error al cancelar el servicio, inténtelo en unos instantes!');
+                    }
+                });
+            }
+        });
+
+        function devolverDinero() {
+            // Obtener el botón que fue clickeado
+            var button = $('.btn-secondary:focus'); // Selecciona el botón que fue clickeado
+            var valor = button.data('valor'); // Recupera el valor
+            var datos = button.data('datos'); // Recupera los datos
+            var csrftoken = getCookie('csrftoken');
+            // Hacer la solicitud AJAX para enviar los datos al servidor
+            $.ajax({
+                url: '/ventas/devolverabono', // Cambia esto a la ruta de tu view
+                type: 'POST', // Usa el método que necesites
+                headers: {
+                    'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
+                },
+                data: {
+                    valor: valor,
+                    datos: datos
+                },
+                success: function(response) {
+                    // Maneja la respuesta del servidor aquí
+                    console.log('Respuesta del servidor:', response);
+                    window.location.href = '/ventas/gastos';
+                    // Puedes mostrar un mensaje de éxito o redirigir, etc.
+                },
+                error: function(xhr, status, error) {
+                    // Maneja el error aquí
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+
+        $('.actualizar-servicio-btn').on('click', function() {
+            var servicioId = $(this).data('id');
+            var costo = $('#costo_finalizado_'+servicioId).val();
+            var abono = $('#abono_finalizado_'+servicioId).val();
+            var solucion = $('#solucion_finalizado_'+servicioId).val();
+            var problema = $('#descripcion_problema_finalizado_'+servicioId).val();
+
+            if (confirm('¿Estás seguro de actualizar los datos ingresados del servicio?')) {
+
+                var csrftoken = getCookie('csrftoken');
+                
+                // Ejemplo de solicitud AJAX usando jQuery
+                $.ajax({
+                    type: 'POST', // o 'PUT', dependiendo de tu API
+                    url: '/ventas/servicio/finalizar-servicio', // URL de tu endpoint para finalizar el servicio
+                    headers: {
+                        'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
+                    },
+                    data: {
+                        id: servicioId,
+                        costo: costo,
+                        abono: abono,
+                        solucion: solucion,
+                        problema: problema,
+                        estado: 'pendiente'
+                    },
+                    
+                    success: function(response) {
+                        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal
+                        //$('#miModalBusqueda' + servicioId).modal('hide');
+                        // Actualizar la interfaz de usuario si es necesario
+                        if (response && response.encoded_path) {
+                            // Construir la URL para redirigir con el encoded_path
+                            var encodedPath = encodeURIComponent(response.encoded_path);
+                            var urlRedirect = '/ventas/servicio/generardescarga_pdf/' + encodedPath + '/';
+                
+                            // Redirigir a la nueva página con el encoded_path en la URL
+                            window.location.href = urlRedirect;
+                        } else {
+                            console.error('No se recibió el encoded_path del servidor.');
+                            // Manejar el caso donde no se recibió correctamente el encoded_path del servidor
+                            // Por ejemplo, mostrar un mensaje de error al usuario
+                            alert('Ocurrio un error al descargar el pdf');
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error al finalizar servicio:', error);
+                        // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+                    }
+                });
+            } else {
+                // No hacer nada si el usuario hace clic en 'Cancelar'
+                console.log('El usuario canceló la operación.');
+            }
+
+        });
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Busca el nombre del cookie
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+    });
+    
+    /******************para manejar los select***********************/
+    document.getElementById('tipo_equipo').addEventListener('change', function() {
+        var seleccionado = this.value;
+        var problemasSelect = document.getElementById('problemas_resolver');
+        if (seleccionado === 'Otro') {
+            document.getElementById('otro_equipo').style.display = 'block';
+            document.getElementById('descripcion_otro').style.display = 'block';
+            document.getElementById('costo').value = 0,00;
+            //document.getElementById('otro_equipo_texto').setAttribute('required', 'required');
+        } else {
+            document.getElementById('otro_equipo').style.display = 'none';
+            document.getElementById('descripcion_otro').style.display = 'none';
+            document.getElementById('costo').value = 0,00;
+            //document.getElementById('otro_equipo_texto').removeAttribute('required');
+            const Data = document.getElementById('descripcionEquipo-data').value;
+            
+            // Limpiar opciones anteriores
+            problemasSelect.innerHTML = '<option value="" disabled selected hidden>Selecciona una opción &nbsp; <i class="fa-solid fa-caret-down"></i></option>';
+
+            // Mostrar el select de problemas
+            document.getElementById('problemas_equipos').style.display = 'block';
+
+            // Agregar nuevas opciones desde Data
+            descripcionEquipos.forEach(function(item) {
+                if (seleccionado === item.equipo ){
+                    var option = document.createElement('option');
+                    option.value = item.problema;
+                    option.textContent = item.problema;
+                    option.dataset.costo = item.costo;
+                    problemasSelect.appendChild(option);
+                }
+            });
+
+            var option = document.createElement('option');
+                option.value = 'Otro';
+                option.textContent = 'Otros problemas (especificar)';
+                problemasSelect.appendChild(option);
+            
+        }
+    });
+
+    document.getElementById('problemas_resolver').addEventListener('change', function() {
+        var seleccionado = this.value;
+        var selectedOption = this.options[this.selectedIndex]; // Obtener la opción seleccionada
+
+        // Obtener el data-costo
+        var costo = parseFloat(selectedOption.dataset.costo) || 0;
+        console.log(costo);
+
+        if (seleccionado === 'Otro') {
+            document.getElementById('descripcion_otro').style.display = 'block';
+        } else {
+            document.getElementById('descripcion_otro').style.display = 'none';
+            document.getElementById('costo').value = costo.toFixed(2); 
+        }
+    
+    });
+
+    function redirectToView(button) {
+        var id = button.getAttribute('data-id');
+        var url = `/ventas/registro_servicios/abono/${id}`; // Aquí construyes la URL con el ID
+        window.location.href = url;   // Rediriges a la URL construida
+    }
+
+    
+</script>
+{% endblock %} 

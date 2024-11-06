@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="HTML Masters">
+
+    <!--Link css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/barraNavegacion.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/piePagina.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ventas_inicio.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ventas_transacciones.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/operacion.css' %}">
+
+    
+    <!--Link bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!--Font awesome-->
+    <script src="https://kit.fontawesome.com/91363630b1.js" crossorigin="anonymous"></script>
+    <!--jQuery-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <title>{% block title %} Pc Computers - Operación{% endblock %}</title>
+    {% load static %}
+    <link rel="shortcut icon" type="image/logo1.png" href="{% static 'img/logo1.png' %}">
+</head>
+<body>
+    
+    <header>
+        <nav>
+            <input type="checkbox" id="check">
+            <label for="check" class="checkbtn">
+                <i class="fa-solid fa-bars"></i>
+            </label>
+            <label class="brand">
+                <div class="logo">
+                    <a href="/">
+                        <img src="{% static 'img/logo.png' %}" alt="Logo de Mi Sitio">
+                    </a>
+                </div>
+            </label>
+            <ul>
+                <li><a href="/operacion"><i class="fa-solid fa-house"></i></a></li>
+                <li><a href="/operacion/stock"><i class="fa-solid fa-truck"></i> Stock</a></li>
+                <li><a href="/operacion/panelcaja"><i class="fa-solid fa-cash-register"></i> Caja</a></li>
+                <li><a href="/operacion/transacciones"><i class="fa-solid fa-right-left"></i> Transacciones</a></li>
+                <li><a href="/"><i class="fa-solid fa-user"></i> {{user}}</a></li>
+                
+                {% if user.is_authenticated %}
+                    <li id="users-btn-perfil"><a href="/cerrar-sesion/" ><i class="fa-solid fa-right-from-bracket"></i> Salir</a></li>
+                {% endif %}    
+                
+                <li id="espacio"><br></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+
+
+        <div class="contenido">
+
+            {% block content %}
+
+            {% endblock %}
+                          
+        </div>
+        <div id="notification" class="notification">
+            <p id="notification-text"> </p>
+        </div>
+    </main>
+    
+        <p class="copyright-text">&copy; Copyright PC Computers &reg; Todos los derechos reservados 2024</p>
+       
+
+    <!--Script swiper-->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!--Link bar productos-->
+    <script src="{% static 'js/bar-productos.js' %}"></script>
+    <script src="{% static 'js/operacion.js' %}"></script>
+</body>
+</html>

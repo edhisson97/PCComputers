@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categoria, subCategoria, Marca, Carrusel, Iva
+from .models import Categoria, subCategoria, Marca, Carrusel, Iva, adicionalUsuario, DescuentoServicio
 
 # Register your models here.
 @admin.register(Categoria)
@@ -21,5 +21,12 @@ class CarruselAdmin(admin.ModelAdmin):
 @admin.register(Iva)
 class IvaAdmin(admin.ModelAdmin):
     list_display = ('porcentaje',)
+    
+@admin.register(DescuentoServicio)
+class DescuentoSAdmin(admin.ModelAdmin):
+    list_display = ('porcentaje',)
 
 
+@admin.register(adicionalUsuario)
+class UsuarioAdicionalAdmin(admin.ModelAdmin):
+    list_display = ('id','user','token','cedula','celular','ciudad','direccion','direccionEnvio','deuda')

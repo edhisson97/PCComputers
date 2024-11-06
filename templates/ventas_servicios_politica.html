@@ -1,0 +1,364 @@
+{% extends "ventas.html" %}
+
+{% block title %}PC Computers - Política de Servicios{% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+    .policy-title{
+        text-align: center;
+        margin-top:20px;
+        margin-bottom: 30px;
+    }
+    
+    .card-title{
+        font-size: 25px;
+    }
+    .card-text{
+        font-size: 18px;
+    }
+    
+    .card {
+      margin-bottom: 20px; /* Espaciado inferior entre tarjetas */
+      background: #efefef;
+    }
+
+    .subtitle{
+      color: #7e7e7e;
+      margin-bottom: 20px;
+      margin-left: 40px;
+      margin-top: 50px;
+    }
+    
+</style>
+<div class="container">
+    <h3 class="policy-title"><i class="fa-solid fa-shield-halved"></i> Política de servicios de la Empresa</h3>
+    
+    <div class="row">
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Costos</h5>
+              <p class="card-text">1. El costo de la obra se determina según el grado de dificultad y el tiempo que se emplea en la reparacion o solución.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Riesgos</h5>
+              <p class="card-text">2. Todo equipo antiguo o descontinuado que se desarma es bajo riesgo del cliente.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Diagnóstico</h5>
+                <p class="card-text">3. El diagnostico inicial es cero costo.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Costos de referencia</h5>
+                <p class="card-text">4. La solucion intermedia tiene costos referenciales.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Inicio de cobros</h5>
+                <p class="card-text">5. Toda accion que se determine luego del diagnostico inicial se factura.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Costo final</h5>
+                <p class="card-text">6. El costo de la solucion definitiva se totaliza según los servicios aplicados.</p>
+              </div>
+            </div>
+          </div>
+      </div>
+</div>
+
+<div class="container">
+  <h3 class="policy-title"><i class="fa-solid fa-shield-halved"></i> Costos referenciales de los servicios</h3>
+  <h5 class="subtitle"><i class="fa-solid fa-laptop"></i> Servicio Técnico en Equipos</h5>
+  <div class="row">
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Formateo e instalación de S.O. y aplicaciones</h6>
+            <p class="card-text"><i class="fa-solid fa-server"></i> Pc Escritorio $20<br>
+            <i class="fa-solid fa-laptop"></i> <i class="fa-solid fa-desktop"></i> Laptop/All in one AIO $25
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Crackeo de OFFICE</h6>
+            <p class="card-text"><i class="fa-solid fa-server"></i> <i class="fa-solid fa-laptop"></i> <i class="fa-solid fa-desktop"></i> Precio $5</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Instalación de OFFICE</h6>
+            <p class="card-text"><i class="fa-solid fa-server"></i> <i class="fa-solid fa-laptop"></i> <i class="fa-solid fa-desktop"></i> Precio $10</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Instalación MAGIS TV</h6>
+            <p class="card-text"><i class="fa-solid fa-server"></i> <i class="fa-solid fa-laptop"></i> <i class="fa-solid fa-desktop"></i> Precio $5</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Crackeo de licencia WINDOWS</h6>
+            <p class="card-text"><i class="fa-solid fa-server"></i> <i class="fa-solid fa-laptop"></i> <i class="fa-solid fa-desktop"></i> Precio $10</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Reconstrucción de bases (cada una)</h6>
+            <p class="card-text"><i class="fa-solid fa-laptop"></i> Precio $10</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Mantenimiento de bisagras</h6>
+            <p class="card-text"><i class="fa-solid fa-laptop"></i> Precio $15</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Cambio de teclado (interno y con suelda)</h6>
+            <p class="card-text"><i class="fa-solid fa-laptop"></i> Precio $25</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Cambio de teclado (sobrepuesto)</h6>
+            <p class="card-text"><i class="fa-solid fa-laptop"></i> Precio $10</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Mantenimiento físico (limpieza + cambio de pasta térmica)</h6>
+            <p class="card-text"><i class="fa-solid fa-server"></i> Pc Escritorio $20<br>
+            <i class="fa-solid fa-laptop"></i> Laptop $25
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Cambio de batería (interna)</h6>
+            <p class="card-text"><i class="fa-solid fa-laptop"></i> Precio $10</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Cambio de batería (sobrepuesto)</h6>
+            <p class="card-text"><i class="fa-solid fa-laptop"></i> Precio $0</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Instalacion de algun software especifico</h6>
+            <p class="card-text"><i class="fa-solid fa-server"></i> <i class="fa-solid fa-laptop"></i> <i class="fa-solid fa-desktop"></i> Precio $10</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Cambio de pantalla</h6>
+            <p class="card-text"><i class="fa-solid fa-laptop"></i> Precio $30</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Respaldo y restauracion de informacion</h6>
+            <p class="card-text"><i class="fa-solid fa-server"></i> <i class="fa-solid fa-laptop"></i> <i class="fa-solid fa-desktop"></i> Precio $(gratis hasta 50gb, mas de 50 gb según los gigas)</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-7">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Reparar disco (Deteccion y correccion de pistas y sectores)</h6>
+            <p class="card-text"><i class="fa-solid fa-server"></i> <i class="fa-solid fa-laptop"></i> <i class="fa-solid fa-desktop"></i> Precio $30</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Reparación de mainboard</h6>
+            <p class="card-text"><i class="fa-solid fa-laptop"></i> Precio $100</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Actualizar o reparar la BIOS</h6>
+            <p class="card-text"><i class="fa-solid fa-laptop"></i> Precio $30</p>
+          </div>
+        </div>
+      </div>
+  </div>
+  <h5 class="subtitle"><i class="fa-solid fa-print"></i> Servicio Técnico en Impresoras</h5>
+  <div class="row">
+    <div class="col-sm-7">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Cambio de almohadillas (Incluye instalación y costo de almohadillas)</h6>
+          <p class="card-text">Precio $15</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Reseteo de contadores</h6>
+          <p class="card-text">Precio $15</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Purga de aire de dumpers</h6>
+          <p class="card-text">Precio $15</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Limpieza de cabezal con líquido especial</h6>
+          <p class="card-text">Precio $25</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Mantenimiento o cambio de cabezal</h6>
+          <p class="card-text">Precio $100</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Cambio de flex ligero</h6>
+          <p class="card-text">Precio $20</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Cambio de flex que incluye desarmado total</h6>
+          <p class="card-text">Precio $35</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Cambio de baterías UPS</h6>
+          <p class="card-text">Precio $5</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Retirar objetos extraños</h6>
+          <p class="card-text">Precio $15</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Reparar placa</h6>
+          <p class="card-text">Precio $50</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Cambio de sensor</h6>
+          <p class="card-text">Precio $15</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Cambio de bomba (incluye repuesto)</h6>
+          <p class="card-text">Precio $35</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Reparación de bomba</h6>
+          <p class="card-text">Precio $15</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Mantenimiento o cambio del sistema de mangueras</h6>
+          <p class="card-text">Precio $30</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Corrección de hardware mal armado, mal calibrado</h6>
+          <p class="card-text">Precio $30</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

@@ -522,3 +522,18 @@ def ventas_sesion(request):
             return render(request, 'ventas_sesion.html', {'error_message': 'Credenciales de acceso inválidas'})
     else:
         return render(request, 'ventas_sesion.html', )
+    
+def operacion_sesion(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            # Redirigir a alguna página de éxito después del inicio de sesión
+            return redirect('/operacion/')
+        else:
+            # Mostrar un mensaje de error o redirigir a la misma página de inicio de sesión con un mensaje de error
+            return render(request, 'operacion_sesion.html', {'error_message': 'Credenciales de acceso inválidas'})
+    else:
+        return render(request, 'operacion_sesion.html', )

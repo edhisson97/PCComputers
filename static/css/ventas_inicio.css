@@ -13,6 +13,26 @@ body {
     color: #031E54;
   }
 
+  .alerta {
+    width: 50%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffeeee;
+    border: 2px solid #ff0000;
+    border-radius: 10px;
+    color: #ff0000;
+    text-align: center;
+}
+
+.alerta-icono{
+  font-size: 60px;
+}
+
+  .alerta-leyenda{
+    font-size: 20px;
+    margin: 40px;
+  }
+
   .centered, .centered-modal {
     display: flex;
     justify-content: center;
@@ -55,7 +75,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 30px;/*interfaz 1 30px interfaz 2 40px*/
+    height: 40px;/*interfaz 1 30px interfaz 2 40px*/
     width: 450px;/*interfaz 1 150px interfaz 2 450px*/
     background-color: #e4e4e4;
     border-radius: 20px; /* Redondea las esquinas */
@@ -78,7 +98,11 @@ body {
     background: transparent;
     font-size: 13px;/*Interfaz 1 10px Interfaz 2 15px*/
     outline: none;
-    width: 65%;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    margin-left: 13px;
+    margin-right: 10px;
+    width: 70%;
     transition: width 0.3s;
   }
   
@@ -165,8 +189,24 @@ body {
   justify-content: flex-end; /* Alinear elementos al final (derecha) */
 }
 
+.form-row-venta{
+  margin-right: 20px;
+}
+
+.form-row-venta select {
+  flex: 1;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  height: 30px;
+  
+}
+
 .form-row-pago{
-  margin-right: 400px;
+  margin-right: 100px;
 }
 
 .form-row-pago select {
@@ -182,10 +222,37 @@ body {
 }
 
 #numeroCheque{
-  margin-left: 200px;
+  margin-left: 150px;
 }
 
 #numeroCheque input {
+  flex: 1;
+  margin-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  height: 30px;
+  
+}
+
+
+#numeroCheque select{
+  font-size: 17px;
+  margin-top: 10px;
+  margin-bottom: 1px;
+  margin-left: 10px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  border-top: 1px;
+  border-bottom: 1px;
+  border-radius: 5px;
+  border: 1px solid #393939;
+}
+
+#pagoCredito {
   flex: 1;
   padding-left: 10px;
   padding-right: 10px;
@@ -196,6 +263,41 @@ body {
   height: 30px;
   
 }
+
+#combinado{
+  margin-left: 150px;
+}
+
+#combinado input[type="text"] {
+  flex: 1;
+  margin-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  height: 30px;
+  
+}
+
+#credito{
+  margin-left: 150px;
+}
+
+#credito input {
+  flex: 1;
+  margin-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  height: 30px;
+  
+}
+
 
 .generar-venta {
   background-color: #007bff;
@@ -489,4 +591,89 @@ margin-right: auto;
   border-radius: 5px;
   z-index: 10000; /* Asegura que esté encima del fondo */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra */
+}
+
+
+/* para los  pagos pendiente*/
+.cedula {
+  text-align: center; /* Centrar contenido */
+}
+
+/* Estilos para el label */
+.cedula label {
+  display: block; /* Para que el label ocupe toda la línea */
+  margin-bottom: 10px; /* Espacio entre el label y el input */
+  font-weight: bold; /* Fuente en negrita */
+  color: #333; /* Color del texto */
+}
+
+/* Estilos para el input */
+.cliente-pagopendiente {
+  padding: 10px; /* Espaciado interior */
+  border: 2px solid #ccc; /* Borde del input */
+  border-radius: 5px; /* Bordes redondeados */
+  max-width: 200px; /* Ancho del input */
+  min-height: 30px;
+}
+
+#datosCliente p{
+  font-size: 15px;
+  margin-top: 30px;
+}
+
+#divpago {
+  text-align: center; /* Centrar contenido */
+}
+
+/* Estilos para el label */
+#divpago label {
+  display: block; /* Para que el label ocupe toda la línea */
+  margin-bottom: 10px; /* Espacio entre el label y el input */
+  font-weight: bold; /* Fuente en negrita */
+  color: #333; /* Color del texto */
+}
+
+/* Estilos para el input */
+#pago {
+  display: block;
+  margin: 0 auto; /* Centrar el input horizontalmente */
+  padding: 10px; /* Espaciado interior */
+  border: 2px solid #ccc; /* Borde del input */
+  border-radius: 5px; /* Bordes redondeados */
+  max-width: 400px; /* Ancho del input */
+  min-height: 40px;
+  max-height: 40px;
+  margin-bottom: 20px;
+}
+
+#divpago select {
+  /*padding: 5px;  Espaciado interior */
+  display: inline-block;
+  border: 2px solid #ccc; /* Borde del input */
+  border-radius: 5px; /* Bordes redondeados */
+  max-width: 400px; /* Ancho del input */
+  margin-bottom: 20px;
+}
+
+.container_pago {
+  max-width: 500px; /* Ajusta el ancho máximo según sea necesario */
+  margin: 0 auto; /* Centra el contenedor horizontalmente */
+  padding: 20px; /* Añade espaciado interno */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Añade una sombra ligera */
+  background-color: #f9f9f9; /* Cambia el color de fondo si es necesario */
+  border-radius: 8px; /* Opcional: redondea las esquinas del contenedor */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#tipoPago{
+  
+  /*padding: 5px;  Espaciado interior */
+  border: 2px solid #ccc; /* Borde del input */
+  border-radius: 5px; /* Bordes redondeados */
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  height: 40px;
+  
 }

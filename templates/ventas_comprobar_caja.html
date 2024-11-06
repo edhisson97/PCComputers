@@ -1,0 +1,291 @@
+{% extends "ventas.html" %}
+
+{% block title %}PC Computers - Ventas{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container-caja-inicio">
+    <h3 class="title"><i class="fa-solid fa-cash-register"></i> Comprobación de Caja </h3>
+    <div class="caja-datos-container">
+        <div class="caja-datos">
+            <div class="titulo-caja">{{caja.numero_caja}}</div>
+
+            {% if caja.estado == 'abierta'%}
+                <div class="alert alert-success">
+                    Caja aperturada
+                </div>
+            {%else%}
+                <div class="alert alert-danger" role="alert">
+                    <i class="fa-solid fa-ban"></i> Por favor, pide a tu operador que inicialice la caja.
+                </div>
+            {%endif%}
+
+            <!--{% if mensaje %}
+                <div class="alert alert-success">
+                    {{ mensaje }}
+                </div>
+            {% endif %}-->
+
+            
+
+            <form method="post" action="/operacion/apertura" id="form-apertura-caja">   
+                {% csrf_token %} 
+                <label for="numero-caja">Caja:</label>
+                <input type="text" id="numero-caja" name="numero-caja" value="{{caja.numero_caja}}" disabled>
+                <input type="hidden" name="numero-caja-hidden" value="{{caja.numero_caja}}">
+
+                
+                {% if caja.estado == 'abierta'%}
+                    <label for="nombre-cajero">Cajero (Username):</label>
+                    <input type="text" id="nombre-cajero" value="{{caja.cajero.first_name}} {{caja.cajero.last_name}} ({{caja.cajero.username}})" disabled>
+                    <input type="hidden" id="cajero-hidden" name="cajero-hidden" value="{{caja.cajero.username}}">
+                
+                    <label for="fecha-hora">Fecha/Hora de Inicio:</label>
+                    <input type="text" id="fecha-hora" value="{{caja.fecha_hora_inicio}}" disabled>
+                    <label for="fecha-hora">Fecha/Hora de Comprobación:</label>
+                    <input type="text" id="fecha-hora" value="{{fecha}}" disabled>
+                    <p>* La hora sera actualizada cuando se genere la transacción.</p>
+                {%else%}
+                    <label for="nombre-cajero">Cajero (Username):</label>
+                    <select name="vendedor" required>
+                      {% for vendedor in vendedores %}
+                          <option value="{{ vendedor.username }}">{{vendedor.first_name}} {{vendedor.last_name}} ({{ vendedor.username }})</option>
+                      {% endfor %}
+                    </select>
+
+                    <label for="fecha-hora">Fecha/Hora de Inicio:</label>
+                    <input type="text" id="fecha-hora" value="{{fecha}}" disabled>
+                    <p>* La hora sera actualizada cuando se genere la transacción.</p>
+                {%endif%}
+            
+                
+                {% if caja.estado == 'abierta'%}
+                    <label for="apertura-caja">Valor de apertura de Caja:</label>
+                    <input type="text" id="apertura-caja" value="{{caja.valor_apertura}}" disabled>
+                    <label for="apertura-caja">Efectivo contado:</label>
+                    <input type="number" id="efectivo" step="0.01" value="0.00">
+                {%else%}
+                    <label for="apertura-caja">Valor de apertura de Caja:</label>
+                    <input type="number" id="apertura-caja" name="apertura_caja" step="0.01" value="0.00">
+                {%endif%}
+            
+                
+                
+                <div class="btn-container">          
+                    <button type="button" class="btn-comprobar"><i class="fa-solid fa-circle-question"></i> Comprobar</button>
+                    <a class="btn-cancelar" href="/operacion"><i class="fa-solid fa-ban"></i> Cancelar</a>
+                </div>
+            </form>
+
+            <!-- Modal -->
+            <div id="modal-valores-recaudados" class="modal">
+                <div class="modal-content">
+                  <span class="close">&times;</span>
+                  <h5>Valores Recaudados de "{{caja.numero_caja}}" por "{{caja.cajero}}"</h5>
+                  <div class="modal-grid">
+                    <div class="modal-box">
+                      <h5>VALORES EN EFECTIVO</h5>
+                      <table>
+                        <tr>
+                          <td>Fondo de Caja</td>
+                          <td><span id="valor-fondoCaja"></span></td>
+                        </tr>
+                        <tr>
+                          <td>Ventas</td>
+                          <td><span id="valor-efectivo"></span></td>
+                        </tr>
+                        <tr>
+                          <td>Servicios</td>
+                          <td><span id="valor-servicios"></span></td>
+                        </tr>
+                        <tr>
+                          <td>Ingresos de caja</td>
+                          <td><span id="valor-ingresos"></span></td>
+                        </tr>
+                        <tr>
+                          <td>Egresos de caja</td>
+                          <td><span id="valor-egresos"></span></td>
+                        </tr>
+                        
+                        <tr>
+                          <td><strong>TOTAL EFECTIVO</strong></td>
+                          <td><strong><span id="valor-total"></span></strong></td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="modal-box">
+                      <h5>CHEQUES/TRANSFERENCIAS</h5>
+                      <table>
+                        <tr>
+                          <tr>
+                            <td>&nbsp; Cheques por Ventas</td>
+                            <td><span id="cheques-ventas"></span></td>
+                          </tr>
+                          <tr>
+                            <td>&nbsp; Cheques por Servicios</td>
+                            <td><span id="cheques-servicios"></span></td>
+                          </tr>
+                          <tr>
+                            <td><strong>TOTAL CHEQUES</strong></td>
+                            <td><strong><span id="valor-cheques"></span></strong></td>
+                          </tr>
+                        </tr>
+                        <tr>
+                          <tr>
+                            <td>&nbsp; Transferencias por Ventas</td>
+                            <td><span id="transferencias-ventas"></span></td>
+                          </tr>
+                          <tr>
+                            <td>&nbsp; Transferencias por Servicios</td>
+                            <td><span id="transferencias-servicios"></span></td>
+                          </tr>
+                          <tr>
+                            <td><strong>TOTAL TRANSFERENCIAS</strong></td>
+                            <td><strong><span id="total-transferencias"></span></strong></td>
+                          </tr>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="modal-box">
+                      <h5>TARJETAS</h5>
+                      <table>
+                        <tr>
+                          <tr>
+                            <td>Por Ventas</td>
+                            <td><span id="tarjetas-ventas"></span></td>
+                          </tr>
+                          <tr>
+                            <td>Por Servicios</td>
+                            <td><span id="tarjetas-servicios"></span></td>
+                          </tr>
+                          <td><strong>TOTAL TARJETAS</strong></td>
+                          <td><strong><span id="valor-tarjetas"></span></strong></td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="modal-box">
+                      <h5>ARQUEO TOTAL</h5>
+                      <table>
+                        <tr>
+                          <td>Efectivo Contado</td>
+                          <td><span id="valor-contado"></span></td>
+                        </tr>
+                        <tr>
+                          <td>Sobrante en Caja</td>
+                          <td><span id="valor-sobrante"></span></td>
+                        </tr>
+                        <tr>
+                          <td>Faltante en Caja</td>
+                          <td><span id="valor-faltante"></span></td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.querySelector('.btn-guardar').addEventListener('click', function () {
+                        // Mostrar un cuadro de diálogo de confirmación
+                        if (confirm('¿Estás seguro de que deseas aperturar la caja?')) {
+                            // Enviar el formulario si el usuario confirma
+                            document.getElementById('form-apertura-caja').submit();
+                        }
+                    });
+                });
+
+                // Abrir el modal al hacer clic en el botón
+                document.querySelector('.btn-comprobar').addEventListener('click', function() {
+                    var efectivo = document.getElementById('efectivo').value;
+                    var cajero = document.getElementById('cajero-hidden').value;
+                    console.log(cajero)
+                    // Obtener el token CSRF del cookie
+                    function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            var cookies = document.cookie.split(';');
+                            for (var i = 0; i < cookies.length; i++) {
+                                var cookie = cookies[i].trim();
+                                // Busca el nombre del cookie
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+
+                    var csrftoken = getCookie('csrftoken');
+
+                    // Configurar la solicitud AJAX con jQuery
+                    $.ajax({
+                        url: '/ventas/caja/comprobar', // Reemplaza con la URL del endpoint en tu backend
+                        type: 'POST',
+                        contentType: 'application/json',
+                        headers: {
+                            'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
+                        },
+                        data: JSON.stringify({ efectivo: efectivo, cajero: cajero }), // Convertir datos a formato JSON
+                        success: function(response) {
+                            // Aquí puedes manejar la respuesta del backend si es necesario
+                            console.log('Respuesta del backend:', response);
+
+
+                            // Actualizar valores en las tablas del modal
+                            document.getElementById('valor-efectivo').textContent = '$ ' + response.totalVendido;
+                            document.getElementById('valor-fondoCaja').textContent = '$ ' + response.fondoCaja;
+                            document.getElementById('valor-servicios').textContent = '$ ' +response.totalServicios;
+                            document.getElementById('valor-egresos').textContent = '$ ' +response.totalEgresos;
+                            document.getElementById('valor-ingresos').textContent = '$ ' +response.totalIngresos;
+                            document.getElementById('valor-total').textContent = '$ ' + response.totalEfectivo;
+
+                            document.getElementById('cheques-ventas').textContent = '$ ' + response.chequesVentas;
+                            document.getElementById('cheques-servicios').textContent = '$ ' + response.chequesServicios;
+                            document.getElementById('valor-cheques').textContent = '$ ' + response.totalCheques;
+                            document.getElementById('transferencias-ventas').textContent = '$ ' + response.transferenciasVentas;
+                            document.getElementById('transferencias-servicios').textContent = '$ ' + response.transferenciasServicios;
+                            document.getElementById('total-transferencias').textContent = '$ ' + response.totalTransferencias;
+
+                            document.getElementById('tarjetas-servicios').textContent = '$ ' + response.tarjetasServicios;
+                            document.getElementById('tarjetas-ventas').textContent = '$ ' + response.tarjetasVentas;
+                            document.getElementById('valor-tarjetas').textContent = '$ ' + response.totalTarjetas;
+
+                            document.getElementById('valor-contado').textContent = '$ ' + response.efectivoContado;
+                            document.getElementById('valor-sobrante').textContent = '$ ' + response.sobrante;
+                            document.getElementById('valor-faltante').textContent = '$ ' + response.faltante;
+
+
+
+                            // Mostrar el modal
+                            document.getElementById('modal-valores-recaudados').style.display = 'block';
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error en la solicitud AJAX:', status, error);
+                            // Manejar errores si es necesario
+                            alert('Ocurrió un error al comprobar la caja. Intente nuevamente en unos minutos.');
+                        }
+                    });
+                    
+                });
+                
+                // Cerrar el modal al hacer clic en la X
+                document.querySelector('.close').addEventListener('click', function() {
+                    document.getElementById('modal-valores-recaudados').style.display = 'none';
+                });
+                
+                // Cerrar el modal al hacer clic fuera del contenido
+                window.addEventListener('click', function(event) {
+                    var modal = document.getElementById('modal-valores-recaudados');
+                    if (event.target == modal) {
+                    modal.style.display = 'none';
+                    }
+                });
+            </script>
+        </div>
+    </div>
+</div>
+
+{% endblock %} 

@@ -1,0 +1,270 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container-inicio">
+    <h3 class="title">Ingreso de Stock</h3>
+    <div class="seccion-datos">
+        
+        <h5>Datos del Proveedor</h5>
+        <div id="mensajeUsuarioIngresado" class="alert alert-warning" role="alert">
+            <i class="fa-solid fa-triangle-exclamation"></i> Los datos del proveedor aún no han sido agregados.
+        </div>
+
+        <div id="datosCliente"></div>
+
+
+        <button class="buscar-cliente" onclick="openModalProveedor()">Buscar proveedor <i class="fa-solid fa-users"></i></button>
+        
+        <form action="recibo" id="miFormulario" method="post">
+            {% csrf_token %}
+
+            <div id="modalFondoBusqueda" onclick="closeModalProveedor()" style="display: none;"></div>
+            <div class="modal-contenido-cliente" id="modalContenidoCliente" style="display: none;">
+                <span class="cerrar-modal" onclick="closeModalProveedor()">&times;</span>
+                        <h5>Datos del proveedor</h5>
+                        
+                        <div id="mensajeUsuarioNoEncontrado" style="display: none;" class="alert alert-warning" role="alert">
+                            No se encontró el proveedor...
+                        </div>
+
+                        <div class="form-row">
+                            <!--<label for="tipo">Tipo </label>
+                            <select name="tipo" id="tipo" onchange="autocompletarCampos()">
+                                <option value="cliente">Proveedor</option>
+                                <option value="consumidor">Consumidor Final</option>
+                            </select>-->
+                            <label for="ruc">RUC</label>
+                            <input type="text" id="ruc" name="ruc" required onkeyup="buscarProveedor()" data-proveedores="{{ proveedores }}">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="ciudad">Ciudad</label>
+                            <input type="text" id="ciudad" name="ciudad" required>
+                            <label for="direccion">Dirección</label>
+                            <input type="text" id="direccion" name="direccion" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="contacto">Contacto</label>
+                            <input type="text" id="contacto" name="contacto" required>
+                            <label for="email">Correo Electrónico</label>
+                            <input type="text" id="email" name="email" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="celular">Celular</label>
+                            <input type="text" id="celular" name="celular" required>
+                            <label for="numeroFactura">Número de Factura</label>
+                            <input type="text" id="numeroFactura" name="numeroFactura" required>
+                                                      
+                        </div>
+            </div>
+
+            
+        </form>
+        <!--<div class="seccion-button">
+            <button class="generar-venta" onclick="enviarFormularioConLocalStorage()">Generar venta <i class="fa-solid fa-check"></i></button>
+            <button class="cancelar">Limpiar <i class="fa-solid fa-ban"></i></button>
+        </di>-->
+    </div>
+    <div class="seccion-productos">
+        <h4>Productos adquiridos al proveedor</h4>
+
+        <!--<button class="agregarProducto" id="mostrarModal"><i class="fa-solid fa-plus"></i> Producto nuevo </i></button>-->
+        <button class="agregarProducto" id="mostrarModal"><i class="fa-solid fa-cart-plus"></i> Asignar productos</button>
+
+        <div id="modalFondoBusqueda" style="display: none;"></div>
+        <div id="miModalBusqueda" class="modal">
+            <div class="modal-contenido">
+                <span class="cerrar-modal">&times;</span>
+
+                <div class="centered-modal">
+                    <div class="centered">
+                        <div class="search-bar-ventas">
+                            <input type="text" name="buscador" id="buscador" placeholder="Agregar productos...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="mensajeNoProductos" style="display: none;">Lo siento, no se encontraron resultados para tu busqueda. <i class="fa-regular fa-face-frown"></i></div>
+                <div id="listaArticulos">
+                    {% if todosProductos %}
+                        {% for prod in todosProductos %}
+                                <div class="articulo" data-id="{{ prod.id }}">
+                                    <div class="codigo-articulo">
+                                        <h6>Cód. Artículo</h6>
+                                        {% for color in prod.colores.all %}
+                                            <p>{{ color.codigo_articulo }}</p>
+                                            <!-- Otros datos de ColorStock -->
+                                        {% endfor %}
+                                    </div>
+                                    <div class="codigo-referencial">
+                                        <h6>Cód. Referencial</h6>
+                                        {% for color in prod.colores.all %}
+                                            <p>{{ color.codigo_referencial }}</p>
+                                            <!-- Otros datos de ColorStock -->
+                                        {% endfor %}
+                                    </div>
+                                    <div class="detalles">
+                                        <h3>{{ prod.marca }} {{ prod.modelo }}</h3>
+                                        <p>{{ prod.detalle }}</p>
+                                    </div>
+                                    <div class="img-container">
+                                    {% if prod.imagenes %}
+                                        <img src={{ prod.imagenes.first.imagen.url }} alt="Categoría 5"></a>
+                                    {% endif %}
+                                    </div>
+                                    <div class="precio">
+                                        <h6>Precio</h6>
+                                            {% if prod.precio_oferta %}
+                                                <p class = "tachado">${{ prod.precio }} </p>
+                                                <p>${{ prod.precio_oferta }}</p>
+                                            {% else %}
+                                                <p>${{ prod.precio }} </p>
+                                            {% endif %}
+                                    </div>
+                                    <div class="color">
+                                        <h6>Color</h6>
+                                        <select class="select-color" id="select-color-{{ prod.id }}" data-product-id="{{ prod.id }}">
+                                            {% for color in prod.colores.all %}
+                                                
+                                                <option value="{{ color.color }}" data-stock="{{ color.stock }}" data-codigo-articulo="{{ color.codigo_articulo }}">{{ color.color }} ({{ color.stock }})</option>
+                                                
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <button class="agregar-producto" id="btnAgregarProducto" data-producto-id="{{ prod.id }}">+</button>
+                                </div>
+                                
+                        {% endfor %}
+                    {% else %}
+
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>
+
+        <table class="table table-striped" id="tabla-productos">
+            <thead>
+              <tr>
+                <th scope="col">Cód. Art.</th>
+                <th scope="col">Detalle</th>
+                <th scope="col">Color</th>
+                <th scope="col">Cantidad</th>
+                <!--<th scope="col">Código</th>-->
+                <th scope="col">P/U</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody id="productos-tbody">
+              
+            </tbody>
+        </table>
+        <!--<button class="limpiar"> Limpiar <i class="fa-solid fa-trash"></i></button>-->
+        <div class="seccion-button">
+            <div class="form-row-pago">
+                <label for="tipoPago">Tipo pago</label>
+                <select name="tipoPago" id="tipoPago" onchange="mostrarNumeroCheque()">
+                    <option value="Contado">Efectivo</option>
+                    <option value="Crédito">Crédito</option>
+                    <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                    <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Combinado (Crédito/Contado)">Combinado</option>
+                </select>
+            </div>
+            <button class="generar-venta" onclick="enviarFormularioConLocalStorage()">Atualizar catálogo <i class="fa-solid fa-check"></i></button>
+            <!--<button class="descuento" onclick="actualizarTabla()">Actualizar <i class="fa-solid fa-rotate"></i></button>-->
+            <button class="cancelar">Limpiar <i class="fa-solid fa-ban"></i></button>
+        </div>
+        <div id="numeroCheque" style="display: none;">
+            <label for="banco">Entidad Bancaria: </label>
+            <select name="Banco" id="banco">
+                <option value="Banco de Machala">Banco de Machala</option>
+                <option value="Banco de Pichincha">Banco de Pichincha</option>
+                <option value="BanEcuador">BanEcuador</option>
+                <option value="Banco de Guayaquil">Banco de Guayaquil</option>
+                <option value="Banco del Pacifico">Banco del Pacífico</option>
+                <option value="Banco Internacional">Banco Internacional</option>
+                <option value="Banco Produbanco">Produbanco</option>
+                <option value="Banco Bolivariano">Banco Bolivariano</option>
+                <option value="Banco del Austro">Banco del Austro</option>
+                <option value="Otro">Otro (Especificar)</option>
+            </select><br>
+            <label for="otroBanco" style="display: none;">Nombre del Banco</label>
+            <input type="text" id="otroBanco" name="otroBanco" style="display: none;">
+            <label for="numeroCheque"># de Cheque</label>
+            <input type="text" id="numeroChequeInput" name="numeroCheque">
+        </div>
+        <div id="combinado" style="display: none;">
+            <div>
+                <label for="Efectivo">Efectivo</label>
+                <input type="checkbox" id="check1">
+                <label for="Valor">Valor</label>
+                <input type="text" id="input1" disabled>
+            </div>
+            <div>
+                <label for="Tcredito">T de Crédito</label>
+                <input type="checkbox" id="check2">
+                <label for="Valor">Valor</label>
+                <input type="text" id="input2" disabled>
+            </div>
+            <div>
+                <label for="Cheque">Cheque</label>
+                <input type="checkbox" id="check3">
+                <label for="Valor">Valor</label>
+                <input type="text" id="input3" disabled>
+            </div>
+        </div>
+        <div id="credito" style="display: none;">
+            <label for="abono">Abono: </label>
+            <input type="text" id="credito" name="credito">
+        </div>
+        <script>
+            document.getElementById('banco').addEventListener('change', function() {
+                var otroBancoInput = document.getElementById('otroBanco');
+                var otroBancoLabel = document.querySelector('label[for="otroBanco"]');
+                if (this.value === 'Otro') {
+                    otroBancoInput.style.display = 'inline';
+                    otroBancoLabel.style.display = 'inline';
+                } else {
+                    otroBancoInput.style.display = 'none';
+                    otroBancoLabel.style.display = 'none';
+                }
+            });
+            //para el checklist 
+            // Obtener elementos del DOM
+    var check1 = document.getElementById("check1");
+    var input1 = document.getElementById("input1");
+    var check2 = document.getElementById("check2");
+    var input2 = document.getElementById("input2");
+    var check3 = document.getElementById("check3");
+    var input3 = document.getElementById("input3");
+
+    // Función para habilitar o deshabilitar el campo de entrada correspondiente
+    function toggleInput(check, input) {
+        input.disabled = !check.checked;
+        if (!check.checked) {
+            input.value = ""; // Limpiar el valor si se deshabilita el campo
+        }
+    }
+
+    // Agregar event listeners para cada checkbox
+    check1.addEventListener("change", function() {
+        toggleInput(check1, input1);
+    });
+    check2.addEventListener("change", function() {
+        toggleInput(check2, input2);
+    });
+    check3.addEventListener("change", function() {
+        toggleInput(check3, input3);
+    });
+        </script>
+    </div>
+</div>
+
+{% endblock %} 

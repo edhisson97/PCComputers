@@ -1,0 +1,50 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container-inicio">
+    <h3 class="title_operacion">Bienvenid@ al Módulo <br> Operaciones de PcComputers</h3>
+    <div class="container_operaciones">
+        <div class="box" onclick="location.href='/operacion/stock';" style="cursor:pointer;">
+            <i class="fa-solid fa-truck"></i>
+          <div>Actualizar Stock</div>
+        </div>
+        <div class="box" onclick="location.href='pagina2.html';" style="cursor:pointer;">
+            <i class="fa-solid fa-bag-shopping"></i>
+          <div>Ofertas</div>
+        </div>
+        <!--<div class="box" onclick="location.href='/operacion/caja';" style="cursor:pointer;">
+            <i class="fa-solid fa-cash-register"></i>
+          <div>Caja</div>
+        </div>-->
+        <div class="box" onclick="location.href='/operacion/panelcaja';" style="cursor:pointer;">
+          <i class="fa-solid fa-cash-register"></i>
+        <div>Panel cajas</div>
+      </div>
+        <div class="box" onclick="location.href='/operacion/gastos';" style="cursor:pointer;">
+          <i class="fa-solid fa-wallet"></i>
+          <div>Registrar Gasto</div>
+        </div>
+        <div class="box" onclick="location.href='/operacion/registro_servicios';" style="cursor:pointer;">
+          <i class="fa-solid fa-desktop"></i>
+          <div>Registrar servicio</div>
+        </div>
+        <div class="box" onclick="location.href='pagina3.html';" style="cursor:pointer;">
+            <i class="fa-solid fa-right-left"></i>
+          <div>Transacciones</div>
+        </div>
+        <div class="box" onclick="location.href='pagina3.html';" style="cursor:pointer;">
+            <i class="fa-solid fa-wrench"></i>
+          <div>{{user}}</div>
+        </div>
+        <div class="box" onclick="location.href='/admin';" style="cursor:pointer;">
+            <i class="fa-solid fa-hammer"></i>
+          <div>Módulo Administrador</div>
+        </div>
+      </div>
+</div>
+
+{% endblock %} 

@@ -44,6 +44,12 @@
             <input type="hidden" name="tipoPago" value="{{ tipoPago }}">
             <input type="hidden" name="peso" value="{{ peso }}">
             <input type="hidden" name="numeroCheque" value="{{ numeroCheque }}">
+            <input type="hidden" name="nombreBanco" value="{{ nombreBanco }}">
+            <input type="hidden" name="combinados" value="{{ combinados }}">
+            <input type="hidden" name="tipoVenta" value="{{ tipoVenta }}">
+            <input type="hidden" name="abono" value="{{ abono }}">
+            <input type="hidden" name="saldo" value="{{ saldo }}">
+            <input type="hidden" name="usuarioVendedor" value="{{ usuarioVendedor }}">
             
             <!-- Convertir la lista de productos a formato JSON -->
           
@@ -107,7 +113,19 @@
             <p><b>PC Computers</b> - RUC: <b>0703074211001</b></p>
             <p>Dirección: <b>Machala - PAEZ ENTRE BOYACA Y GUABO</b></p>
             <p>Teléfono: <b>0997434229</b></p>
-            <p>Tipo de Pago: <b>{{tipoPago}}</b> &nbsp; {%if numeroCheque != 'x' %}Número de Cheque: <b>{{numeroCheque}}</b>{%endif%}</p>
+            <p>Tipo de Venta: <b>{{tipoVenta}}</b> Usuario vendedor: {{usuarioVendedor}}</p></p>
+            <p>Tipo de Pago: 
+                {%if tipoVenta == 'Crédito'%}
+                    {%if abono %} 
+                        <b>{{tipoPago}}</b> &nbsp; {%if tipoPago == 'Cheque'%}Banco: <b>{{nombreBanco}}</b> Número de Cheque: <b>{{numeroCheque}}{%endif%} {%if tipoPago == 'Combinado'%} {%for c in combinados%} {{c.tipo}}: ${{c.valor}} {%endfor%} {%endif%}</b>
+                    {%else%}
+                     - 
+                    {%endif%}
+                    &nbsp; Abono: <b>{{abono}}</b> &nbsp; Saldo: <b>{{saldo}}</b>
+                {%else%}
+                    <b>{{tipoPago}}</b> &nbsp; {%if tipoPago == 'Cheque'%}Banco: <b>{{nombreBanco}}</b> Número de Cheque: <b>{{numeroCheque}}{%endif%} {%if tipoPago == 'Combinado'%} {%for c in combinados%} {{c.tipo}}: ${{c.valor}} {%endfor%} {%endif%}</b>
+                {%endif%}
+            </p>
         </div>
         <div class="customer-info">
             <p>Nombre: <b>{{ nombre }} {{apellidos}}</b> &nbsp; Identificación: <b>{{cedula}}</b></p>

@@ -1,0 +1,448 @@
+{% extends "ventas.html" %}
+
+{% block title %}PC Computers - Abono de servicios{% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+    .container_noencontrado{
+      text-align: center;
+    }
+
+    .titulo_abono{
+      text-align: center;
+      margin-bottom:20px;
+    }
+
+    .no_servicio{
+      margin-top: 50px;
+      margin-bottom: 50px;
+      font-size: 40px;
+      text-align: center;
+      margin-left: 40px;
+      margin-right :40;
+    }
+    
+    .centar_botones_abono{
+      text-align: center;
+    }
+
+    .boton_regresar {
+      display: inline-block;       
+      padding: 10px 20px;          
+      background-color: #5a6268;     
+      color: #ffffff;                
+      text-decoration: none;         
+      border-radius: 5px;              
+      font-size: 16px;                
+      transition: background-color 0.3s, transform 0.3s; 
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Estilo cuando el ratón está sobre el botón */
+    .boton_regresar:hover {
+      background-color: #a1a1a1;
+    }
+
+    .finalizar-servicio-btn {
+      display: inline-block;       
+      padding: 10px 20px;          
+      background-color: #291fcd;     
+      color: white;                
+      text-decoration: none;         
+      border-radius: 5px;              
+      font-size: 16px;                
+      transition: background-color 0.3s, transform 0.3s; 
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 20px;
+      border: none;
+    }
+    
+    /* Estilo cuando el ratón está sobre el botón */
+    .finalizar-servicio-btn:hover {
+      background-color: #0d0676;
+      color: white;
+    }
+
+
+    .service-details {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .service-details h3 {
+        margin-top: 0px;
+        color: #0933b7;
+    }
+    
+    .service-info {
+        margin: 20px 0;
+    }
+    
+    .info-item {
+        margin-bottom: 10px;
+        margin-top:5px;
+    }
+    
+    .info-item strong {
+        color: #333;
+    }
+    .pago_abono{
+      margin:20px;
+      text-align: center;
+    }
+    #pago{
+      max-width:100px;
+    }
+    .agregar_abono{
+      text-align: center; /* Corrección del error tipográfico */
+      max-width: 550px;
+      margin: 0 auto; /* Centra el div horizontalmente dentro de su contenedor */
+      padding: 20px; /* Opcional: añade padding para mejor espaciado interno */
+      
+    }
+</style>
+<div class="container">
+  {% if servicio%}
+    <h3 class="titulo_abono"><i class="fa-solid fa-plus"></i> Nuevo abono de Servicio</h3>
+    <div class="service-details">
+      <h3>Servicio #{{ servicio.id }} - {{ servicio.equipo }} {{ servicio.marca }} {{ servicio.modelo }} Serie ({%if servicio.serie%}{{ servicio.serie }}{%else%}NA{%endif%})</h3>
+      <div class="service-info">
+          <div class="info-item"><strong>{{servicio.usuario.first_name}} {{servicio.usuario.last_name}}</strong> - {{servicio.usuario.email}}</div>
+          <div class="info-item"><strong>Ingreso:</strong> {{ servicio.fecha_ingreso }} <strong> &nbsp; Posible Entrega:</strong> {%if servicio.fecha_entrega %}{{ servicio.fecha_entrega }}{%else%}sn{%endif%}</div>
+          <div class="info-item"><strong>Tipo de Servicio:</strong> {{ servicio.tipo_servicio }} <strong> &nbsp; Problema:</strong> {{ servicio.descripcion_problema }} &nbsp; <!--Solución:</strong> {%if servicio.solucion %}{{ servicio.solucion }}{%else%}sn{%endif%}--></div>
+          <div class="info-item">
+            <strong>Solución </strong>(este campo se guarda unicamente al finalizar el servicio):
+            <textarea id="solucion" name="solucion" class="form-control"  rows="1"  required>{%if serviciP.solucion%}{{servicioP.solucion}}{%endif%}</textarea>
+          </div>
+          <div class="info-item">Técnico Asignado: {{ servicio.tecnico_asignado }} &nbsp; Usuario Receptor del equipo: {{ servicio.usuario_recepta }}</div>
+          <div class="info-item">Costo del servicio: $ <strong>{{ servicio.costo }}</strong> &nbsp; Saldo pendiente: $ <strong>{{ servicio.saldo }}</strong></div>
+      </div>
+      <div class="centar_botones_abono">
+        <a href="/ventas/registro_servicios" class="boton_regresar"><i class="fa-solid fa-rotate-left"></i> &nbsp; Regresar al Módulo de Servicios</a> &nbsp;
+        <a href="/ventas/servicio/todos_registros" class="boton_regresar"><i class="fa-solid fa-bars"></i> &nbsp; Todos los registos</a> &nbsp;
+        <a href="/ventas/" class="boton_regresar"><i class="fa-solid fa-square-plus"></i> &nbsp; Panel de Ventas</a> &nbsp;
+        
+      </div>
+    </div>
+    {% if servicio.saldo == 0 %}
+    <div class="centar_botones_abono">
+      <button type="button" class="finalizar-servicio-btn" data-id="{{ servicio.id }}" data-costo="{{ servicio.costo }}" data-problema="{{ servicio.descripcion_problema }}" data-abono="{{ servicio.saldo }}">Finalizar servicio</button>
+    </div>
+    {% else %}
+    <form action="/ventas/registro_servicios/abono/generar_recibo_abono" id="miFormulario" method="post">
+      {% csrf_token %}
+    <div class="agregar_abono">
+      <div class="pago_abono">
+        <label for="cedula" ><strong>Monto a pagar</strong></label>
+        <input type="number" id="pago" name="pago" placeholder="0.00" >
+        <div class="form-row-pago">
+          <label for="tipoPago">Tipo pago</label>
+          <select name="tipoPago" id="tipoPago" style="display: block;" onchange="mostrarNumeroCheque()">
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+              <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Combinado">Combinado</option>
+          </select>
+          
+        </div>
+        <div id="numeroTransferencia" style="display: none;">
+          <label for="numeroCheque"># de Transferencia</label>
+          <input type="text" id="numeroTransferencia" name="numeroTransferencia">
+      </div>
+        <div id="numeroCheque" style="display: none;">
+            <label for="banco">Entidad Bancaria: </label>
+            <select name="Banco" id="banco">
+                <option value="Banco de Machala">Banco de Machala</option>
+                <option value="Banco de Pichincha">Banco de Pichincha</option>
+                <option value="BanEcuador">BanEcuador</option>
+                <option value="Banco de Guayaquil">Banco de Guayaquil</option>
+                <option value="Banco del Pacifico">Banco del Pacífico</option>
+                <option value="Banco Internacional">Banco Internacional</option>
+                <option value="Banco Produbanco">Produbanco</option>
+                <option value="Banco Bolivariano">Banco Bolivariano</option>
+                <option value="Banco del Austro">Banco del Austro</option>
+                <option value="Otro">Otro (Especificar)</option>
+            </select><br>
+            <label for="otroBanco" style="display: none;">Nombre del Banco</label>
+            <input type="text" id="otroBanco" name="otroBanco" style="display: none;">
+            <label for="numeroCheque"># de Cheque</label>
+            <input type="text" id="numeroCheque" name="numeroCheque">
+        </div>
+        <div id="combinado" style="display: none;">
+            <div>
+                <label for="Efectivo">Efectivo</label>
+                <input type="checkbox" id="check1" name="check1">
+                <label for="Valor">Valor</label>
+                <input type="number" id="input1" name="input1" disabled>
+            </div>
+            <div>
+                <label for="Tcredito">Tarjeta de Crédito</label>
+                <input type="checkbox" id="check2" name="check2">
+                <label for="Valor">Valor</label>
+                <input type="number" id="input2" name="input2" disabled>
+            </div>
+            <div>
+                <label for="Cheque">Cheque</label>
+                <input type="checkbox" id="check3" name="check3">
+                <label for="Valor">Valor</label>
+                <input type="number" id="input3" name="input3" disabled>
+            </div>
+            <div>
+              <label for="Transferencia">Transferencia</label>
+              <input type="checkbox" id="check4" name="check4">
+              <label for="Valor">Valor</label>
+              <input type="number" id="input4" name="input4" disabled>
+          </div>
+          <div>
+            <label for="Tdebito">Tarjeta de Débito</label>
+            <input type="checkbox" id="check5" name="check5">
+            <label for="Valor">Valor</label>
+            <input type="number" id="input5" name="input5" disabled>
+          </div>
+        </div>
+    </div>
+    <input type="hidden" id="saldo" value="{{ servicio.saldo }}">
+    <input type="hidden" id="servicio_id" name="servicio_id" value="{{ servicio.id }}">
+    <button class="agregarProducto" id="agregarpago"><i class="fa-solid fa-plus"></i> Agregar nuevo abono</i></button>
+    </form>
+    {% endif %}
+
+  </div>
+  {% if pagoServicio %}
+    <h4>Registro de abonos </h4>
+
+    <table class="table table-striped" id="tabla-productos">
+        <thead>
+        <tr>
+            <th scope="col"># transaccion</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Monto aportado ($<strong>{{servicio.abonado}}</strong>)</th>
+            <!--<th scope="col">Código</th>-->
+        </tr>
+        </thead>
+        <tbody id="pagos-tbody">
+        {% for ps in pagoServicio%}
+          <tr>
+            <th scope="col">{{ps.id}}</th>
+            <th scope="col">{{ps.fecha}}</th>
+            <th scope="col">{{ps.abono}}</th>
+            <!--<th scope="col">Código</th>-->
+          </tr>
+        {% endfor%}
+        </tbody>
+    </table>
+    {% endif %}
+  {% else %}
+  <div class="container_noencontrado">
+    <p class="no_servicio">Servicio no encontrado :( por favor intenta nuevamente!</p>
+    <a href="/ventas/registro_servicios" class="boton_regresar"><i class="fa-solid fa-rotate-left"></i> Regresar al Módulo de Servicios</a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+$(document).ready(function() {
+  $('.finalizar-servicio-btn').on('click', function() {
+      
+    var servicioId = $(this).data('id');
+    var costoStr = $(this).data('costo');
+    costoStr = costoStr.replace(',', '.');
+    // Convierte a número decimal
+    var costo = parseFloat(costoStr);
+    var abonoStr = $(this).attr('data-abono');
+    // Reemplaza comas por puntos
+    abonoStr = abonoStr.replace(',', '.');
+    // Convierte a número decimal
+    var abono = parseFloat(abonoStr);
+    var solucion = $('#solucion').val();
+    var problema = $(this).data('problema');
+
+
+    
+    // Comprobar si el saldo es mayor que 0
+    // Comprobar si el saldo es mayor que 0
+    if (abono > 0) {
+        alert('No se puede finalizar el servicio porque el cliente aun tiene un saldo pendiente de $' + abono+ '.');
+        return; // Salir de la función si el saldo no es 0
+    }
+    if (solucion == '') {
+        alert('Debe agregar una solución para finalizar el servicio.');
+        return; // Salir de la función si el saldo no es 0
+    }
+
+    if (confirm('¿Estás seguro de finalizar este servicio?')) {
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Busca el nombre del cookie
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+        
+        // Ejemplo de solicitud AJAX usando jQuery
+        $.ajax({
+            type: 'POST', // o 'PUT', dependiendo de tu API
+            url: '/ventas/servicio/finalizar-servicio', // URL de tu endpoint para finalizar el servicio
+            headers: {
+                'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
+            },
+            data: {
+                id: servicioId,
+                costo: costo,
+                abono: abono,
+                solucion: solucion,
+                problema: problema,
+                estado: 'terminado'
+            },
+            
+            success: function(response) {
+                // Manejar la respuesta del servidor, por ejemplo, cerrar el modal
+                //$('#miModalBusqueda' + servicioId).modal('hide');
+                // Actualizar la interfaz de usuario si es necesario
+                if (response && response.encoded_path) {
+                    // Construir la URL para redirigir con el encoded_path
+                    var encodedPath = encodeURIComponent(response.encoded_path);
+                    var urlRedirect = '/ventas/servicio/generardescarga_pdf/' + encodedPath + '/';
+        
+                    // Redirigir a la nueva página con el encoded_path en la URL
+                    window.location.href = urlRedirect;
+                } else {
+                    console.error('No se recibió el encoded_path del servidor.');
+                    // Manejar el caso donde no se recibió correctamente el encoded_path del servidor
+                    // Por ejemplo, mostrar un mensaje de error al usuario
+                    alert('Ocurrio un error al descargar el pdf');
+                }
+            },
+            error: function(xhr, status, error) {
+              console.error('Error al finalizar servicio:', xhr.responseText);
+              alert('Ocurrió un error al finalizar el servicio: ' + xhr.status + ' - ' + xhr.statusText);
+          }
+        });
+    } else {
+        // No hacer nada si el usuario hace clic en 'Cancelar'
+        console.log('El usuario canceló la operación.');
+    }
+
+  });
+});
+
+
+
+  document.getElementById('tipoPago').addEventListener('change', function() {
+    var selectedValue = this.value;
+    // Ocultar todos los divs
+    document.getElementById('numeroCheque').style.display = 'none';
+    document.getElementById('numeroTransferencia').style.display = 'none';
+    document.getElementById('combinado').style.display = 'none';
+    // Mostrar divs según la opción seleccionada
+    if (selectedValue === 'Cheque') {
+        document.getElementById('numeroCheque').style.display = 'block';
+    } else if (selectedValue === 'Transferencia') {
+      document.getElementById('numeroTransferencia').style.display = 'block';
+    }else if (selectedValue === 'Combinado') {
+        document.getElementById('combinado').style.display = 'block';
+    }
+  });
+  document.getElementById('banco').addEventListener('change', function() {
+      var selectedValue = this.value;
+      // Mostrar/ocultar el campo para nombre del banco según la selección
+      if (selectedValue === 'Otro') {
+          document.getElementById('otroBanco').style.display = 'block';
+          document.querySelector('label[for="otroBanco"]').style.display = 'block';
+      } else {
+          document.getElementById('otroBanco').style.display = 'none';
+          document.querySelector('label[for="otroBanco"]').style.display = 'none';
+      }
+  });
+
+  // Función para habilitar/deshabilitar inputs según el estado de los checkboxes
+  function toggleInput(checkboxId, inputId) {
+      var checkbox = document.getElementById(checkboxId);
+      var input = document.getElementById(inputId);
+      input.disabled = !checkbox.checked;
+  }
+
+  // Maneja el cambio en cada checkbox dentro de "Combinado"
+  document.getElementById('check1').addEventListener('change', function() {
+      toggleInput('check1', 'input1');
+  });
+  document.getElementById('check2').addEventListener('change', function() {
+      toggleInput('check2', 'input2');
+  });
+  document.getElementById('check3').addEventListener('change', function() {
+      toggleInput('check3', 'input3');
+  });
+  document.getElementById('check4').addEventListener('change', function() {
+    toggleInput('check4', 'input4');
+  });
+  document.getElementById('check5').addEventListener('change', function() {
+    toggleInput('check5', 'input5');
+  });
+
+  document.getElementById('agregarpago').addEventListener('click', function(event) {
+    // Obtén los valores del formulario
+    var montoPagarStr = document.getElementById('pago').value;
+    montoPagarStr = montoPagarStr.replace(',', '.');
+    var montoPagar = parseFloat(montoPagarStr);
+    var saldoStr = document.getElementById('saldo').value;
+    saldoStr = saldoStr.replace(',', '.');
+    var saldo = parseFloat(saldoStr);
+    var tipoPago = document.getElementById('tipoPago').value;
+
+    //verifico los montos en el tipo de pago combinado
+    if (tipoPago === 'Combinado'){
+      var montoPago = parseFloat(document.getElementById('pago').value) || 0;
+      var totalCombinado = 0;
+      // Obtener todos los inputs dentro del contenedor de 'combinado'
+      // Obtener todos los checkboxes y sus inputs correspondientes
+      var checkboxes = document.querySelectorAll('#combinado input[type="checkbox"]');
+      checkboxes.forEach(function(checkbox) {
+          if (checkbox.checked) {
+              var inputId = checkbox.id.replace('check', 'input'); // Convertir el id del checkbox en id del input
+              var input = document.getElementById(inputId);
+              totalCombinado += parseFloat(input.value) || 0;
+          }
+      });
+    }
+    
+    // Verifica si el monto a pagar es mayor que el saldo
+    if (montoPagar <= 0) {
+      alert('El monto a pagar debe ser mayor que 0.');
+      event.preventDefault(); // Evita el envío del formulario
+    } else if (montoPagar > saldo) {
+        alert('El monto a pagar excede el saldo que tiene por el servicio.');
+        event.preventDefault(); // Evita el envío del formulario
+    } else if (isNaN(montoPagar)) {
+      alert('Debe agregar un monto');
+      event.preventDefault(); // Evita el envío del formulario
+    } else if (totalCombinado !== montoPago){
+      alert('La suma de los montos combinados debe ser igual al monto a pagar.');
+      event.preventDefault(); // Evita el envío del formulario
+    }else {
+        // Si la validación es exitosa, envía el formulario
+        document.getElementById('miFormulario').submit();
+    }
+  });
+
+</script>
+
+{% endblock %} 
+

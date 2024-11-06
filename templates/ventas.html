@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/piePagina.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/ventas_inicio.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/ventas_transacciones.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/operacion.css' %}">
 
 
     <!-- Agrega estos enlaces a los archivos CSS y JS de Slick Carousel 
@@ -47,9 +48,12 @@
                 </div>
             </label>
             <ul>
-                <li><a href="/ventas"><i class="fa-solid fa-cash-register"></i> Facturación</a></li>
+                <li><a href="/ventas"><i class="fa-solid fa-house"></i></a></li>
+                <li><a href="/ventas/facturacion"><i class="fa-solid fa-cash-register"></i> Facturación</a></li>
                 <li><a href="/ventas/transacciones"><i class="fa-solid fa-right-left"></i> Transacciones</a></li>
-                <li><a href="/"><i class="fa-solid fa-user"></i> {{user}}</a></li>
+                <li><a href="/ventas/pagospendientes"><i class="fa-solid fa-dollar-sign"></i> Pagos Pendientes</a></li>
+                <!--<li><a href="/ventas/registro_servicios"><i class="fa-solid fa-desktop"></i> Servicios</a></li>
+                <li><a href="/"><i class="fa-solid fa-user"></i> {{user}}</a></li>-->
                 
                 {% if user.is_authenticated %}
                     <li id="users-btn-perfil"><a href="/cerrar-sesion/" ><i class="fa-solid fa-right-from-bracket"></i> Salir</a></li>
@@ -138,6 +142,12 @@
         <p class="copyright-text">&copy; Copyright PC Computers &reg; Todos los derechos reservados 2024</p>
        
 
+
+        <!-- jQuery (debe incluirse antes de Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!--Script swiper-->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <!--Link bar productos-->

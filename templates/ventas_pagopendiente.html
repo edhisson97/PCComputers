@@ -1,0 +1,324 @@
+{% extends "ventas.html" %}
+
+{% block title %}PC Computers - Ventas{% endblock %}
+
+{% block content %}
+
+
+
+<style>
+    #busqueda-div {
+        text-align: center;
+    }
+    #resultados {
+        border: 1px solid #ccc;
+        margin-left: 200px;
+        margin-right: 200px;
+        display: block;
+        overflow-y: auto;
+        background-color: #fff;
+        z-index: 1000;
+        display: none;
+        border-radius: 5px;
+    }
+    .resultado-item {
+        padding: 8px;
+        cursor: pointer;
+        text-align: left;
+    }
+    .resultado-item:hover {
+        background-color: #e8faff;
+    }
+
+    #combinado div{
+        display: flex; 
+    }
+
+    #combinado label, input {
+        margin-left: 10px;
+    }
+</style>
+
+{% load static %}
+
+<div class="container-inicio">
+    <h3 class="title">Pagos pendientes (Facturas a crédito)</h3>
+    {%if caja.estado == 'abierta' %}
+    <div class="seccion-datos">
+        
+        <h5>Buscar Deuda</h5>
+        <div class="cedula">
+            <label for="cedula" >Cédula o nombres del cliente</label>
+            <input class="cliente-pagopendiente" type="text" id="cedula" name="cedula" placeholder="0705643786" onkeyup="filtrarClientes()">
+            <input type="hidden" id="clientes-data" value='{{ clientes|safe }}'>
+            
+            <div id="busqueda-div">
+                <div id="resultados" class="resultados">
+
+                </div>
+            </div>
+        </div>
+        
+        <button class="buscar-cliente" onclick="buscarDeuda()">Buscar <i class="fa-solid fa-magnifying-glass"></i></button>
+
+        <div id="mensajeUsuarioNoDeuda" class="alert" role="alert" ></div>
+        <div id="datosCliente"></div>
+
+        <div id="datosCliente"></div>
+
+
+    </div>
+    <div id="registro" style="display: none;">
+        <div class="seccion-productos">
+            <table class="table table-striped" id="tabla-productos">
+                <thead>
+                <tr>
+                    
+                    <th scope="col">Valor facturado</th>
+                    <th scope="col">Saldo pendiente</th>
+                    <!--<th scope="col">Código</th>-->
+                </tr>
+                </thead>
+                <tbody id="pendiente-tbody">
+                
+                </tbody>
+            </table>
+
+            <div id="divpago">
+                <label for="cedula" >Monto a pagar</label>
+                <input Class="monto_pagar" type="number" id="pago" name="pago" placeholder="0.00" >
+                
+                <select name="factura" id="factura">
+                    <!-- Agrega más opciones según necesites -->
+                </select>
+                    <div class="container_pago">
+                        <div class="agregar_abono">
+                            <div class="pago_abono">
+                            <div class="form-row-pago">
+                                <label for="tipoPago">Tipo pago</label>
+                                <select name="tipoPago" id="tipoPago" style="display: block;" onchange="mostrarNumeroCheque()">
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Transferencia">Transferencia</option>
+                                    <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                                    <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+                                    <option value="Cheque">Cheque</option>
+                                    <option value="Combinado">Combinado</option>
+                                </select>
+                                
+                            </div>
+                            <div id="numeroTransferencia" style="display: none;">
+                                <label for="numeroCheque"># de Transferencia</label>
+                                <input type="text" id="numeroTransferencia" name="numeroTransferencia">
+                            </div>
+                            <div id="numeroCheque" style="display: none;">
+                                <label for="banco">Entidad Bancaria: </label>
+                                <select name="Banco" id="banco">
+                                    <option value="Banco de Machala">Banco de Machala</option>
+                                    <option value="Banco de Pichincha">Banco de Pichincha</option>
+                                    <option value="BanEcuador">BanEcuador</option>
+                                    <option value="Banco de Guayaquil">Banco de Guayaquil</option>
+                                    <option value="Banco del Pacifico">Banco del Pacífico</option>
+                                    <option value="Banco Internacional">Banco Internacional</option>
+                                    <option value="Banco Produbanco">Produbanco</option>
+                                    <option value="Banco Bolivariano">Banco Bolivariano</option>
+                                    <option value="Banco del Austro">Banco del Austro</option>
+                                    <option value="Otro">Otro (Especificar)</option>
+                                </select><br>
+                                <label for="otroBanco" style="display: none;">Nombre del Banco</label>
+                                <input type="text" id="otroBanco" name="otroBanco" style="display: none;">
+                                <label for="numeroCheque"># de Cheque</label>
+                                <input type="text" id="numeroCheque" name="numeroCheque">
+                            </div>
+                            <div id="combinado" style="display: none;">
+                                <div>
+                                    <label for="Efectivo">Efectivo</label>
+                                    <input type="checkbox" id="check1" name="check1">
+                                    <input type="number" id="input1" name="input1" disabled>
+                                </div>
+                                <div>
+                                    <label for="Tcredito">Tarjeta de Crédito</label>
+                                    <input type="checkbox" id="check2" name="check2">
+                                    <input type="number" id="input2" name="input2" disabled>
+                                </div>
+                                <div>
+                                    <label for="Cheque">Cheque</label>
+                                    <input type="checkbox" id="check3" name="check3">
+                                    <input type="number" id="input3" name="input3" disabled>
+                                </div>
+                                <div>
+                                    <label for="Transferencia">Transferencia</label>
+                                    <input type="checkbox" id="check4" name="check4">
+                                    <input type="number" id="input4" name="input4" disabled>
+                                </div>
+                                <div>
+                                    <label for="Tdebito">Tarjeta de Débito</label>
+                                    <input type="checkbox" id="check5" name="check5">
+                                    <input type="number" id="input5" name="input5" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <button class="agregarProducto" id="agregarpago" onclick="agregarpago()"><i class="fa-solid fa-plus"></i> Agregar nuevo pago</i></button>
+
+            <h4>Registro de pagos </h4>
+
+            <table class="table table-striped" id="tabla-productos">
+                <thead>
+                <tr>
+                    <th scope="col"># transaccion</th>
+                    <th scope="col">Factura</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Monto aportado</th>
+                    <!--<th scope="col">Código</th>-->
+                </tr>
+                </thead>
+                <tbody id="pagos-tbody">
+                
+                </tbody>
+            </table>
+
+            <h4>Registro de Deudas </h4>
+
+            <table class="table table-striped" id="tabla-productos">
+                <thead>
+                <tr>
+                    <th scope="col"># transaccion</th>
+                    <th scope="col">Factura</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Anticipo inicial</th>
+                    <!--<th scope="col">Código</th>-->
+                </tr>
+                </thead>
+                <tbody id="deudas-tbody">
+                    
+                </tbody>
+            </table>
+            <!--<button class="limpiar"> Limpiar <i class="fa-solid fa-trash"></i></button>-->
+            <!--<div class="seccion-button">
+                
+                
+                <button class="cancelar">Limpiar <i class="fa-solid fa-ban"></i></button>
+            </div>-->
+        </div>
+    </div>
+    {%else%}
+    <div class="alerta">
+        <p class="alerta-icono"><i class="fa-solid fa-ban"></i></p>
+        <p class="alerta-leyenda">Por favor solicita a tu supervisor que inicialice la caja para aperturar el módulo de Facturación y realizar pagos pendientes de facturas.</p>
+    </div>
+    {%endif%}
+</div>
+
+<script>
+    
+    const clientesData = document.getElementById('clientes-data').value;
+    const clientes = JSON.parse(clientesData); // Convertir a objeto JSON
+
+    function filtrarClientes() {
+    
+        const input = document.getElementById('cedula');
+        const filtro = input.value.toLowerCase();
+        const resultadosDiv = document.getElementById('resultados');
+        resultadosDiv.innerHTML = ''; // Limpiar resultados anteriores
+    
+        if (filtro.length > 0) {
+            // Filtrar clientes según el nombre o cédula
+            const resultados = clientes.filter(cliente =>
+                cliente.nombre.toLowerCase().includes(filtro) ||
+                cliente.cedula.includes(filtro)
+            );
+    
+            if (resultados.length > 0) {
+                resultadosDiv.style.display = 'block';
+                resultados.slice(0, 4).forEach(cliente => {
+                    const div = document.createElement('div');
+                    div.className = 'resultado-item';
+                    div.textContent = `${cliente.nombre} (${cliente.cedula})`;
+    
+                    // Añadir el evento onclick
+                    div.onclick = function() {
+                        input.value = cliente.cedula; // Colocar la cédula en el input
+                        buscarDeuda(); // Llamar a la función buscarDeuda
+                    };
+    
+                    resultadosDiv.appendChild(div);
+                });
+            } else {
+                resultadosDiv.style.display = 'none';
+            }
+        } else {
+            resultadosDiv.style.display = 'none';
+        }
+    }
+
+
+    document.getElementById('tipoPago').addEventListener('change', function() {
+        var selectedValue = this.value;
+        // Ocultar todos los divs
+        document.getElementById('numeroCheque').style.display = 'none';
+        document.getElementById('numeroTransferencia').style.display = 'none';
+        document.getElementById('combinado').style.display = 'none';
+        // Mostrar divs según la opción seleccionada
+        if (selectedValue === 'Cheque') {
+            document.getElementById('numeroCheque').style.display = 'block';
+            document.getElementById('pago').style.display = 'block';
+        } else if (selectedValue === 'Transferencia') {
+          document.getElementById('numeroTransferencia').style.display = 'block';
+          document.getElementById('pago').style.display = 'block';
+        }else if (selectedValue === 'Combinado') {
+            document.getElementById('combinado').style.display = 'block';
+            document.getElementById('pago').style.display = 'none';
+        }else if (selectedValue === 'Tarjeta de Crédito') {
+            document.getElementById('pago').style.display = 'block';
+        }
+        else if (selectedValue === 'Tarjeta de Débito') {
+            document.getElementById('pago').style.display = 'block';
+        }else if (selectedValue === 'Transferencia') {
+            document.getElementById('pago').style.display = 'block';
+        }
+      });
+      document.getElementById('banco').addEventListener('change', function() {
+          var selectedValue = this.value;
+          // Mostrar/ocultar el campo para nombre del banco según la selección
+          if (selectedValue === 'Otro') {
+              document.getElementById('otroBanco').style.display = 'block';
+              document.querySelector('label[for="otroBanco"]').style.display = 'block';
+          } else {
+              document.getElementById('otroBanco').style.display = 'none';
+              document.querySelector('label[for="otroBanco"]').style.display = 'none';
+          }
+      });
+    
+      // Función para habilitar/deshabilitar inputs según el estado de los checkboxes
+      function toggleInput(checkboxId, inputId) {
+          var checkbox = document.getElementById(checkboxId);
+          var input = document.getElementById(inputId);
+          input.disabled = !checkbox.checked;
+      }
+    
+      // Maneja el cambio en cada checkbox dentro de "Combinado"
+      document.getElementById('check1').addEventListener('change', function() {
+          toggleInput('check1', 'input1');
+      });
+      document.getElementById('check2').addEventListener('change', function() {
+          toggleInput('check2', 'input2');
+      });
+      document.getElementById('check3').addEventListener('change', function() {
+          toggleInput('check3', 'input3');
+      });
+      document.getElementById('check4').addEventListener('change', function() {
+        toggleInput('check4', 'input4');
+      });
+      document.getElementById('check5').addEventListener('change', function() {
+        toggleInput('check5', 'input5');
+      });
+
+      
+</script>
+
+{% endblock %} 
