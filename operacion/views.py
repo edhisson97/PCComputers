@@ -3,12 +3,22 @@ from .decorators import operador_required
 from django.contrib.auth.models import User, Group
 from .models import Proveedor, Caja, Gasto, Ingreso
 from ventas.models import Registro, Servicio, PagoServicio, PagoServicioCombinado, PagoPendienteCombinado, PagoRegistroCombinado, Pago
-from productos.models import Producto
+from productos.models import Producto, Categoria, subCategoria, Marca, ImagenProducto, ColorStock
 from datetime import datetime
 from decimal import Decimal
 from django.http import JsonResponse
 from django.utils import timezone
 import json
+from django.template.loader import render_to_string
+import tempfile
+import pdfkit
+from django.conf import settings
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.contrib import messages  # Para mostrar alertas en la plantilla
+from django.db import IntegrityError
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 def cerrar_caja(request):
@@ -211,6 +221,7 @@ def comprobar_operacion_caja(request):
         efectivoContado = data.get('efectivo', None)
         print(efectivoContado)
         cajero_username = data.get('cajero', None)
+        accion = data.get('accion', None)
         print('--------------------------------')
         print(cajero_username)
         vendedor = User.objects.get(username=cajero_username)
@@ -238,17 +249,26 @@ def comprobar_operacion_caja(request):
         transferencias_ventas = 0
         cheques_ventas = 0
         tarjetas_ventas = 0
+        numero_ventas = registros.count()
+        numero_ventas_contado = 0
+        numero_ventas_credito = 0
+        numero_ventas_apartado = 0
+        tarjetas_credito_ventas = 0
+        tarjetas_debito_ventas = 0
         
         for r in registros:
             if r.tipo_venta == 'Contado':
+                numero_ventas_contado += 1
                 if r.tipo_pago == 'Efectivo':
                     totalVendido = totalVendido + Decimal(r.total_vendido)
                 if r.tipo_pago == 'Transferencia':
                     transferencias_ventas = transferencias_ventas + Decimal(r.total_vendido)
                 if r.tipo_pago == 'Tarjeta de Crédito':
                     tarjetas_ventas = tarjetas_ventas + Decimal(r.total_vendido)
+                    tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.total_vendido)
                 if r.tipo_pago == 'Tarjeta de Débito':
                     tarjetas_ventas = tarjetas_ventas + Decimal(r.total_vendido)
+                    tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.total_vendido)
                 if r.tipo_pago == 'Cheque':
                     cheques_ventas = cheques_ventas + Decimal(r.total_vendido)
                 if r.tipo_pago == 'Combinado':
@@ -258,8 +278,10 @@ def comprobar_operacion_caja(request):
                             totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
                         if pagoRegistroCombinado.valorTarjetaCredito:
                             tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                            tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
                         if pagoRegistroCombinado.valorTarjetaDebito:
                             tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                            tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
                         if pagoRegistroCombinado.valorCheque:
                             cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
                         if pagoRegistroCombinado.valorTransferencia:
@@ -267,14 +289,17 @@ def comprobar_operacion_caja(request):
                     except PagoServicioCombinado.DoesNotExist:
                         pagoRegistroCombinado = ''
             if r.tipo_venta == 'Crédito':
+                numero_ventas_credito +=1
                 if r.tipo_pago == 'Efectivo':
                     totalVendido = totalVendido + Decimal(r.adelanto)
                 if r.tipo_pago == 'Transferencia':
                     transferencias_ventas = transferencias_ventas + Decimal(r.adelanto)
                 if r.tipo_pago == 'Tarjeta de Crédito':
                     tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                    tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.adelanto)
                 if r.tipo_pago == 'Tarjeta de Débito':
                     tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                    tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.adelanto)
                 if r.tipo_pago == 'Cheque':
                     cheques_ventas = cheques_ventas + Decimal(r.adelanto)
                 if r.tipo_pago == 'Combinado':
@@ -284,8 +309,41 @@ def comprobar_operacion_caja(request):
                             totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
                         if pagoRegistroCombinado.valorTarjetaCredito:
                             tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                            tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
                         if pagoRegistroCombinado.valorTarjetaDebito:
                             tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                            tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                        if pagoRegistroCombinado.valorCheque:
+                            cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                        if pagoRegistroCombinado.valorTransferencia:
+                            transferencias_ventas = transferencias_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                    except PagoServicioCombinado.DoesNotExist:
+                        pagoRegistroCombinado = ''
+            if r.tipo_venta == 'Apartado':
+                numero_ventas_apartado += 1
+                if r.tipo_pago == 'Efectivo':
+                    totalVendido = totalVendido + Decimal(r.adelanto)
+                if r.tipo_pago == 'Transferencia':
+                    transferencias_ventas = transferencias_ventas + Decimal(r.adelanto)
+                if r.tipo_pago == 'Tarjeta de Crédito':
+                    tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                    tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.adelanto)
+                if r.tipo_pago == 'Tarjeta de Débito':
+                    tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                    tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.adelanto)
+                if r.tipo_pago == 'Cheque':
+                    cheques_ventas = cheques_ventas + Decimal(r.adelanto)
+                if r.tipo_pago == 'Combinado':
+                    try:
+                        pagoRegistroCombinado = PagoRegistroCombinado.objects.get(registro = r)
+                        if pagoRegistroCombinado.valorEfectivo:
+                            totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
+                        if pagoRegistroCombinado.valorTarjetaCredito:
+                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                            tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                        if pagoRegistroCombinado.valorTarjetaDebito:
+                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                            tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
                         if pagoRegistroCombinado.valorCheque:
                             cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
                         if pagoRegistroCombinado.valorTransferencia:
@@ -294,14 +352,17 @@ def comprobar_operacion_caja(request):
                         pagoRegistroCombinado = ''
                 
         for pr in pagosRegistros:
+            #if pr.deuda.registro.tipo_venta != "Apartado":
             if pr.tipoPago == 'Efectivo':
                 totalVendido = totalVendido + Decimal(pr.cuota)
             if pr.tipoPago == 'Transferencia':
                 transferencias_ventas = transferencias_ventas + Decimal(pr.cuota)
             if pr.tipoPago == 'Tarjeta de Crédito':
                 tarjetas_ventas = tarjetas_ventas + Decimal(pr.cuota)
+                tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pr.cuota)
             if pr.tipoPago == 'Tarjeta de Débito':
                 tarjetas_ventas = tarjetas_ventas + Decimal(pr.cuota)
+                tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pr.cuota)
             if pr.tipoPago == 'Cheque':
                 cheques_ventas = cheques_ventas + Decimal(pr.cuota)
             if pr.tipoPago == 'Combinado':
@@ -311,8 +372,10 @@ def comprobar_operacion_caja(request):
                         totalVendido = totalVendido + Decimal(pagoPendienteCombinado.valorEfectivo)
                     if pagoPendienteCombinado.valorTarjetaCredito:
                         tarjetas_ventas = tarjetas_ventas + Decimal(pagoPendienteCombinado.valorTarjetaCredito)
+                        tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoPendienteCombinado.valorTarjetaCredito)
                     if pagoPendienteCombinado.valorTarjetaDebito:
                         tarjetas_ventas = tarjetas_ventas + Decimal(pagoPendienteCombinado.valorTarjetaDebito)
+                        tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoPendienteCombinado.valorTarjetaDebito)
                     if pagoPendienteCombinado.valorCheque:
                         cheques_ventas = cheques_ventas + Decimal(pagoPendienteCombinado.valorCheque)
                     if pagoPendienteCombinado.valorTransferencia:
@@ -340,6 +403,8 @@ def comprobar_operacion_caja(request):
         transferencias_servicios = 0
         cheques_servicios = 0
         tarjetas_servicios = 0  
+        tarjetas_credito_servicios = 0
+        tarjetas_debito_servicios = 0
         try:
             pagoservicios = PagoServicio.objects.filter(caja = caja)
             for s in pagoservicios:
@@ -352,8 +417,10 @@ def comprobar_operacion_caja(request):
                     cheques_servicios = cheques_servicios + Decimal(s.abono)
                 if s.tipoPago == 'Tarjeta de Crédito':
                     tarjetas_servicios = tarjetas_servicios + Decimal(s.abono)
+                    tarjetas_credito_servicios = tarjetas_credito_servicios + Decimal(s.abono)
                 if s.tipoPago == 'Tarjeta de Débito':
                     tarjetas_servicios = tarjetas_servicios + Decimal(s.abono)
+                    tarjetas_debito_servicios = tarjetas_debito_servicios + Decimal(s.abono)
                 if s.tipoPago == 'Combinado':
                     try:
                         pagoCombinado = PagoServicioCombinado.objects.get(pagoServicio = s)
@@ -361,8 +428,10 @@ def comprobar_operacion_caja(request):
                             total_servicios = total_servicios + Decimal(pagoCombinado.valorEfectivo)
                         if pagoCombinado.valorTarjetaCredito:
                             tarjetas_servicios = tarjetas_servicios + Decimal(pagoCombinado.valorTarjetaCredito)
+                            tarjetas_credito_servicios = tarjetas_credito_servicios + Decimal(pagoCombinado.valorTarjetaCredito)
                         if pagoCombinado.valorTarjetaDebito:
                             tarjetas_servicios = tarjetas_servicios + Decimal(pagoCombinado.valorTarjetaDebito)
+                            tarjetas_debito_servicios = tarjetas_debito_servicios + Decimal(pagoCombinado.valorTarjetaDebito)
                         if pagoCombinado.valorCheque:
                             cheques_servicios = cheques_servicios + Decimal(pagoCombinado.valorCheque)
                         if pagoCombinado.valorTransferencia:
@@ -376,53 +445,247 @@ def comprobar_operacion_caja(request):
 
         sobrante = Decimal('0')
         faltante = Decimal('0')
-
+        
+        aux = ''
         #compruebo que el total efectivo no sea negativo
         if totalEfectivo > 0:
             diferencia = Decimal(totalEfectivo) - Decimal(efectivoContado)
             # Determinar el sobrante o el faltante basado en la diferencia
             if diferencia < 0:
                 sobrante = abs(diferencia)
+                aux = "sobra"
             elif diferencia > 0:
                 faltante = abs(diferencia)
+                aux = "falta"
         else:
             diferencia = Decimal(totalEfectivo) + Decimal(efectivoContado)
             # Determinar el sobrante o el faltante basado en la diferencia
             if diferencia > 0:
                 sobrante = abs(diferencia)
+                aux = "sobra"
             elif diferencia < 0:
                 faltante = abs(diferencia)
+                aux = "falta"
         
         totalCheques = cheques_ventas + cheques_servicios
         totalTransferencias = transferencias_servicios + transferencias_ventas
         totalTarjetas = tarjetas_servicios + tarjetas_ventas
         
         # Devuelve una respuesta JSON
-        response_data = {
-            'message': 'Datos recibidos correctamente',
-            'fondoCaja':fondoCaja,
-            'totalVendido':totalVendido,
-            'totalServicios':total_servicios,
+        if accion == 'cerrar':
+            detalle = data.get('detalle', None)
+            ventas = totalVendido + cheques_ventas + tarjetas_credito_ventas + tarjetas_debito_ventas + transferencias_ventas
+            servicios = total_servicios + cheques_servicios + tarjetas_credito_servicios + tarjetas_debito_servicios + transferencias_servicios
+            totalGeneral = ventas + servicios
+            fechaCierre = timezone.now()
+            
+            context = {
+            'aperturaCaja':caja.fecha_hora_inicio,
+            'cierreCaja':fechaCierre,
+            'cajero':caja.cajero.first_name +" " +caja.cajero.last_name +" ("+caja.cajero.username+")",
+            'numeroCaja':caja.id,
+            'detalle':detalle,
+            'numero_ventas':numero_ventas,
+            'numero_ventas_contado':numero_ventas_contado,
+            'numero_ventas_credito':numero_ventas_credito,
+            'numero_ventas_apartado':numero_ventas_apartado,
+            'enEfectivo':totalVendido,
+            'chequesVentas':cheques_ventas,
+            'tarjetas_credito_ventas':tarjetas_credito_ventas,
+            'tarjetas_debito_ventas':tarjetas_debito_ventas,
+            'transferenciasVentas':transferencias_ventas,
+            'ventas_contado':ventas,
+            'efectivoServicios':total_servicios,
+            'chequesServicios':cheques_servicios,
+            'tarjetas_credito_servicios':tarjetas_credito_servicios,
+            'tarjetas_debito_servicios':tarjetas_debito_servicios,
+            'transferencias_servicios':transferencias_servicios,
+            'totalServicios': servicios,
+            #'ventasContado': totalVendido + cheques_ventas + tarjetas_credito_ventas + tarjetas_debito_ventas + transferencias_ventas,
+            'efectivoContado': efectivoContado,
+            'inicioCaja':fondoCaja,
+            'totalGeneral': totalGeneral,
             'totalEgresos':totalEgresos,
             'totalIngresos':totalIngresos,
             'totalEfectivo':totalEfectivo,
-            'chequesServicios':cheques_servicios,
-            'chequesVentas':cheques_ventas,
-            'totalCheques':totalCheques,
-            'transferenciasServicios':transferencias_servicios,
-            'transferenciasVentas':transferencias_ventas,
-            'totalTransferencias':totalTransferencias,
-            'tarjetasServicios':tarjetas_servicios,
-            'tarjetasVentas':tarjetas_ventas,
-            'totalTarjetas':totalTarjetas,
-            'efectivoContado': efectivoContado,
-            'faltante':faltante,
-            'sobrante':sobrante,
-        }
+            'aux':aux,
+            }
+            
+            #generar pdf y enviar
+            html_content = render_to_string('cierre_caja_recibo.html', context)
+
+            # Guardar el contenido HTML en un archivo temporal
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+                temp_html.write(html_content.encode('utf-8'))
+                temp_html_path = temp_html.name
+                
+                # Cerrar el archivo HTML temporal
+                temp_html.close()
+                # Eliminar el archivo PDF temporal
         
-        print(response_data)
+            # Configuración de pdfkit
+            config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
         
-        return JsonResponse(response_data)
+            # Convertir el archivo HTML temporal a PDF
+            output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
+            pdfkit.from_file(temp_html_path, output_path, configuration=config)
+            
+            # Suponiendo que tienes output_path definido y quieres codificarlo
+            encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+
+            # Crear el diccionario de contexto
+            context = {'encoded_path': encoded_path}
+            
+            caja.estado = "cerrada"
+            caja.fecha_hora_cierre = fechaCierre
+            caja.observaciones = detalle
+            caja.efectivo_ventas = totalVendido
+            caja.total_ventas = ventas
+            caja.efectivo_servicios = total_servicios
+            caja.total_servicios = servicios
+            caja.total_general = totalGeneral
+            caja.efectivo_contado = efectivoContado
+            caja.save()
+            
+            return JsonResponse(context)
+        
+        else:
+            response_data = {
+                'message': 'Datos recibidos correctamente',
+                'fondoCaja':fondoCaja,
+                'totalVendido':totalVendido,
+                'totalServicios':total_servicios,
+                'totalEgresos':totalEgresos,
+                'totalIngresos':totalIngresos,
+                'totalEfectivo':totalEfectivo,
+                'chequesServicios':cheques_servicios,
+                'chequesVentas':cheques_ventas,
+                'totalCheques':totalCheques,
+                'transferenciasServicios':transferencias_servicios,
+                'transferenciasVentas':transferencias_ventas,
+                'totalTransferencias':totalTransferencias,
+                'tarjetasServicios':tarjetas_servicios,
+                'tarjetasVentas':tarjetas_ventas,
+                'totalTarjetas':totalTarjetas,
+                'efectivoContado': efectivoContado,
+                'faltante':faltante,
+                'sobrante':sobrante,
+            }
+            return JsonResponse(response_data)
 
     # Si la solicitud no es POST, devolver un error apropiado (en desarrollo, puede ser 405 Method Not Allowed)
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@operador_required
+def descargar_pdf_operaciones(request, encoded_path):
+    # Decodificar la ruta del archivo
+    decoded_path = urlsafe_base64_decode(encoded_path).decode('utf-8')
+    
+    with open(decoded_path, 'rb') as pdf_file:
+        response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="recibo_cierre_caja.pdf"'
+    return response
+
+@operador_required
+def generardescarga_pdf_operaciones(request, encoded_path):
+    # Decodificar la ruta del archivo
+    context = {'encoded_path': encoded_path}
+    return render(request, 'descargar_pdf_cierrecaja.html', context)
+
+@operador_required
+def nuevo_producto(request):
+    try:
+        categoria = Categoria.objects.all()
+        primeraCategoria = Categoria.objects.first()
+    except Categoria.DoesNotExist:
+        return render(request, "operacion_stock.html",)
+    try:
+        subcategoria = subCategoria.objects.all()
+    except subCategoria.DoesNotExist:
+        return render(request, "operacion_stock.html",)
+    try:
+        marca = Marca.objects.all()
+    except Marca.DoesNotExist:
+        return render(request, "operacion_stock.html",)
+    try:
+        primerasSubcategorias = subCategoria.objects.filter(id_categoria=primeraCategoria.id)
+    except subCategoria.DoesNotExist:
+        primerasSubcategorias = "Ninguna"
+    subcategorias_dict = [
+        {
+            "id": sub.id,
+            "nombre": sub.nombre,
+            "id_categoria": sub.id_categoria.nombre         
+        }
+        for sub in subcategoria
+    ]
+    
+    # Convertimos el diccionario a JSON antes de pasarlo al template
+    subcategorias_json = json.dumps(subcategorias_dict)
+    
+    if request.method == "POST":
+        try:
+            # Procesar el formulario enviado
+            modelo = request.POST.get("modelo")
+            calidad = request.POST.get("calidad")
+            detalle = request.POST.get("detalle")
+            descripcion = request.POST.get("descripcion")
+            oferta = request.POST.get("oferta") == "on"  # Verifica si el checkbox está marcado
+            precio_oferta = request.POST.get("precio_oferta") if oferta else None
+            imagenes = request.FILES.getlist("imagenes")
+            
+            
+            precio = request.POST.get("precio")
+            peso = request.POST.get("peso")
+            categoria_id = request.POST.get("categoria")
+            subcategoria_id = request.POST.get("subcategoria")
+            marca_id = request.POST.get("marca")
+           
+            
+            # Crear la instancia del producto
+            nuevo_producto = Producto(
+                modelo=modelo,
+                categoria_id=categoria_id,
+                subcategoria_id=subcategoria_id,
+                marca_id=marca_id,
+                calidad=calidad,
+                precio=precio,
+                detalle=detalle,
+                descripcion=descripcion,
+                peso=peso,
+                oferta=oferta,
+                precio_oferta=precio_oferta,
+            )
+            nuevo_producto.save()  # Guardar el producto en la base de datos
+
+            # Guardar las imágenes
+            for imagen in imagenes:
+                ImagenProducto.objects.create(producto=nuevo_producto, imagen=imagen)
+                
+            colorStock = ColorStock(
+                codigo_articulo = nuevo_producto.id,
+                color = 'negro',
+                stock = 0,
+                producto = nuevo_producto,
+            )
+            colorStock.save()
+
+            return redirect(f"/operacion/stock/nuevoproducto/detalle/idproducto={nuevo_producto.id}/")
+
+        except ValueError as ve:
+            messages.error(request, f"Error de valor: {str(ve)}")
+        except IntegrityError:
+            messages.error(request, "Error: No se pudo guardar el producto. Verifique los datos.")
+        except Exception as e:
+            messages.error(request, f"Ocurrió un error inesperado: {str(e)}")
+
+    
+    else:
+        
+        return render(request, 'operacion_crearproducto.html',{"categorias":categoria, "subcategorias":subcategorias_json, "marcas":marca, "primerasSubcategorias":primerasSubcategorias})
+
+def detalle_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    colores = ColorStock.objects.filter(producto=producto)
+
+    return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})

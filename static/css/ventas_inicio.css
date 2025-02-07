@@ -360,13 +360,34 @@ body {
 }
 
 .agregarProducto:hover {
-  background-color: rgb(64, 136, 64); /* Color de fondo verde */
+  background-color: rgb(44, 99, 44); /* Color de fondo verde */
 }
 
 .agregarProducto i {
   margin-right: 5px; /* Espacio entre el icono y el texto */
 }
 
+.nuevoProducto {
+  display: inline-block;
+  text-decoration: none;
+  margin: 0 auto; /* Centrar el botón horizontalmente */
+  padding: 10px 20px; /* Ajustar el relleno del botón */
+  background-color: rgb(124, 124, 124); /* Color de fondo verde */
+  color: white; /* Color del texto blanco */
+  border: none; /* Quitar borde */
+  border-radius: 5px; /* Esquinas redondeadas */
+  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+  margin-bottom: 20px;
+}
+
+.nuevoProducto:hover {
+  background-color: rgb(210, 210, 210); /* Color de fondo verde */
+  color: black;
+}
+
+.botones {
+  text-align: right; /* Alinea los botones a la derecha */
+}
 
 
 .centered, .centered-modal {

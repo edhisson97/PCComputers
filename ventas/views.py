@@ -287,10 +287,7 @@ def generar_recibo_servicios(request):
             #adicionalU.deuda = 'si'
             adicionalU.save()
             
-            
-        
-        
-        
+       
         
         nuevoservicio = Servicio()
         usuario_adicional = adicionalUsuario.objects.get(cedula=cedula)
@@ -1187,14 +1184,14 @@ def reciboPago(request):
             totalp = ivaTotal + subtotal
             totalp = round(totalp,2)
             
-            if (tipoVenta == "Crédito" and tipoPago != "Combinado"):
+            if (tipoVenta == "Crédito" and tipoPago != "Combinado") or (tipoVenta == "Apartado" and tipoPago != "Combinado"):
                 
                 abono = request.POST.get('abono')
                 print("abonoooooo" + abono)
                 abono_int = Decimal(abono) if abono else Decimal(0)
                 saldo = totalp - abono_int
                 
-            elif (tipoVenta == "Crédito" and tipoPago == "Combinado"):
+            elif (tipoVenta == "Crédito" and tipoPago == "Combinado") or (tipoVenta == "Apartado" and tipoPago == "Combinado"):
                 abono = 0
                 for item in combinados:
                     abono = abono + Decimal(item.get('valor'))
@@ -1357,7 +1354,7 @@ def generarPdf(request):
             'usuarioVendedor':usuarioVendedor
         }
         
-        if (tipoVenta == 'Crédito'):
+        if (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
             html_content = render_to_string('ventas_recibopagocredito.html', context)
             # Guardar el contenido HTML en un archivo temporal
             with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
@@ -1450,7 +1447,7 @@ def generarPdf(request):
             usuario_adicional.direccionEnvio = direccionEnvio
             usuario_adicional.celular = celular
             usuario_adicional.ciudad = ciudad
-            if (tipoVenta == 'Crédito'):
+            if (tipoVenta == 'Crédito')or (tipoVenta == 'Apartado'):
                     usuario_adicional.deuda = 'si'
             usuario_adicional.save()
             
@@ -1482,7 +1479,7 @@ def generarPdf(request):
             adicionalU.ciudad = ciudad
             adicionalU.direccion = direccion
             adicionalU.direccionEnvio = direccionEnvio
-            if (tipoVenta == 'Crédito'):
+            if (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
                     adicionalU.deuda = 'si'
             adicionalU.save()
             
@@ -1503,7 +1500,7 @@ def generarPdf(request):
                 nuevoRegistro.vendedor_id = usuario_vendedor_completo.id
                 nuevoRegistro.tipo_pago = tipoPago
                 nuevoRegistro.tipo_venta = tipoVenta
-                if (tipoVenta == 'Crédito'):
+                if (tipoVenta == 'Crédito')or (tipoVenta == 'Apartado'):
                     nuevoRegistro.deuda = 'si'
                     if abono:
                         nuevoRegistro.adelanto = abono
@@ -1539,7 +1536,7 @@ def generarPdf(request):
             print("Error al guardar el registro:", e)
         
         try:
-            if (tipoVenta == 'Crédito'):
+            if (tipoVenta == 'Crédito')or (tipoVenta == 'Apartado'):
                  
                 deudaPendiente = Decimal(total) - Decimal(nuevoRegistro.adelanto) 
                     
@@ -2114,6 +2111,37 @@ def comprobar_ventas_caja(request):
                             transferencias_ventas = transferencias_ventas + Decimal(pagoRegistroCombinado.valorCheque)
                     except PagoServicioCombinado.DoesNotExist:
                         pagoRegistroCombinado = ''
+            if r.tipo_venta == 'Apartado':
+                if r.tipo_pago == 'Efectivo':
+                    totalVendido = totalVendido + Decimal(r.adelanto)
+                if r.tipo_pago == 'Transferencia':
+                    transferencias_ventas = transferencias_ventas + Decimal(r.adelanto)
+                if r.tipo_pago == 'Tarjeta de Crédito':
+                    tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                    tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.adelanto)
+                if r.tipo_pago == 'Tarjeta de Débito':
+                    tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                    tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.adelanto)
+                if r.tipo_pago == 'Cheque':
+                    cheques_ventas = cheques_ventas + Decimal(r.adelanto)
+                if r.tipo_pago == 'Combinado':
+                    try:
+                        pagoRegistroCombinado = PagoRegistroCombinado.objects.get(registro = r)
+                        if pagoRegistroCombinado.valorEfectivo:
+                            totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
+                        if pagoRegistroCombinado.valorTarjetaCredito:
+                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                            tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                        if pagoRegistroCombinado.valorTarjetaDebito:
+                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                            tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                        if pagoRegistroCombinado.valorCheque:
+                            cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                        if pagoRegistroCombinado.valorTransferencia:
+                            transferencias_ventas = transferencias_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                    except PagoServicioCombinado.DoesNotExist:
+                        pagoRegistroCombinado = ''
+            
                 
         for pr in pagosRegistros:
             if pr.tipoPago == 'Efectivo':

@@ -88,7 +88,6 @@
                     {% if caja.estado == 'abierta'%}
                         <button type="button" class="btn-comprobar"><i class="fa-solid fa-circle-question"></i> Comprobar</button>
                         <button type="button" class="btn-cerrar" data-toggle="modal" data-target="#confirmModal" > Cerrar</button>
-                        <a href="/operacion/cerrar_caja">cerrar</a>
                         <!--<button type="button" class="btn-cerrar" data-toggle="modal" data-target="#confirmModal"> Cerrar</button>-->
                     {% else%}
                       {% if vendedores%}
@@ -234,6 +233,47 @@
 
 
             <script>
+              document.addEventListener('DOMContentLoaded', function () {
+                document.querySelector('.btn-guardar').addEventListener('click', function () {
+                    // Mostrar un cuadro de diálogo de confirmación
+                    if (confirm('¿Estás seguro de que deseas aperturar la caja?')) {
+                        // Enviar el formulario si el usuario confirma
+                        document.getElementById('form-apertura-caja').submit();
+                    }
+                });
+                document.querySelector('.btn-cerrar').addEventListener('click', function () {
+                  // Muestra la modal
+                  $('#confirmModal').modal('show');
+
+                  
+              });
+      
+              // Manejador de evento para el botón "Confirmar" en la modal
+              document.querySelector('.btn-confirmar').addEventListener('click', function () {
+                  // Envía el formulario
+                  document.getElementById('form-apertura-caja').submit();
+              });
+            });
+          
+
+              
+            
+              // Cerrar el modal al hacer clic en la X
+              document.querySelector('.close').addEventListener('click', function() {
+                  document.getElementById('modal-valores-recaudados').style.display = 'none';
+              });
+              
+              // Cerrar el modal al hacer clic fuera del contenido
+              window.addEventListener('click', function(event) {
+                  var modal = document.getElementById('modal-valores-recaudados');
+                  if (event.target == modal) {
+                  modal.style.display = 'none';
+                  }
+              });
+            
+
+
+
               // Abrir el modal al hacer clic en el botón
             document.querySelector('.btn-comprobar').addEventListener('click', function() {
                 var efectivo = document.getElementById('efectivo').value;
@@ -309,6 +349,8 @@
             document.getElementById('confirmarCerrar').addEventListener('click', function () {
               var efectivo = document.getElementById('efectivo').value;
                 var cajero = document.getElementById('cajero-hidden').value;
+                var detalle = document.getElementById('observaciones').value;
+                //var accion = 'cerrar';
                 
                 // Obtener el token CSRF del cookie
                 function getCookie(name) {
@@ -337,11 +379,23 @@
                     headers: {
                         'X-CSRFToken': csrftoken  // Agrega el token CSRF al encabezado
                     },
-                    data: JSON.stringify({ efectivo: efectivo, cajero: cajero }), // Convertir datos a formato JSON
+                    data: JSON.stringify({ efectivo: efectivo, cajero: cajero, detalle: detalle, accion:'cerrar' }), // Convertir datos a formato JSON
                     success: function(response) {
                         // Aquí puedes manejar la respuesta del backend si es necesario
                         
-                        alert('cerrado');
+                        if (response && response.encoded_path) {
+                          // Construir la URL para redirigir con el encoded_path
+                          var encodedPath = encodeURIComponent(response.encoded_path);
+                          var urlRedirect = '/operacion/cerrar_caja/generardescarga_pdf/' + encodedPath + '/';
+              
+                          // Redirigir a la nueva página con el encoded_path en la URL
+                          window.location.href = urlRedirect;
+                      } else {
+                          console.error('No se recibió el encoded_path del servidor.');
+                          // Manejar el caso donde no se recibió correctamente el encoded_path del servidor
+                          // Por ejemplo, mostrar un mensaje de error al usuario
+                          alert('Ocurrio un error al descargar el pdf');
+                      }
                     },
                     error: function(xhr, status, error) {
                         // Manejar errores si es necesario
@@ -350,42 +404,6 @@
                 });
             });
 
-              document.addEventListener('DOMContentLoaded', function () {
-                  document.querySelector('.btn-guardar').addEventListener('click', function () {
-                      // Mostrar un cuadro de diálogo de confirmación
-                      if (confirm('¿Estás seguro de que deseas aperturar la caja?')) {
-                          // Enviar el formulario si el usuario confirma
-                          document.getElementById('form-apertura-caja').submit();
-                      }
-                  });
-                  document.querySelector('.btn-cerrar').addEventListener('click', function () {
-                    // Muestra la modal
-                    $('#confirmModal').modal('show');
-
-                    
-                });
-        
-                // Manejador de evento para el botón "Confirmar" en la modal
-                document.querySelector('.btn-confirmar').addEventListener('click', function () {
-                    // Envía el formulario
-                    document.getElementById('form-apertura-caja').submit();
-                });
-              });
-
-                
-              
-                // Cerrar el modal al hacer clic en la X
-                document.querySelector('.close').addEventListener('click', function() {
-                    document.getElementById('modal-valores-recaudados').style.display = 'none';
-                });
-                
-                // Cerrar el modal al hacer clic fuera del contenido
-                window.addEventListener('click', function(event) {
-                    var modal = document.getElementById('modal-valores-recaudados');
-                    if (event.target == modal) {
-                    modal.style.display = 'none';
-                    }
-                });
             </script>
         </div>
     </div>

@@ -66,25 +66,6 @@ function camposVacios() {
     // Otros campos
 }
 
-// Obtener elementos del DOM
-var btnMostrarModal = document.getElementById("mostrarModal");
-var modalFondo = document.getElementById("modalFondoBusqueda");
-var modal = document.getElementById("miModalBusqueda");
-var btnCerrarModal = document.getElementById("cerrar-modal");
-var inputBuscador = document.getElementById("buscadorModal");
-
-// Cerrar el modal al hacer clic en la "x" o fuera del modal
-$('.cerrar-modal, #modalFondoBusqueda').on('click', function () {
-    $('#modalFondoBusqueda').fadeOut();
-    $('#miModalBusqueda').fadeOut();
-});
-
-// Mostrar modal al hacer clic en el botón
-btnMostrarModal.addEventListener("click", function() {
-    modalFondo.style.display = "block";
-    modal.style.display = "block";
-});
-
 document.addEventListener("keyup", e => {
     if (e.target.matches("#buscador")) {
         if (e.key === "Escape") e.target.value = "";

@@ -73,8 +73,14 @@
     <div class="seccion-productos">
         <h4>Productos adquiridos al proveedor</h4>
 
-        <!--<button class="agregarProducto" id="mostrarModal"><i class="fa-solid fa-plus"></i> Producto nuevo </i></button>-->
-        <button class="agregarProducto" id="mostrarModal"><i class="fa-solid fa-cart-plus"></i> Asignar productos</button>
+        
+            <!--<button class="agregarProducto" id="mostrarModal"><i class="fa-solid fa-plus"></i> Producto nuevo </i></button>-->
+            
+        <div class="botones">
+            <a class="nuevoProducto" href="/operacion/stock/nuevoproducto"><i class="fa-solid fa-plus"></i> Nuevo producto </i></a>
+            <a class="nuevoProducto" href=""><i class="fa-solid fa-pen-to-square"></i> Editar producto </i></a>
+        </div>
+        <button class="agregarProducto" id="mostrarModal"><i class="fa-solid fa-cart-plus"></i> Agregar productos</button>
 
         <div id="modalFondoBusqueda" style="display: none;"></div>
         <div id="miModalBusqueda" class="modal">
@@ -89,7 +95,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="mensajeNoProductos" style="display: none;">Lo siento, no se encontraron resultados para tu busqueda. <i class="fa-regular fa-face-frown"></i></div>
+                <div id="mensajeNoProductos" style="display: none;">Lo siento, no se encontraron resultados para tu busqueda. <i class="fa-regular fa-face-frown"></i> <br>Ingresa el artículo en el boton "Nuevo Producto".</div>
                 <div id="listaArticulos">
                     {% if todosProductos %}
                         {% for prod in todosProductos %}

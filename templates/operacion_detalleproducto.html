@@ -1,0 +1,60 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion Detalles producto{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container">
+  <!-- 📌 Detalles del Producto -->
+  <div class="left">
+      <div class="product-info">
+          <h2 class="title-detalle"> PRODUCTO ID {{producto.id}} - {{ producto.modelo }}</h2>
+          <p><strong>Categoría:</strong> {{ producto.categoria.nombre }}</p>
+          <p><strong>Subcategoría:</strong> {{ producto.subcategoria.nombre }}</p>
+          <p><strong>Marca:</strong> {{ producto.marca.nombre }}</p>
+          <p><strong>Calidad:</strong> {{ producto.get_calidad_display }}</p>
+          <p><strong>Precio:</strong> ${{ producto.precio }}</p>
+          <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+      </div>
+
+      <!-- 📌 Imagen Principal -->
+      {% if producto.imagenes.all %}
+          <img src="{{ producto.imagenes.first.imagen.url }}" alt="Imagen del producto">
+      {% endif %}
+
+      <!-- 📌 Imágenes secundarias -->
+      <div>
+          {% for img in producto.imagenes.all %}
+              <img src="{{ img.imagen.url }}" alt="Imagen secundaria" style="width: 50px; height: 50px; margin: 5px;">
+          {% endfor %}
+      </div>
+  </div>
+
+  <!-- 📌 Agregar colores y stock -->
+  <div class="right">
+        <!-- 📌 Lista de colores -->
+      <h2 class="title-detalle">Colores disponibles</h2>
+      {% for color in colores %}
+      <div class="color-box">
+          <div style="background: {{ color.codigo_color }}"></div>
+          <p>{{ color.color }} - Stock: {{ color.stock }}</p>
+          {% if color.imagen %}
+              <img src="{{ color.imagen.url }}" alt="Color" style="width: 40px; height: 40px;">
+          {% endif %}
+      </div>
+      {% endfor %}
+      
+      <h2 class="title-detalle">Agregar Color y Stock</h2>
+      <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="text" name="color" placeholder="Nombre del color" required>
+          <input type="color" name="codigo_color" value="#000000">
+          <input type="number" name="stock" placeholder="Cantidad en stock" required>
+          <input type="file" name="imagen" accept="image/*" required>
+          <button type="submit">Agregar</button>
+      </form>
+  </div>
+</div>
+
+{% endblock %} 

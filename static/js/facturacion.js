@@ -229,7 +229,7 @@ function actualizarTabla(){
 
 
     $.ajax({
-        url: 'producto',
+        url: '/ventas/producto',
         type: 'POST',
         contentType: 'application/json',
         headers: {
@@ -382,9 +382,7 @@ function enviarFormularioConLocalStorage() {
 
         if (formularioLleno) {
             // Preguntar al usuario si desea enviar el formulario
-            
-            
-                
+
 
                 // Crear un campo oculto para los productos y agregarlo al formulario
                 var campoProductos = document.createElement('input');
@@ -523,7 +521,7 @@ function enviarFormularioConLocalStorage() {
                         enviar = false;
                     }
 
-                } if (tipoPagoSeleccionado === 'Combinado' && tipoVentaSeleccionado === 'Crédito'){
+                } if ((tipoPagoSeleccionado === 'Combinado' && tipoVentaSeleccionado === 'Crédito')||(tipoPagoSeleccionado === 'Combinado' && tipoVentaSeleccionado === 'Apartado')){
                     //var abonoInput = document.getElementById('abono');
                     var totalCombinado = 0;
                     // Obtener todos los inputs dentro del contenedor de 'combinado'
@@ -602,7 +600,7 @@ function enviarFormularioConLocalStorage() {
                             enviar = false;
                         }
 
-                }if (tipoPagoSeleccionado !== 'Combinado' && tipoVentaSeleccionado === 'Crédito'){
+                }if ((tipoPagoSeleccionado !== 'Combinado' && tipoVentaSeleccionado === 'Crédito')||(tipoPagoSeleccionado !== 'Combinado' && tipoVentaSeleccionado === 'Apartado')){
                     
                     var abono = document.getElementById('abono');
                     // Crear un campo oculto para los productos y agregarlo al formulario
@@ -841,7 +839,7 @@ function mostrarNumeroCheque() {
     
 
     //si se selecciona tipo de venta credito, debe desaparecer las demas opciones
-    if (tipoVenta === "Crédito" && tipoPago !== "Combinado") {
+    if ((tipoVenta === "Crédito" && tipoPago !== "Combinado")||(tipoVenta === "Apartado" && tipoPago !== "Combinado")) {
         creditoDiv.style.display = "block";
     } else {
         mostarPago.style.display = "block";

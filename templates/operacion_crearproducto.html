@@ -1,0 +1,190 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion Nuevo producto{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container-inicio">
+    <h3 class="title">Crear un nuevo producto</h3>
+      {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-danger" role="alert">
+                  {{ message }}
+              </div>
+          {% endfor %}
+      {% endif %}
+
+        
+        <div class="form-container">
+            <h5 class="leyenda_nuevo_producto">Todos los campos son obligatorios, por favor ingrese correctamente todos los datos.</h5>
+            <form id="productoForm" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              
+              <div class="form-group">
+                <label for="modelo">Modelo:</label>
+                <input type="text" class="form-control" id="modelo" name="modelo" maxlength="255" required>
+              </div>
+          
+              <div class="form-group">
+                <label for="categoria">Categoría:</label>
+                <select class="form-control short" id="categoria" name="categoria" required>
+                  {% for categoria in categorias %}
+                  <option value="{{ categoria.id }}" data-subcategorias='{{ subcategorias|safe }}'>{{ categoria.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="subcategoria">Subcategoría:</label>
+                <select class="form-control short" id="subcategoria" name="subcategoria" required>
+                  {% for subcategoria in primerasSubcategorias %}
+                    
+                        <option value="{{ subcategoria.id }}">{{ subcategoria.nombre }}</option>
+                    
+                  {% endfor %}
+                </select>
+              </div>
+          
+              <!--<div class="form-group" id="subcategoria-group">
+                <label for="subcategoria">Subcategoría:</label>{{categorias.0.nombre}} {{subcategorias}}
+                <select class="form-control short" id="subcategoria" name="subcategoria" required>
+                  {% for subcategoria in subcategorias %}
+                    {% if categorias.0.id == subcategoria.id_categoria %}
+                        <option value="{{ subcategoria.id }}">{{ subcategoria.nombre }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              </div>-->
+          
+              <div class="form-group">
+                <label for="marca">Marca:</label>
+                <select class="form-control short" id="marca" name="marca" required>
+                  {% for marca in marcas %}
+                  <option value="{{ marca.id }}">{{ marca.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+          
+              <div class="form-group">
+                <label for="calidad">Calidad:</label>
+                <select class="form-control short" id="calidad" name="calidad">
+                  <option value="original">Original</option>
+                  <option value="generico">Genérico</option>
+                  <option value="sn">S/N</option>
+                </select>
+              </div>
+          
+              <div class="form-group">
+                <label for="precio">Precio:</label>
+                <input type="number" class="form-control short" id="precio" name="precio" step="0.01" required>
+              </div>
+          
+              <div class="form-group">
+                <label for="detalle">Detalle:</label>
+                <input type="text" class="form-control" id="detalle" name="detalle" maxlength="600" placeholder="Características principales (una línea)" required>
+              </div>
+              <!--<p>* Breve descripción del artículo o equipo, generalmente de una linea.</p>-->
+          
+              <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Características detalladas del producto" required></textarea>
+              </div>
+          
+              <div class="form-group">
+                <label for="peso">Peso (Kg):</label>
+                <input type="number" class="form-control short" id="peso" name="peso" step="0.01" value="0.5" required>
+              </div>
+          
+              <div class="form-group checkbox-group">
+                <label for="oferta">¿En oferta?</label>
+                <input type="checkbox" id="oferta" name="oferta">
+              </div>
+          
+              <div class="form-group">
+                <label for="precio_oferta">Precio de oferta:</label>
+                <input type="number" class="form-control short" id="precio_oferta" name="precio_oferta" step="0.01" disabled>
+              </div>
+          
+              <div class="form-group">
+                <label for="imagenes">Imágenes del producto:</label>
+                <input type="file" class="form-control" id="imagenes" name="imagenes" accept="image/*" multiple required>
+              </div>
+          
+              <button type="submit" class="btn">Guardar Producto</button>
+            </form>
+          </div>
+          
+    
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const checkboxOferta = document.getElementById("oferta");
+      const inputPrecioOferta = document.getElementById("precio_oferta");
+  
+      // Función para habilitar o deshabilitar el input de precio oferta
+      function togglePrecioOferta() {
+        if (checkboxOferta.checked) {
+          inputPrecioOferta.disabled = false; // Habilitar el input
+        } else {
+          inputPrecioOferta.disabled = true; // Deshabilitar el input
+          inputPrecioOferta.value = ""; // Limpiar el valor
+        }
+      }
+  
+      // Escuchar el cambio de estado del checkbox
+      checkboxOferta.addEventListener("change", togglePrecioOferta);
+  
+      // Inicializar el estado del input al cargar la página
+      togglePrecioOferta();
+
+      /************PARA CAMBIAR LA SUCATEGORIA DEPENDIENDO DE LA CATEGORIA****************/
+        // Selecciona el elemento del select
+        const categoriaSelect = document.getElementById("categoria");
+        const subcategoriaSelect = document.getElementById("subcategoria");
+
+        // Escucha el evento 'change' cuando cambia la selección
+        categoriaSelect.addEventListener("change", function () {
+            // Obtén la opción seleccionada
+            const selectedOption = categoriaSelect.options[categoriaSelect.selectedIndex];
+
+            // Obtén los datos de la categoría
+            const categoriaId = selectedOption.value; // ID de la categoría
+            //const subcategoriasJson = selectedOption.dataset.subcategorias; // Nombre de la categoría
+            // Obtén los datos del atributo `data-subcategorias`
+            const subcategoriasData = selectedOption.dataset.subcategorias;
+
+            // Convierte el string JSON en un objeto JavaScript
+            const subcategorias = JSON.parse(subcategoriasData);
+
+            // Limpia las opciones del select de subcategorías
+            subcategoriaSelect.innerHTML = "";
+
+            // Recorre las subcategorías y muestra los valores
+            subcategorias.forEach((subcategoria) => {
+                //console.log(`ID: ${subcategoria.id}`);
+                
+                //console.log(`ID Categoría: ${subcategoria.id_categoria}`);
+                if (categoriaId == subcategoria.id_categoria) {
+                    //console.log(`Nombre: ${subcategoria.nombre}`);
+
+                    const option = document.createElement("option");
+                    option.value = subcategoria.id;
+                    option.textContent = subcategoria.nombre;
+
+                    // Agrega la opción al select de subcategorías
+                    subcategoriaSelect.appendChild(option);
+
+                }
+                
+            });
+        });
+
+    });
+
+
+  </script>
+  
+
+{% endblock %} 

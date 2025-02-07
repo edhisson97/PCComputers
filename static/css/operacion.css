@@ -245,3 +245,133 @@
 .user i{
   font-size: 10px;
 }
+
+/**************NUEVO PRODUCTO********************/
+.leyenda_nuevo_producto{
+  font-size: 16px;
+  color: #474747;
+  margin-bottom: 20px;
+}
+
+.form-container {
+  max-width: 600px; /* Ancho máximo del formulario */
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container .form-group {
+  margin-bottom: 15px;
+  display: flex; /* Para alinear etiquetas e inputs */
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.form-container label {
+  font-weight: bold;
+  flex: 0 0 30%; /* Ancho de la etiqueta */
+  margin-right: 10px;
+}
+
+.form-container .form-control {
+  flex: 1; /* Toma el espacio restante */
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.form-container .form-control.short {
+  flex: 0 0 48%; /* Inputs más cortos, ocupan la mitad del espacio */
+}
+
+.form-container .btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.form-container .btn:hover {
+  background-color: #0056b3;
+}
+
+.form-container .checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.form-container .checkbox-group input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+
+/**************DETALLE PRODUCTO**********************/
+.container {
+  display: flex;
+  gap: 20px;
+}
+.left, .right {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.left {
+  flex: 2;
+}
+.right {
+  flex: 1;
+}
+img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.title-detalle {
+  text-align: center;
+  font-size: 20px;
+  margin: 0;
+  color: #5d5d5d;
+}
+.product-info p {
+  margin: 2px 0;
+  font-size: 15px;
+  color: #555;
+}
+.color-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 5px;
+}
+.color-box div {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+form input, form button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+form button {
+  background: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+form button:hover {
+  background: #0056b3;
+}

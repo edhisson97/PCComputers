@@ -37,3 +37,4 @@ class ColorStock(models.Model):
     stock = models.IntegerField(default=1)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="colores")
     imagen = models.ImageField(upload_to="productos", null=True, blank=True)
+    

@@ -25,6 +25,12 @@ class Caja(models.Model):
     fecha_hora_cierre = models.DateTimeField(null=True, blank=True)
     estado = models.CharField(max_length=20, default='abierta')
     numero_caja = models.CharField(max_length=20, null=True, blank=True)
+    efectivo_ventas = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total_ventas = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    efectivo_servicios = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total_servicios = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total_general = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    efectivo_contado = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     #def __str__(self):
     #    return f"Caja de {self.cajero.username} - {self.fecha_hora_inicio}"
