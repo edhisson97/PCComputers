@@ -12,7 +12,7 @@ class Registro(models.Model):
     vendedor_id = models.IntegerField()  # Campo para el ID del vendedor
     tipo_venta = models.CharField(max_length=100,null=True)
     tipo_pago = models.CharField(max_length=100,null=True)
-    deuda = models.CharField(max_length=3, default='no')
+    deuda = models.CharField(max_length=10, default='no')
     adelanto = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     
     def __str__(self):
