@@ -4,9 +4,9 @@ from django.db import models
 
 
 # Crear grupos
-seller_group, created = Group.objects.get_or_create(name='Vendedores')
-Seller_group, created = Group.objects.get_or_create(name='Operadores')
-Seller_group, created = Group.objects.get_or_create(name='Tecnicos')
+#seller_group, created = Group.objects.get_or_create(name='Vendedores')
+#Seller_group, created = Group.objects.get_or_create(name='Operadores')
+#Seller_group, created = Group.objects.get_or_create(name='Tecnicos')
 
 class adicionalUsuario(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
