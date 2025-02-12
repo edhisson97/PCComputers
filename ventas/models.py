@@ -32,7 +32,7 @@ class Deudas(models.Model):
     registro = models.ForeignKey(Registro, on_delete=models.SET_NULL, null=True)  # Relaciona con el modelo User de Django
     total = models.DecimalField(max_digits=10, decimal_places=2)
     saldo = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.CharField(max_length=10, default='pendiente')#el otro estado es pagada
+    estado = models.CharField(max_length=15, default='pendiente')#el otro estado es pagada
     
     
     def __str__(self):
@@ -44,7 +44,7 @@ class Pago(models.Model):
     deuda = models.ForeignKey(Deudas, on_delete=models.SET_NULL, null=True)  # Relaciona con el modelo User de Django
     fecha_hora = models.DateTimeField()  # Guarda la fecha y hora automáticamente al crear el registro
     cuota = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.CharField(max_length=10, default='pendiente')#el otro estado es terminado
+    estado = models.CharField(max_length=15, default='pendiente')#el otro estado es terminado
     tipoPago = models.CharField(max_length=50, blank=True, null=True)
     numeroCheque = models.CharField(max_length=50, blank=True, null=True)
     banco = models.CharField(max_length=50, blank=True, null=True)
@@ -117,7 +117,7 @@ class Servicio(models.Model):
     costo_sin_descuento = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
     abonado = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
     saldo = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
-    estado = models.CharField(max_length=10, default='pendiente')#el otro estado es terminado
+    estado = models.CharField(max_length=15, default='pendiente')#el otro estado es terminado
     numero_reparacion = models.IntegerField(blank=True, null=True)  
     
 class PagoServicio(models.Model):
