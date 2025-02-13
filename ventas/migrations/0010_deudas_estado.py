@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='deudas',
             name='estado',
-            field=models.CharField(default='pendiente', max_length=3),
+            field=models.CharField(default='pendiente', max_length=10),
         ),
     ]

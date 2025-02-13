@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='registro',
             name='deuda',
-            field=models.CharField(default='no', max_length=3),
+            field=models.CharField(default='no', max_length=10),
         ),
         migrations.AddField(
             model_name='registro',
