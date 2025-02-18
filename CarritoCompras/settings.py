@@ -19,7 +19,7 @@ import cloudinary.uploader
 import cloudinary.api
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'PCCOMPUTERS',
+    'CLOUD_NAME': 'dqphy48oi',
     'API_KEY': '528441226936991',
     'API_SECRET': '-xjPHIBDc09x32FSNq7T5uWblho',
 }
