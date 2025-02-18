@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import Group, User
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 # Crear grupos
@@ -44,7 +45,7 @@ class Marca(models.Model):
         return self.nombre
     
 class Carrusel(models.Model):
-    imagen = models.ImageField(upload_to="carrusel")
+    imagen = CloudinaryField('image', folder='carrusel')
 
     def __int__(self):
         return self.id
