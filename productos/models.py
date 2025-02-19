@@ -1,6 +1,6 @@
 from django.db import models
 from inicio.models import Categoria, subCategoria, Marca
-
+from cloudinary.models import CloudinaryField
 from smart_selects.db_fields import GroupedForeignKey
 
 # Create your models here.
@@ -26,7 +26,9 @@ class Producto(models.Model):
         return self.modelo
     
 class ImagenProducto(models.Model):
-    imagen = models.ImageField(upload_to="productos")
+    imagen = CloudinaryField('image', folder='productos')
+    # PARA SERVIDORES QUE SOPRTAN ARCHIVOS ESTATICOS
+    #imagen = models.ImageField(upload_to="productos")
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE,related_name="imagenes")
     
 class ColorStock(models.Model):
@@ -36,5 +38,7 @@ class ColorStock(models.Model):
     codigo_color = models.CharField(max_length=10, default="#050505",help_text="El código del producto debe ser HEX ejemplo:'#050505' o '#fcfcfc'.")
     stock = models.IntegerField(default=1)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="colores")
-    imagen = models.ImageField(upload_to="productos", null=True, blank=True)
+    imagen = CloudinaryField('image', folder='productos', null=True, blank=True)
+    # PARA SERVIDORES QUE SOPRTAN ARCHIVOS ESTATICOS
+    #imagen = models.ImageField(upload_to="productos", null=True, blank=True)
     

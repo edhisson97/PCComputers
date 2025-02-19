@@ -5,9 +5,9 @@ from cloudinary.models import CloudinaryField
 
 
 # Crear grupos
-#seller_group, created = Group.objects.get_or_create(name='Vendedores')
-#Seller_group, created = Group.objects.get_or_create(name='Operadores')
-#Seller_group, created = Group.objects.get_or_create(name='Tecnicos')
+seller_group, created = Group.objects.get_or_create(name='Vendedores')
+Seller_group, created = Group.objects.get_or_create(name='Operadores')
+Seller_group, created = Group.objects.get_or_create(name='Tecnicos')
 
 class adicionalUsuario(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -25,7 +25,9 @@ class adicionalUsuario(models.Model):
 # Create your models here.
 class Categoria(models.Model):
     nombre = models.CharField(max_length=255)
-    imagen = models.ImageField(upload_to="categorias", null=True, blank=True)
+    imagen = CloudinaryField('image', folder='categorias', null=True, blank=True)
+    # PARA SERVIDORES QUE SOPRTAN ARCHIVOS ESTATICOS
+    #imagen = models.ImageField(upload_to="categorias", null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -33,6 +35,8 @@ class Categoria(models.Model):
 class subCategoria(models.Model):
     id_categoria = models.ForeignKey(Categoria, null=True, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=255)
+    imagen = CloudinaryField('image', folder='subcategorias', null=True, blank=True)
+    # PARA SERVIDORES QUE SOPRTAN ARCHIVOS ESTATICOS
     imagen = models.ImageField(upload_to="subCategorias", null=True, blank=True)
 
     def __str__(self):
@@ -46,6 +50,8 @@ class Marca(models.Model):
     
 class Carrusel(models.Model):
     imagen = CloudinaryField('image', folder='carrusel')
+    # PARA SERVIDORES QUE SOPRTAN ARCHIVOS ESTATICOS
+    #imagen = models.ImageField(upload_to="carrusel")
 
     def __int__(self):
         return self.id
