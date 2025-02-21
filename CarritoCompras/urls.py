@@ -24,6 +24,17 @@ from informacion.views import contactanos, servicios, desarrollo_web, mantenimie
 from ventas.views import inicio_ventas, transacciones_ventas, productos_facturar, reciboPago, generarPdf, pago_pendiente, ventas_caja, buscar_deuda, agregarPago, registro_servicios, generar_recibo_servicios,home_ventas, gastos_ventas, comprobar_ventas_caja, finalizar_servicio, servicios_registros, descargar_pdf_servicios, generardescarga_pdf_servicios, politica_servicios, nuevo_abono, generarrecibo_nuevo_abono, cancelar_servicio, devolver_abono
 from operacion.views import stock_operacion, inicio_operacion, caja_operacion, caja_apertura_operacion, comprobar_operacion_caja, gastos_operacion, caja_panel, cerrar_caja,generardescarga_pdf_operaciones, descargar_pdf_operaciones, nuevo_producto, detalle_producto
 from django.contrib.auth import views as auth_views
+from django.conf.urls import handler404, handler500
+from django.shortcuts import render
+
+def custom_404(request, exception):
+    return render(request, 'error.html', status=404)
+
+def custom_500(request):
+    return render(request, 'error.html', status=500)
+
+handler404 = custom_404
+handler500 = custom_500
 
 
 urlpatterns = [

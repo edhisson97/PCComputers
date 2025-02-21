@@ -22,7 +22,7 @@
 }
 
 .info-mantenimiento, .info-analisis{
-    padding: 50px;
+    padding: 45px;
     flex: 50%;
 }
 
@@ -55,12 +55,19 @@
 }
 
 .info-desarrollo, .info-capacitaciones{
-    padding: 50px;
+    padding: 45px;
     flex: 50%;
 }
 
 .info-desarrollo h3, .info-capacitaciones h3{
     color: azure;
+}
+
+.info-desarrollo .texto-corto,
+.info-analisis .texto-corto,
+.info-capacitaciones .texto-corto,
+.info-mantenimiento .texto-corto{
+    display: none;
 }
 
 /*************Servicio Mantenimiento***********/
@@ -237,6 +244,37 @@
     }
     .header-mantenimiento h1 {
         font-size: 2.5em;
+    }
+}
+
+@media(max-width: 800px) {
+    .info-desarrollo span,
+    .info-analisis span,
+    .info-capacitaciones span,
+    .info-mantenimiento span {
+        display: none;
+    }
+    .info-desarrollo .texto-corto,
+    .info-analisis .texto-corto,
+    .info-capacitaciones .texto-corto,
+    .info-mantenimiento .texto-corto{
+        display: block;
+        font-size: 14px;
+    }
+}
+
+@media(max-width: 525px) {
+    .info-desarrollo h3,
+    .info-analisis h3,
+    .info-capacitaciones h3,
+    .info-mantenimiento h3{
+        font-size: 16px;
+    }
+    .info-desarrollo a,
+    .info-analisis a,
+    .info-capacitaciones a,
+    .info-mantenimiento a{
+        font-size: 13px;
     }
 }
 
