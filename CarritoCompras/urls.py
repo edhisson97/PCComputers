@@ -26,12 +26,30 @@ from operacion.views import stock_operacion, inicio_operacion, caja_operacion, c
 from django.contrib.auth import views as auth_views
 from django.conf.urls import handler404, handler500
 from django.shortcuts import render
+from inicio.models import Categoria
+from productos.models import Producto
 
 def custom_404(request, exception):
-    return render(request, 'error.html', status=404)
+    try:
+        categoria = Categoria.objects.all()
+    except Categoria.DoesNotExist:
+        return render(request, "home.html",)
+    try:
+        productos = Producto.objects.all()
+    except Producto.DoesNotExist:
+        return render(request, "home.html",)
+    return render(request, 'error.html', {"categoria": categoria,"todosProductos":productos}, status=404)
 
 def custom_500(request):
-    return render(request, 'error.html', status=500)
+    try:
+        categoria = Categoria.objects.all()
+    except Categoria.DoesNotExist:
+        return render(request, "home.html",)
+    try:
+        productos = Producto.objects.all()
+    except Producto.DoesNotExist:
+        return render(request, "home.html",)
+    return render(request, 'error.html', {"categoria": categoria,"todosProductos":productos}, status=500)
 
 handler404 = custom_404
 handler500 = custom_500

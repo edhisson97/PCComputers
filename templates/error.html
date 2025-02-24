@@ -5,11 +5,12 @@
 {% block content %}
 {% load static %}
 <style>
-    .body-noencontrada {
+    /* Se eliminó el centrado del body para que no afecte la navbar y el footer */
+    .container-noencontrada-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        height: 100vh; /* Solo este div tomará el alto completo */
         text-align: center;
         font-family: Arial, sans-serif;
         background-color: #f8f9fa;
@@ -23,20 +24,20 @@
         font-size: 48px;
         margin-bottom: 20px;
     }
-    .p-noencontrada{
+    .p-noencontrada {
         font-size: 22px;
         margin-bottom: 20px;
     }
     .icon {
         font-size: 60px;
-        color:rgb(168, 168, 168);
-        animation: spin 5s linear infinite;
+        color: rgb(168, 168, 168);
+        animation: spin 7s linear infinite;
     }
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
-    .a-noencontrada{
+    .a-noencontrada {
         display: inline-block;
         padding: 10px 20px;
         background-color: #007bff;
@@ -51,17 +52,15 @@
         background-color: #0056b3;
     }
 </style>
-</head>
-<body class="body-noencontrada">
 
-<div class="container-noencontrada">
-    <h1 class="h1-noencontrada">Lo sentimos, página no encontrada</h1>
-    <p class="p-noencontrada">Estamos trabajando en ello. Nuestro equipo de PCComputers lo solucionará pronto.</p>
-    <i class="fa-solid fa-gear icon"></i>
-    <br>
-    <a class="a-noencontrada" href="/">Volver al inicio</a>
+<div class="container-noencontrada-wrapper">
+    <div class="container-noencontrada">
+        <h1 class="h1-noencontrada">Lo sentimos, página no encontrada</h1>
+        <p class="p-noencontrada">Estamos trabajando en ello. Nuestro equipo de PCComputers lo solucionará pronto.</p>
+        <i class="fa-solid fa-gear icon"></i>
+        <br>
+        <a class="a-noencontrada" href="/">Volver al inicio</a>
+    </div>
 </div>
-
-</body>
     
 {% endblock %} 
