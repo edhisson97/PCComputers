@@ -1,8 +1,21 @@
 {% extends "paginaInicio.html" %}
 
+{% block title %}PC Computers - Página no encontrada{% endblock %}
+
 {% block content %}
 {% load static %}
 <style>
+    .body-noencontrada {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+        padding: 20px;
+    }
     .container-noencontrada {
         max-width: 600px;
     }
@@ -10,14 +23,14 @@
         font-size: 48px;
         margin-bottom: 20px;
     }
-    .container-noencontrada p {
+    .p-noencontrada{
         font-size: 22px;
         margin-bottom: 20px;
     }
     .icon {
         font-size: 60px;
         color:rgb(168, 168, 168);
-        animation: spin 2s linear infinite;
+        animation: spin 5s linear infinite;
     }
     @keyframes spin {
         0% { transform: rotate(0deg); }
@@ -31,6 +44,7 @@
         text-decoration: none;
         border-radius: 5px;
         margin-top: 20px;
+        margin-bottom: 50px;
         font-size: 18px;
     }
     .a-noencontrada:hover {
@@ -38,7 +52,7 @@
     }
 </style>
 </head>
-<body>
+<body class="body-noencontrada">
 
 <div class="container-noencontrada">
     <h1 class="h1-noencontrada">Lo sentimos, página no encontrada</h1>
