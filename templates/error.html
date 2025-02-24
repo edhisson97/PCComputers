@@ -3,38 +3,27 @@
 {% block content %}
 {% load static %}
 <style>
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        text-align: center;
-        font-family: Arial, sans-serif;
-        background-color: #f8f9fa;
-        color: #333;
-        padding: 20px;
-    }
-    .container {
+    .container-noencontrada {
         max-width: 600px;
     }
-    h1 {
+    container-noencontrada h1 {
         font-size: 48px;
         margin-bottom: 20px;
     }
-    p {
+    container-noencontrada p {
         font-size: 22px;
         margin-bottom: 20px;
     }
     .icon {
         font-size: 60px;
-        color: #ff5733;
+        color:rgb(168, 168, 168);
         animation: spin 2s linear infinite;
     }
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
-    a {
+    .container-noencontrada a {
         display: inline-block;
         padding: 10px 20px;
         background-color: #007bff;
@@ -44,17 +33,17 @@
         margin-top: 20px;
         font-size: 18px;
     }
-    a:hover {
+    container-noencontrada a:hover {
         background-color: #0056b3;
     }
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container-noencontrada">
     <h1>Lo sentimos, página no encontrada</h1>
     <p>Estamos trabajando en ello. Nuestro equipo de PCComputers lo solucionará pronto.</p>
-    <i class="fa-solid fa-gears icon"></i>
+    <i class="fa-solid fa-gear"></i>
     <br>
     <a href="/">Volver al inicio</a>
 </div>
