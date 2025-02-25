@@ -9,8 +9,9 @@
             <!-- Slides -->
             {% for carru in carrusel %}
                 {% if carru.imagen %}
-                    <div class="swiper-slide"><img class="img-carrusel" src={{ carru.imagen.url }} ></div>
-                <img src={{ c.imagen.url }} alt="Categoría 5">
+                    <div class="swiper-slide">
+                        <img class="img-carrusel" src="{{ carru.imagen.url }}" alt="Carrusel">
+                    </div>
                 {% endif %}
             {% endfor %}
             <!--<div class="swiper-slide"><img class="img-carrusel" src="{% static 'img/carrusel/oferta1.png' %}" ></div>
