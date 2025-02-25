@@ -18,20 +18,29 @@ def login_with_google(request):
     return redirect('social:begin', 'google-oauth2')
 
 def ingresar(request):
+    mensaje_error = None  # Inicializa el mensaje de error
+    
     if request.method == 'POST':
-        correo = request.POST.get('correo')
+        credencial = request.POST.get('correo')
         contrasena = request.POST.get('contrasena')
+        
+        # Buscar usuario por cédula (username) o correo electrónico
+        usuario = User.objects.filter(email=credencial).first()
+        if not usuario:
+            usuario = User.objects.filter(username=credencial).first()
 
-        # Autenticar al usuario
-        usuario = authenticate(request, username=correo, password=contrasena)
+        if usuario:
+            # Autenticar usando username (que almacena la cédula)
+            usuario_autenticado = authenticate(request, username=usuario.username, password=contrasena)
 
-        if usuario is not None:
-            # El usuario ha sido autenticado correctamente
-            login(request, usuario)
-            return redirect('/perfil/')  # Redirigir a la página principal después del inicio de sesión
+            if usuario_autenticado:
+                login(request, usuario_autenticado)
+                return redirect('/perfil/')  # Redirigir a la página principal después del inicio de sesión
+            else:
+                mensaje_error = "Cédula/Correo o contraseña incorrectos."
         else:
-            # El inicio de sesión ha fallado, puedes mostrar un mensaje de error
-            mensaje_error = "Correo electrónico o contraseña incorrectos."
+            mensaje_error = "Usuario no encontrado."
+
     try:
         categoria = Categoria.objects.all()
     except Categoria.DoesNotExist:
