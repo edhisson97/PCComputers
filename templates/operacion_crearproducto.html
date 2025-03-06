@@ -30,7 +30,7 @@
                 <label for="categoria">Categoría:</label>
                 <select class="form-control short" id="categoria" name="categoria" required>
                   {% for categoria in categorias %}
-                  <option value="{{ categoria.id }}" data-subcategorias='{{ subcategorias|safe }}'>{{ categoria.nombre }}</option>
+                  <option value="{{ categoria.nombre }}" data-subcategorias='{{ subcategorias|safe }}'>{{ categoria.nombre }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -149,6 +149,7 @@
             // Obtén la opción seleccionada
             const selectedOption = categoriaSelect.options[categoriaSelect.selectedIndex];
 
+            //console.log(categoriaSelect.value);
             // Obtén los datos de la categoría
             const categoriaId = selectedOption.value; // ID de la categoría
             //const subcategoriasJson = selectedOption.dataset.subcategorias; // Nombre de la categoría
@@ -157,7 +158,7 @@
 
             // Convierte el string JSON en un objeto JavaScript
             const subcategorias = JSON.parse(subcategoriasData);
-
+            //console.log(subcategorias);
             // Limpia las opciones del select de subcategorías
             subcategoriaSelect.innerHTML = "";
 
@@ -166,8 +167,11 @@
                 //console.log(`ID: ${subcategoria.id}`);
                 
                 //console.log(`ID Categoría: ${subcategoria.id_categoria}`);
-                if (categoriaId == subcategoria.id_categoria) {
-                    //console.log(`Nombre: ${subcategoria.nombre}`);
+                //console.log(selectedOption.value);
+                //console.log(subcategoria.id_categoria);
+
+                if (categoriaSelect.value == subcategoria.id_categoria) {
+                    console.log(`Nombre: ${subcategoria.nombre}`);
 
                     const option = document.createElement("option");
                     option.value = subcategoria.id;
