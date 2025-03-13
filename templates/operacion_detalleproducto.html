@@ -21,7 +21,7 @@
   <div class="left">
       <div class="product-info">
           <h2 class="title-detalle"> {{ producto.marca.nombre }} {{ producto.modelo }} - 
-            <a href="/operacion/stock/nuevoproducto" class="btn btn-outline-success btn-sm">
+            <a href="/operacion/stock/editarproducto/productoid={{producto.id}}" class="btn btn-outline-success btn-sm">
                 <i class="fa-solid fa-pen-to-square"></i> Editar
             </a>
           </h2>
@@ -79,7 +79,8 @@
                     data-color="{{ color.color }}"
                     data-codigo="{{ color.codigo_referencial }}"
                     data-stock="{{ color.stock }}"
-                    data-codigo_color="{{ color.codigo_color }}">
+                    data-codigo_color="{{ color.codigo_color }}"
+                    data-imagen="{% if color.imagen %}{{ color.imagen.url }}{% endif %}">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
             </div>
@@ -138,7 +139,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editForm" method="POST" action="{% url 'editar_color' %}">
+                <form id="editForm" method="POST" enctype="multipart/form-data" action="{% url 'editar_color' %}">
                     {% csrf_token %}
                     <input type="hidden" id="edit-id" name="id">
                     
@@ -162,13 +163,15 @@
                         <input type="number" class="form-control" id="edit-stock" name="stock">
                     </div>
                     <div class="mb-3">
-                        <label for="imagen" class="form-label">Imagen</label>
-                        <input type="file" class="form-control" id="imagen" name="imagen">
-                        {% if color.imagen %}
-                            <img src="{{ color.imagen.url }}" alt="Imagen Actual" style="width: 80px; height: 50px; margin-top: 10px;">
-                        {% else %}
-                            <img src="{% static 'img/noimage.jpg' %}" alt="No Imagen" style="width: 80px; height: 50px; margin-top: 10px;">
-                        {% endif %}
+                        <label for="imagen" class="form-label">Actualizar la imagen actual</label>
+                        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                        
+                        <div id="imagen-container" style="margin-top: 10px;">
+                            <img id="preview-imagen" src="" alt="Imagen Actual" style="width: 80px; height: 50px; display: none;">
+                            <br>
+                            <label for="eliminar_imagen" id="eliminar_imagen_label" style="display: none;">Eliminar la imagen actual</label>
+                            <input type="checkbox" id="eliminar_imagen" name="eliminar_imagen" style="display: none;">
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -188,6 +191,22 @@
                 document.getElementById("edit-codigo").value = this.getAttribute("data-codigo");
                 document.getElementById("edit-stock").value = this.getAttribute("data-stock");
                 document.getElementById("edit-codigo_color").value = this.getAttribute("data-codigo_color");
+                // Obtener la imagen
+                let imagenUrl = this.getAttribute("data-imagen");
+                let imagenPreview = document.getElementById("preview-imagen");
+                let checkbox = document.getElementById("eliminar_imagen");
+                let labelCheckbox = document.getElementById("eliminar_imagen_label");
+
+                if (imagenUrl) {
+                    imagenPreview.src = imagenUrl;
+                    imagenPreview.style.display = "block"; // Mostrar imagen
+                    checkbox.style.display = "inline-block"; // Mostrar checkbox
+                    labelCheckbox.style.display = "inline-block"; // Mostrar etiqueta
+                } else {
+                    imagenPreview.style.display = "none"; // Ocultar imagen
+                    checkbox.style.display = "none"; // Ocultar checkbox
+                    labelCheckbox.style.display = "none"; // Ocultar etiqueta
+                }
             });
         });
     });

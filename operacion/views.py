@@ -19,6 +19,7 @@ from django.http import JsonResponse
 from django.contrib import messages  # Para mostrar alertas en la plantilla
 from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404
+import cloudinary.uploader
 
 # Create your views here.
 def cerrar_caja(request):
@@ -730,8 +731,16 @@ def editar_color(request):
         color_id = request.POST.get("id")
         color_obj = get_object_or_404(ColorStock, id=color_id)
         
-        if 'imagen' in request.FILES:
-            color_obj.imagen = request.FILES['imagen']
+        # Si el usuario marcó la opción de eliminar la imagen
+        if request.POST.get("eliminar_imagen"):
+            if color_obj.imagen:  # Verifica que haya una imagen
+                public_id = color_obj.imagen.public_id  # Obtiene el ID de la imagen en Cloudinary
+                cloudinary.uploader.destroy(public_id)  # Elimina la imagen de Cloudinary
+                color_obj.imagen = None  # Limpia el campo en la base de datos
+
+        # Si el usuario subió una nueva imagen
+        elif 'imagen' in request.FILES:
+            color_obj.imagen = request.FILES['imagen']  # Actualiza con la nueva imagen
         
         color_obj.color = request.POST.get("color")
         color_obj.codigo_referencial = request.POST.get("codigo_referencial")
@@ -744,3 +753,44 @@ def editar_color(request):
         producto = get_object_or_404(Producto, id=color_obj.producto.id)
         colores = ColorStock.objects.filter(producto=producto)
         return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
+    
+@operador_required
+def editar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+
+    try:
+        categoria = Categoria.objects.all()
+    except Categoria.DoesNotExist:
+        categoria = []
+
+    try:
+        subcategoria = subCategoria.objects.all()
+    except subCategoria.DoesNotExist:
+        subcategoria = []
+
+    try:
+        marca = Marca.objects.all()
+    except Marca.DoesNotExist:
+        marca = []
+    
+    # Esto se hace para cargar el producto en el formulario
+    categorias_seleccionada = producto.categoria.id if producto.categoria else None
+    subcategorias_seleccionada = producto.subcategoria.id if producto.subcategoria else None
+    marca_seleccionada = producto.marca.id if producto.marca else None
+    
+    precio = "{:.2f}".format(producto.precio)  # Asegura que el precio tiene dos decimales
+    peso = "{:.2f}".format(producto.peso)
+
+    print(producto.precio, producto.peso)
+    return render(request, "operacion_editarproducto.html", {
+        "producto": producto,
+        "categoria": categoria,
+        "subcategoria": subcategoria,
+        "marca": marca,
+        "categorias_seleccionada": categorias_seleccionada,
+        "subcategorias_seleccionada": subcategorias_seleccionada,
+        "marca_seleccionada": marca_seleccionada,
+        "precio":precio,
+        "peso":peso,
+    })
+    

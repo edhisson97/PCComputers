@@ -1,0 +1,154 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion Editar producto{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container-inicio">
+  <h3 class="title">Editar producto - {{ producto.marca }} {{ producto.modelo }}</h3>
+  
+  {% if messages %}
+      {% for message in messages %}
+          <div class="alert alert-danger" role="alert">
+              {{ message }}
+          </div>
+      {% endfor %}
+  {% endif %}
+
+  <div class="form-container">
+      <h5 class="leyenda_nuevo_producto">Todos los campos son obligatorios, por favor ingrese correctamente todos los datos.</h5>
+      
+      <form id="productoForm" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <!-- Modelo -->
+          <div class="form-group">
+              <label for="modelo">Modelo:</label>
+              <input type="text" class="form-control" id="modelo" name="modelo" maxlength="255" value="{{ producto.modelo }}" required>
+          </div>
+
+         <!-- Categoría 
+        <div class="form-group">
+            <label for="categoria">Categoría:</label>
+            <select class="form-control short" id="categoria" name="categoria" required>
+                {% for categoria in categoria %}
+                    <option value="{{ categoria.id }}" {% if categoria.id == categorias_seleccionada %}selected{% endif %}>{{ categoria.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+         Subcategoría -->
+        <div class="form-group">
+            <label for="subcategoria">Categoría y Subcategoría:</label>
+            <select class="form-control short" id="subcategoria" name="subcategoria" required>
+                <option value="">Seleccione una:</option>
+                {% for subcategoria in subcategoria %}
+                    <option value="{{ subcategoria.id }}" {% if subcategoria.id == subcategorias_seleccionada %}selected{% endif %}>{{subcategoria.id_categoria}} - {{subcategoria.nombre}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+          
+          <!-- Marca -->
+          <div class="form-group">
+              <label for="marca">Marca:</label>
+              <select class="form-control short" id="marca" name="marca" required>
+                  {% for marca in marca %}
+                      <option value="{{ marca.id }}" {% if marca.id == marca_seleccionada %}selected{% endif %}>{{ marca.nombre }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+
+          <!-- Calidad -->
+          <div class="form-group">
+              <label for="calidad">Calidad:</label>
+              <select class="form-control short" id="calidad" name="calidad">
+                  <option value="original" {% if producto.calidad == "original" %}selected{% endif %}>Original</option>
+                  <option value="generico" {% if producto.calidad == "generico" %}selected{% endif %}>Genérico</option>
+                  <option value="sn" {% if producto.calidad == "sn" %}selected{% endif %}>S/N</option>
+              </select>
+          </div>
+
+          <!-- Precio -->
+          <div class="form-group">
+              <label for="precio">Precio:</label>
+              <input type="number" class="form-control short" id="precio" name="precio" step="0.01" value="{{ precio }}" required>
+          </div>
+
+          <!-- Detalle -->
+          <div class="form-group">
+              <label for="detalle">Detalle:</label>
+              <input type="text" class="form-control" id="detalle" name="detalle" maxlength="600" value="{{ producto.detalle }}" placeholder="Características principales (una línea)" required>
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group">
+              <label for="descripcion">Descripción:</label>
+              <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Características detalladas del producto" required>{{ producto.descripcion }}</textarea>
+          </div>
+
+          <!-- Peso -->
+          <div class="form-group">
+              <label for="peso">Peso (Kg):</label>
+              <input type="number" class="form-control short" id="peso" name="peso" step="0.01" value="{{ peso }}" required>
+          </div>
+
+          <!-- Oferta -->
+          <div class="form-group checkbox-group">
+              <label for="oferta">¿En oferta?</label>
+              <input type="checkbox" id="oferta" name="oferta" {% if producto.oferta %}checked{% endif %}>
+          </div>
+
+          <!-- Precio de oferta -->
+          <div class="form-group">
+              <label for="precio_oferta">Precio de oferta:</label>
+              <input type="number" class="form-control short" id="precio_oferta" name="precio_oferta" step="0.01" value="{{ producto.precio_oferta }}" {% if not producto.oferta %}disabled{% endif %}>
+          </div>
+
+          <!-- Imágenes 
+          <div class="form-group">
+              <label for="imagenes">Imágenes del producto:</label>
+              <input type="file" class="form-control" id="imagenes" name="imagenes" accept="image/*" multiple>
+              <p>Imágenes actuales:</p>
+              {% for imagen in producto.imagenes.all %}
+                  <img src="{{ imagen.url }}" alt="Imagen" style="width: 80px; height: 80px;">
+              {% empty %}
+                  <p>No hay imágenes.</p>
+              {% endfor %}
+          </div>-->
+
+          <button type="submit" class="btn">Actualizar Producto</button>
+      </form>
+  </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const checkboxOferta = document.getElementById("oferta");
+      const inputPrecioOferta = document.getElementById("precio_oferta");
+  
+      // Función para habilitar o deshabilitar el input de precio oferta
+      function togglePrecioOferta() {
+        if (checkboxOferta.checked) {
+          inputPrecioOferta.disabled = false; // Habilitar el input
+        } else {
+          inputPrecioOferta.disabled = true; // Deshabilitar el input
+          inputPrecioOferta.value = ""; // Limpiar el valor
+        }
+      }
+  
+      // Escuchar el cambio de estado del checkbox
+      checkboxOferta.addEventListener("change", togglePrecioOferta);
+  
+      // Inicializar el estado del input al cargar la página
+      togglePrecioOferta();
+  
+  
+    });
+
+  </script>
+  
+
+
+{% endblock %} 
