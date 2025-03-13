@@ -5,16 +5,33 @@
 {% block content %}
 {% load static %}
 
+<h5 class="title-detalle"><i class="fa-solid fa-list"></i> Detalles del producto</h5>
+
+    {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-danger" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endfor %}
+      {% endif %}
 <div class="container">
+    
   <!-- 📌 Detalles del Producto -->
   <div class="left">
       <div class="product-info">
-          <h2 class="title-detalle"> PRODUCTO ID {{producto.id}} - {{ producto.modelo }}</h2>
+          <h2 class="title-detalle"> {{ producto.marca.nombre }} {{ producto.modelo }} - 
+            <a href="/operacion/stock/nuevoproducto" class="btn btn-outline-success btn-sm">
+                <i class="fa-solid fa-pen-to-square"></i> Editar
+            </a>
+          </h2>
+          <p><strong>Código refencial:</strong> {{ producto.id }}</p>
           <p><strong>Categoría:</strong> {{ producto.categoria.nombre }}</p>
           <p><strong>Subcategoría:</strong> {{ producto.subcategoria.nombre }}</p>
           <p><strong>Marca:</strong> {{ producto.marca.nombre }}</p>
           <p><strong>Calidad:</strong> {{ producto.get_calidad_display }}</p>
           <p><strong>Precio:</strong> ${{ producto.precio }}</p>
+          <p><strong>Detalle:</strong> {{ producto.detalle }}</p>
           <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
       </div>
 
@@ -35,26 +52,145 @@
   <div class="right">
         <!-- 📌 Lista de colores -->
       <h2 class="title-detalle">Colores disponibles</h2>
+      {% if not colores%}
+        
+        <h6>Aún no se han agregado colores.</h6>
+        
+      {% endif %}
       {% for color in colores %}
-      <div class="color-box">
-          <div style="background: {{ color.codigo_color }}"></div>
-          <p>{{ color.color }} - Stock: {{ color.stock }}</p>
-          {% if color.imagen %}
-              <img src="{{ color.imagen.url }}" alt="Color" style="width: 40px; height: 40px;">
-          {% endif %}
-      </div>
+        {% if not color.color and color.stock == 0 %}
+            
+            <h6>Aún no se han agregado colores.</h6>
+            
+        {% else %}
+            <div class="color-box">
+                <div style="background: {{ color.codigo_color }}"></div>
+                <p><b>{{ color.color }}</b></p>
+                <p>Cód. Referencial: {{ color.codigo_referencial }}</p>
+                <p>Stock: <b> {{ color.stock }}</b></p>
+                {% if color.imagen %}
+                    <img src="{{ color.imagen.url }}" alt="Color" style="width: 40px; height: 40px;">
+                {% else %}
+                    <img src="{% static 'img/noimage.jpg' %}" alt="Color" style="width: 80px; height: 50px;">
+                {% endif %}
+                <button type="button" class="btn btn-success edit-btn"
+                    data-bs-toggle="modal" data-bs-target="#editModal"
+                    data-id="{{ color.id }}"
+                    data-color="{{ color.color }}"
+                    data-codigo="{{ color.codigo_referencial }}"
+                    data-stock="{{ color.stock }}"
+                    data-codigo_color="{{ color.codigo_color }}">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+            </div>
+        {% endif %}
       {% endfor %}
-      
-      <h2 class="title-detalle">Agregar Color y Stock</h2>
-      <form method="POST" enctype="multipart/form-data">
-          {% csrf_token %}
-          <input type="text" name="color" placeholder="Nombre del color" required>
-          <input type="color" name="codigo_color" value="#000000">
-          <input type="number" name="stock" placeholder="Cantidad en stock" required>
-          <input type="file" name="imagen" accept="image/*" required>
-          <button type="submit">Agregar</button>
-      </form>
+    
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarColor">
+        <i class="fa-solid fa-plus"></i> Agregar Nuevo Color
+    </button>
+
+      <!-- Modal -->
+        <div class="modal fade" id="modalAgregarColor" tabindex="-1" aria-labelledby="modalAgregarColorLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAgregarColorLabel">Agregar Color y Stock</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Código Referencial</label>
+                                <input type="text" name="codigoReferencial" class="form-control" placeholder="Código referencial" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nombre del Color</label>
+                                <input type="text" name="color" class="form-control" placeholder="Nombre del color" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="color" name="codigo_color" class="form-control form-control-color" value="#000000">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Cantidad en Stock</label>
+                                <input type="number" name="stock" class="form-control" placeholder="Cantidad en stock" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="file" name="imagen" class="form-control" accept="image/*" >
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Agregar Color</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
   </div>
+  <!-- Modal de Edición -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Color Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="POST" action="{% url 'editar_color' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="edit-id" name="id">
+                    
+                    <div class="mb-3">
+                        <label for="edit-color" class="form-label">Color</label>
+                        <input type="text" class="form-control" id="edit-color" name="color">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit-codigo_color" class="form-label">Código de Color</label>
+                        <input type="color" class="form-control" id="edit-codigo_color" name="codigo_color">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit-codigo" class="form-label">Código Referencial</label>
+                        <input type="text" class="form-control" id="edit-codigo" name="codigo_referencial">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit-stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="edit-stock" name="stock">
+                    </div>
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label">Imagen</label>
+                        <input type="file" class="form-control" id="imagen" name="imagen">
+                        {% if color.imagen %}
+                            <img src="{{ color.imagen.url }}" alt="Imagen Actual" style="width: 80px; height: 50px; margin-top: 10px;">
+                        {% else %}
+                            <img src="{% static 'img/noimage.jpg' %}" alt="No Imagen" style="width: 80px; height: 50px; margin-top: 10px;">
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".edit-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                document.getElementById("edit-id").value = this.getAttribute("data-id");
+                document.getElementById("edit-color").value = this.getAttribute("data-color");
+                document.getElementById("edit-codigo").value = this.getAttribute("data-codigo");
+                document.getElementById("edit-stock").value = this.getAttribute("data-stock");
+                document.getElementById("edit-codigo_color").value = this.getAttribute("data-codigo_color");
+            });
+        });
+    });
+</script>
 
 {% endblock %} 

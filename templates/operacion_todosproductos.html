@@ -1,0 +1,65 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion productos{% endblock %}
+
+{% block content %}
+{% load static %}
+<h5 class="title-detalle"> Listado de Productos</h5>
+<h2 class="text-center"></h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <input type="text" id="buscarProducto" class="form-control w-50" placeholder="🔎 Buscar producto...">
+    <a href="/operacion/stock/nuevoproducto" class="btn btn-primary">
+        + Nuevo Producto
+    </a>
+</div>
+
+<div class="container mt-4">
+
+    <div class="row" id="productosContainer">
+        {% for producto in productos %}
+        <div class="col-md-2 producto-card">
+            <div class="card mb-4">
+                {% if producto.imagenes.all %}
+                <img src="{{ producto.imagenes.first.imagen.url }}" class="card-img-top" alt="{{ producto.modelo }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ producto.marca.nombre }} {{ producto.modelo }}</h5>
+                    <p class="card-text"><strong>Código:</strong> {{producto.id}}</p>
+                    <p class="card-text"><strong>Precio:</strong> ${{ producto.precio }}</p>
+                    <a href="/operacion/stock/nuevoproducto/detalle/idproducto={{producto.id}}/"> Ver más</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No hay productos disponibles.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- JavaScript para la búsqueda en tiempo real -->
+<script>
+    document.getElementById("buscarProducto").addEventListener("input", function () {
+        let filtro = this.value.toLowerCase();
+        let productos = document.querySelectorAll(".producto-card");
+    
+        productos.forEach(producto => {
+            let nombre = producto.querySelector(".card-title").textContent.toLowerCase();
+            let codigo = producto.querySelector(".card-text strong").nextSibling.textContent.trim().toLowerCase(); // Obtiene el código
+
+            if (nombre.includes(filtro)|| codigo.includes(filtro)) {
+                producto.style.order = "-1"; // Se muestra primero
+                producto.style.opacity = "1"; // Se mantiene visible
+                producto.style.maxHeight = "500px"; // Evita que colapse
+            } else {
+                producto.style.order = "1"; // Se mueve al final
+                producto.style.opacity = "0"; // Se desvanece
+                producto.style.maxHeight = "0"; // Oculta sin distorsionar
+                producto.style.overflow = "hidden"; // Evita que el contenido se vea
+                producto.style.transition = "opacity 0.3s, max-height 0.3s"; // Animación suave
+            }
+        });
+    });
+      
+</script>
+
+{% endblock %} 

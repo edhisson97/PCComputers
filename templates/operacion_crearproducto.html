@@ -30,7 +30,7 @@
                 <label for="categoria">Categoría:</label>
                 <select class="form-control short" id="categoria" name="categoria" required>
                   {% for categoria in categorias %}
-                  <option value="{{ categoria.nombre }}" data-subcategorias='{{ subcategorias|safe }}'>{{ categoria.nombre }}</option>
+                  <option value="{{ categoria.id }}" data-categoria='{{ categoria.nombre }}' data-subcategorias='{{ subcategorias|safe }}'>{{ categoria.nombre }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -151,7 +151,7 @@
 
             //console.log(categoriaSelect.value);
             // Obtén los datos de la categoría
-            const categoriaId = selectedOption.value; // ID de la categoría
+            const categoriaId = selectedOption.dataset.categoria; // ID de la categoría
             //const subcategoriasJson = selectedOption.dataset.subcategorias; // Nombre de la categoría
             // Obtén los datos del atributo `data-subcategorias`
             const subcategoriasData = selectedOption.dataset.subcategorias;
@@ -170,7 +170,7 @@
                 //console.log(selectedOption.value);
                 //console.log(subcategoria.id_categoria);
 
-                if (categoriaSelect.value == subcategoria.id_categoria) {
+                if (categoriaId == subcategoria.id_categoria) {
                     console.log(`Nombre: ${subcategoria.nombre}`);
 
                     const option = document.createElement("option");

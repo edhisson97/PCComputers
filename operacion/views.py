@@ -598,51 +598,45 @@ def nuevo_producto(request):
         categoria = Categoria.objects.all()
         primeraCategoria = Categoria.objects.first()
     except Categoria.DoesNotExist:
-        return render(request, "operacion_stock.html",)
+        return render(request, "operacion_stock.html")
+
     try:
         subcategoria = subCategoria.objects.all()
     except subCategoria.DoesNotExist:
-        return render(request, "operacion_stock.html",)
+        return render(request, "operacion_stock.html")
+
     try:
         marca = Marca.objects.all()
     except Marca.DoesNotExist:
-        return render(request, "operacion_stock.html",)
+        return render(request, "operacion_stock.html")
+
     try:
         primerasSubcategorias = subCategoria.objects.filter(id_categoria=primeraCategoria.id)
     except subCategoria.DoesNotExist:
         primerasSubcategorias = "Ninguna"
+
     subcategorias_dict = [
-        {
-            "id": sub.id,
-            "nombre": sub.nombre,
-            "id_categoria": sub.id_categoria.nombre         
-        }
+        {"id": sub.id, "nombre": sub.nombre, "id_categoria": sub.id_categoria.nombre}
         for sub in subcategoria
     ]
-    
-    # Convertimos el diccionario a JSON antes de pasarlo al template
+
     subcategorias_json = json.dumps(subcategorias_dict)
-    
+
     if request.method == "POST":
         try:
-            # Procesar el formulario enviado
             modelo = request.POST.get("modelo")
             calidad = request.POST.get("calidad")
             detalle = request.POST.get("detalle")
             descripcion = request.POST.get("descripcion")
-            oferta = request.POST.get("oferta") == "on"  # Verifica si el checkbox está marcado
+            oferta = request.POST.get("oferta") == "on"
             precio_oferta = request.POST.get("precio_oferta") if oferta else None
             imagenes = request.FILES.getlist("imagenes")
-            
-            
             precio = request.POST.get("precio")
             peso = request.POST.get("peso")
             categoria_id = request.POST.get("categoria")
             subcategoria_id = request.POST.get("subcategoria")
             marca_id = request.POST.get("marca")
-           
-            
-            # Crear la instancia del producto
+
             nuevo_producto = Producto(
                 modelo=modelo,
                 categoria_id=categoria_id,
@@ -656,17 +650,16 @@ def nuevo_producto(request):
                 oferta=oferta,
                 precio_oferta=precio_oferta,
             )
-            nuevo_producto.save()  # Guardar el producto en la base de datos
+            nuevo_producto.save()
 
-            # Guardar las imágenes
             for imagen in imagenes:
                 ImagenProducto.objects.create(producto=nuevo_producto, imagen=imagen)
-                
+
             colorStock = ColorStock(
-                codigo_articulo = nuevo_producto.id,
-                color = 'negro',
-                stock = 0,
-                producto = nuevo_producto,
+                codigo_articulo=nuevo_producto.id,
+                color='',
+                stock=0,
+                producto=nuevo_producto,
             )
             colorStock.save()
 
@@ -674,18 +667,80 @@ def nuevo_producto(request):
 
         except ValueError as ve:
             messages.error(request, f"Error de valor: {str(ve)}")
-        except IntegrityError:
-            messages.error(request, "Error: No se pudo guardar el producto. Verifique los datos.")
         except Exception as e:
             messages.error(request, f"Ocurrió un error inesperado: {str(e)}")
 
-    
-    else:
-        
-        return render(request, 'operacion_crearproducto.html',{"categorias":categoria, "subcategorias":subcategorias_json, "marcas":marca, "primerasSubcategorias":primerasSubcategorias})
+        # SOLUCIÓN: Siempre retornar `render()` si hay un error
+        return render(request, 'operacion_crearproducto.html', {
+            "categorias": categoria,
+            "subcategorias": subcategorias_json,
+            "marcas": marca,
+            "primerasSubcategorias": primerasSubcategorias
+        })
 
+    # Respuesta en caso de `GET`
+    return render(request, 'operacion_crearproducto.html', {
+        "categorias": categoria,
+        "subcategorias": subcategorias_json,
+        "marcas": marca,
+        "primerasSubcategorias": primerasSubcategorias
+    })
+    
+@operador_required
 def detalle_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
+    if request.method == "POST":
+        try:
+            # Capturar los datos del formulario
+            codigo_referencial = request.POST.get("codigoReferencial")
+            nombre_color = request.POST.get("color")
+            codigo_color = request.POST.get("codigo_color")  # Hexadecimal
+            stock = request.POST.get("stock")
+            imagen = request.FILES.get("imagen")
+            
+            nuevoColorStock = ColorStock()
+            nuevoColorStock.codigo_articulo = producto.id
+            nuevoColorStock.codigo_referencial = codigo_referencial
+            nuevoColorStock.color = nombre_color
+            nuevoColorStock.codigo_color = codigo_color
+            nuevoColorStock.stock = int(stock)
+            if imagen:
+                nuevoColorStock.imagen =imagen
+            nuevoColorStock.producto = producto
+            nuevoColorStock.save()
+            
+        except Producto.DoesNotExist:
+            messages.error(request, "El producto no existe.")
+        except Exception as e:
+            messages.error(request, f"Error al agregar el color: {str(e)}")
+            
+    
     colores = ColorStock.objects.filter(producto=producto)
 
     return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
+
+@operador_required
+def todos_productos(request):
+    productos = Producto.objects.all()
+    return render(request, "operacion_todosproductos.html", {"productos": productos})
+
+@operador_required
+def editar_color(request):
+    if request.method == "POST":
+        color_id = request.POST.get("id")
+        color_obj = get_object_or_404(ColorStock, id=color_id)
+        
+        if 'imagen' in request.FILES:
+            color_obj.imagen = request.FILES['imagen']
+        
+        color_obj.color = request.POST.get("color")
+        color_obj.codigo_referencial = request.POST.get("codigo_referencial")
+        color_obj.stock = request.POST.get("stock")
+        color_obj.codigo_color = request.POST.get("codigo_color")
+
+        color_obj.save()
+        messages.success(request, "Color actualizado correctamente.")
+        
+        producto = get_object_or_404(Producto, id=color_obj.producto.id)
+        colores = ColorStock.objects.filter(producto=producto)
+        return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
