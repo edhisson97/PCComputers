@@ -700,7 +700,6 @@ def detalle_producto(request, producto_id):
             imagen = request.FILES.get("imagen")
             
             nuevoColorStock = ColorStock()
-            nuevoColorStock.codigo_articulo = producto.id
             nuevoColorStock.codigo_referencial = codigo_referencial
             nuevoColorStock.color = nombre_color
             nuevoColorStock.codigo_color = codigo_color
@@ -755,6 +754,24 @@ def editar_color(request):
         return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
     
 @operador_required
+def eliminar_color(request, color_id):
+    color = get_object_or_404(ColorStock, id=color_id)
+
+    if request.method == "POST":
+        if color.imagen:  # Verifica que haya una imagen
+                public_id = color.imagen.public_id  # Obtiene el ID de la imagen en Cloudinary
+                cloudinary.uploader.destroy(public_id)  # Elimina la imagen de Cloudinary
+        
+        color.delete()
+        messages.success(request, "Producto eliminado correctamente.")
+        
+    producto = get_object_or_404(Producto, id=color.producto.id)
+    colores = ColorStock.objects.filter(producto=producto)
+    return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
+    
+
+    
+@operador_required
 def editar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
@@ -780,6 +797,8 @@ def editar_producto(request, producto_id):
     
     precio = "{:.2f}".format(producto.precio)  # Asegura que el precio tiene dos decimales
     peso = "{:.2f}".format(producto.peso)
+    if producto.precio_oferta:
+        oferta = "{:.2f}".format(producto.precio_oferta)
 
     print(producto.precio, producto.peso)
     return render(request, "operacion_editarproducto.html", {
@@ -792,5 +811,77 @@ def editar_producto(request, producto_id):
         "marca_seleccionada": marca_seleccionada,
         "precio":precio,
         "peso":peso,
+        "precio_oferta":oferta
     })
     
+def actualizar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    if request.method == "POST":
+        # Obtener datos del formulario
+        producto.modelo = request.POST.get("modelo")
+        subcategoria_id = request.POST.get("subcategoria")
+        subcategoria = get_object_or_404(subCategoria, id=subcategoria_id)
+        categoria = get_object_or_404(Categoria, nombre=subcategoria.id_categoria)
+        producto.subcategoria = subcategoria
+        producto.categoria = categoria
+        marca_id = request.POST.get("marca")
+        marca = get_object_or_404(Marca, id=marca_id)
+        producto.marca = marca
+        producto.calidad = request.POST.get("calidad")
+
+        # Manejo de números (precio y peso)
+        try:
+            producto.precio = float(request.POST.get("precio", 0))
+            producto.peso = float(request.POST.get("peso", 0))
+        except ValueError:
+            messages.error(request, "Error en los valores numéricos.")
+            return redirect("actualizar_producto", producto_id=producto.id)
+
+        producto.detalle = request.POST.get("detalle")
+        producto.descripcion = request.POST.get("descripcion")
+
+        # Manejo del checkbox de oferta
+        if "oferta" in request.POST:
+            producto.oferta = True
+            try:
+                producto.precio_oferta = float(request.POST.get("precio_oferta", 0))
+            except ValueError:
+                producto.precio_oferta = None
+        else:
+            producto.oferta = False
+            producto.precio_oferta = None
+
+        # Guardar cambios
+        producto.save()
+        messages.success(request, "Producto actualizado correctamente.")
+
+        # Redirigir a la vista de detalles del producto (ajusta según tu proyecto)
+        producto = get_object_or_404(Producto, id=producto_id)
+        colores = ColorStock.objects.filter(producto=producto)
+        return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
+
+    
+def gestionar_imagenes(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    imagenes = ImagenProducto.objects.filter(producto=producto)
+
+    if request.method == "POST":
+        if "agregar" in request.POST and "imagen" in request.FILES:
+            if imagenes.count() >= 4:
+                messages.error(request, "No puedes subir más de 4 imágenes.")
+            else:
+                nueva_imagen = ImagenProducto(producto=producto, imagen=request.FILES["imagen"])
+                nueva_imagen.save()
+                messages.success(request, "Imagen agregada con éxito.")
+                return redirect("gestionar_imagenes", producto_id=producto.id)
+        
+        elif "eliminar" in request.POST:
+            imagen_id = request.POST.get("imagen_id")
+            imagen = get_object_or_404(ImagenProducto, id=imagen_id, producto=producto)
+            public_id = imagen.imagen.public_id  # Obtiene el ID de la imagen en Cloudinary
+            cloudinary.uploader.destroy(public_id)
+            imagen.delete()
+            messages.success(request, "Imagen eliminada correctamente.")
+            return redirect("gestionar_imagenes", producto_id=producto.id)
+
+    return render(request, "operacion_gestionarimagenes.html", {"producto": producto, "imagenes": imagenes})

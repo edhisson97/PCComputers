@@ -32,7 +32,6 @@ class ImagenProducto(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE,related_name="imagenes")
     
 class ColorStock(models.Model):
-    codigo_articulo = models.IntegerField(default=1,unique=True)
     codigo_referencial = models.CharField(max_length=255,null=True)
     color = models.CharField(max_length=100,null=True)
     codigo_color = models.CharField(max_length=10, default="#050505",help_text="El código del producto debe ser HEX ejemplo:'#050505' o '#fcfcfc'.")

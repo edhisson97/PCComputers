@@ -335,6 +335,10 @@
 .right {
   flex: 1.5;
 }
+.left img{
+  margin-bottom: 10px;
+}
+
 img {
   width: 100%;
   max-height: 300px;
@@ -530,4 +534,111 @@ form button:hover {
   .producto-card {
       flex: 1 1 100%; /* 1 tarjeta por fila en pantallas muy pequeñas */
   }
+}
+
+/**********GESTION DE IMAGENES*************/
+.gestion-imagenes-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.gestion-imagenes-title {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.gestion-imagenes-messages {
+  margin-bottom: 10px;
+}
+
+.gestion-imagenes-message {
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.gestion-imagenes-success { background: #d4edda; color: #155724; }
+.gestion-imagenes-error { background: #f8d7da; color: #721c24; }
+
+.gestion-imagenes-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.gestion-imagenes-item {
+  position: relative;
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.gestion-imagenes-item img {
+  max-width: 200px;
+  height: auto;
+  border-radius: 5px;
+  display: block;
+}
+
+.gestion-imagenes-btn {
+  padding: 8px 15px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.gestion-imagenes-btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.gestion-imagenes-btn-danger:hover {
+  background: #c82333;
+}
+
+.gestion-imagenes-btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.gestion-imagenes-btn-primary:hover {
+  background: #0056b3;
+}
+
+.gestion-imagenes-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.gestion-imagenes-form input {
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.gestion-imagenes-max {
+  font-size: 14px;
+  color: #888;
+}
+
+.gestion-imagenes-noimagenes {
+  font-size: 16px;
+  color: #777;
 }

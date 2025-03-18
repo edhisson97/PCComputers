@@ -1,0 +1,47 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion Gestionar imagenes{% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="gestion-imagenes-container">
+    <h2 class="gestion-imagenes-title">Gestionar Imágenes de {{ producto.modelo }}</h2>
+
+    <!-- Mensajes de éxito/error -->
+    {% if messages %}
+    <div class="gestion-imagenes-messages">
+        {% for message in messages %}
+        <div class="gestion-imagenes-message gestion-imagenes-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Contenedor de imágenes -->
+    <div class="gestion-imagenes-list">
+        {% for imagen in imagenes %}
+        <div class="gestion-imagenes-item">
+            <img src="{{ imagen.imagen.url }}" alt="Imagen del producto">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="imagen_id" value="{{ imagen.id }}">
+                <button type="submit" name="eliminar" class="gestion-imagenes-btn gestion-imagenes-btn-danger">Eliminar</button>
+            </form>
+        </div>
+        {% empty %}
+        <p class="gestion-imagenes-noimagenes">No hay imágenes cargadas.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Formulario para subir imágenes -->
+    {% if imagenes.count < 4 %}
+    <form method="post" enctype="multipart/form-data" class="gestion-imagenes-form">
+        {% csrf_token %}
+        <input type="file" name="imagen" accept="image/*" required>
+        <button type="submit" name="agregar" class="gestion-imagenes-btn gestion-imagenes-btn-primary">Subir Imagen</button>
+    </form>
+    {% else %}
+    <p class="gestion-imagenes-max">Has alcanzado el límite de 4 imágenes.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

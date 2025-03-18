@@ -19,7 +19,7 @@
   <div class="form-container">
       <h5 class="leyenda_nuevo_producto">Todos los campos son obligatorios, por favor ingrese correctamente todos los datos.</h5>
       
-      <form id="productoForm" method="post" enctype="multipart/form-data">
+      <form id="productoForm" method="post" enctype="multipart/form-data" action="{% url 'actualizar_producto' producto.id %}">
           {% csrf_token %}
           
           <!-- Modelo -->
@@ -103,7 +103,7 @@
           <!-- Precio de oferta -->
           <div class="form-group">
               <label for="precio_oferta">Precio de oferta:</label>
-              <input type="number" class="form-control short" id="precio_oferta" name="precio_oferta" step="0.01" value="{{ producto.precio_oferta }}" {% if not producto.oferta %}disabled{% endif %}>
+              <input type="number" class="form-control short" id="precio_oferta" name="precio_oferta" step="0.01" value="{{ precio_oferta }}" {% if not producto.oferta %}disabled{% endif %}>
           </div>
 
           <!-- Imágenes 

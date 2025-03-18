@@ -8,7 +8,7 @@ class ImagenProductoInline(admin.TabularInline):
     
 class ColorStockInline(admin.TabularInline):
     model = ColorStock
-    fields = ['codigo_articulo', 'codigo_referencial' ,'color','codigo_color' ,'stock','imagen']
+    fields = ['codigo_referencial' ,'color','codigo_color' ,'stock','imagen']
     extra = 1
 
 @admin.register(Producto)
