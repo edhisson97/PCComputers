@@ -642,3 +642,30 @@ form button:hover {
   font-size: 16px;
   color: #777;
 }
+
+/*********BARRA NAVEGACION ACCESOS DIRECTOS*************/
+.breadcrumb {
+  font-size: 14px;
+  color: #666;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.breadcrumb a:hover {
+  color: #0056b3;
+}
+
+.breadcrumb span {
+  font-size: 25px;  /* Aumentamos el tamaño del separador */
+  font-weight: bold;
+  color: #444;
+}

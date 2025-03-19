@@ -824,6 +824,7 @@ def editar_producto(request, producto_id):
         "peso":peso,
     })
     
+@operador_required
 def actualizar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     if request.method == "POST":
@@ -870,7 +871,7 @@ def actualizar_producto(request, producto_id):
         colores = ColorStock.objects.filter(producto=producto)
         return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
 
-    
+@operador_required
 def gestionar_imagenes(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     imagenes = ImagenProducto.objects.filter(producto=producto)

@@ -4,8 +4,13 @@
 
 {% block content %}
 {% load static %}
-
 <h5 class="title-detalle"><i class="fa-solid fa-list"></i> Detalles del producto</h5>
+
+<div class="breadcrumb">
+    <a href="/operacion">Panel operaciones</a>
+    <span>›</span>
+    <a href="/operacion/todosproductos">Todos productos</a>
+</div>
 
     {% if messages %}
           {% for message in messages %}

@@ -4,6 +4,13 @@
 
 {% block content %}
 {% load static %}
+<div class="breadcrumb">
+    <a href="/operacion">Panel operaciones</a>
+    <span>›</span>
+    <a href="/operacion/todosproductos">Todos productos</a>
+    <span>›</span>
+    <a href="/operacion/stock/nuevoproducto/detalle/idproducto={{producto.id}}/">Detalle del producto ({{producto.marca}} {{producto.modelo}})</a>
+</div>
 
 <div class="container-inicio">
   <h3 class="title">Editar producto - {{ producto.marca }} {{ producto.modelo }}</h3>

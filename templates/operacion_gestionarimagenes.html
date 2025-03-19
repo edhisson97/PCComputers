@@ -4,9 +4,16 @@
 
 {% block content %}
 {% load static %}
+<div class="breadcrumb">
+    <a href="/operacion">Panel operaciones</a>
+    <span>›</span>
+    <a href="/operacion/todosproductos">Todos productos</a>
+    <span>›</span>
+    <a href="/operacion/stock/nuevoproducto/detalle/idproducto={{producto.id}}/">Detalle del producto ({{producto.marca}} {{producto.modelo}})</a>
+</div>
 <div class="gestion-imagenes-container">
     <h2 class="gestion-imagenes-title">Gestionar Imágenes de {{ producto.modelo }}</h2>
-
+    
     <!-- Mensajes de éxito/error -->
     {% if messages %}
     <div class="gestion-imagenes-messages">
