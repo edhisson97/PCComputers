@@ -657,7 +657,6 @@ def nuevo_producto(request):
                 ImagenProducto.objects.create(producto=nuevo_producto, imagen=imagen)
 
             colorStock = ColorStock(
-                codigo_articulo=nuevo_producto.id,
                 color='',
                 stock=0,
                 producto=nuevo_producto,
@@ -799,9 +798,21 @@ def editar_producto(request, producto_id):
     peso = "{:.2f}".format(producto.peso)
     if producto.precio_oferta:
         oferta = "{:.2f}".format(producto.precio_oferta)
-
-    print(producto.precio, producto.peso)
-    return render(request, "operacion_editarproducto.html", {
+    
+        return render(request, "operacion_editarproducto.html", {
+            "producto": producto,
+            "categoria": categoria,
+            "subcategoria": subcategoria,
+            "marca": marca,
+            "categorias_seleccionada": categorias_seleccionada,
+            "subcategorias_seleccionada": subcategorias_seleccionada,
+            "marca_seleccionada": marca_seleccionada,
+            "precio":precio,
+            "peso":peso,
+            "precio_oferta":oferta
+        })
+    else:
+        return render(request, "operacion_editarproducto.html", {
         "producto": producto,
         "categoria": categoria,
         "subcategoria": subcategoria,
@@ -811,7 +822,6 @@ def editar_producto(request, producto_id):
         "marca_seleccionada": marca_seleccionada,
         "precio":precio,
         "peso":peso,
-        "precio_oferta":oferta
     })
     
 def actualizar_producto(request, producto_id):
