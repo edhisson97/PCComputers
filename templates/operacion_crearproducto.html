@@ -5,6 +5,14 @@
 {% block content %}
 {% load static %}
 
+<div class="breadcrumb">
+  <a href="/operacion">Panel operaciones</a>
+  <span>›</span>
+  <a href="/operacion/todosproductos">Todos productos</a>
+  <span>›</span>
+  <a href="/operacion/stock/nuevoproducto">Nuevo producto</a>
+</div>
+
 <div class="container-inicio">
     <h3 class="title">Crear un nuevo producto</h3>
       {% if messages %}

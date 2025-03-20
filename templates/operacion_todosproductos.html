@@ -5,11 +5,15 @@
 {% block content %}
 {% load static %}
 <h5 class="title-detalle"> Listado de Productos</h5>
-<h2 class="text-center"></h2>
+<div class="breadcrumb">
+    <a href="/operacion">Panel operaciones</a>
+    <span>›</span>
+    <a href="/operacion/todosproductos">Todos productos</a>
+</div>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <input type="text" id="buscarProducto" class="form-control w-50" placeholder="🔎 Buscar producto...">
     <a href="/operacion/stock/nuevoproducto" class="btn btn-primary">
-        + Nuevo Producto
+        <i class="fa-solid fa-plus"></i> Nuevo Producto
     </a>
 </div>
 
@@ -25,7 +29,11 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ producto.marca.nombre }} {{ producto.modelo }}</h5>
                     <p class="card-text"><strong>Código:</strong> {{producto.id}}</p>
-                    <p class="card-text"><strong>Precio:</strong> ${{ producto.precio }}</p>
+                    {% if producto.desactivado == "si"%}
+                        <p class="desactivado">DESACTIVADO</P>
+                    {% else %}
+                        <p class="card-text"><strong>Precio:</strong> ${{ producto.precio }}</p>
+                    {% endif %}
                     <a href="/operacion/stock/nuevoproducto/detalle/idproducto={{producto.id}}/"> Ver más</a>
                 </div>
             </div>

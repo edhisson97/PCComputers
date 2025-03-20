@@ -510,6 +510,11 @@ form button:hover {
   margin-bottom: 5px;
 }
 
+.desactivado{
+  font-size: 14px;
+  color: red;
+}
+
 .productos-container {
   display: flex;
   flex-wrap: wrap;  /* Permite que las tarjetas se ajusten en varias filas */
