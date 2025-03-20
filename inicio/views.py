@@ -50,7 +50,7 @@ def ingresar(request):
     except Carrusel.DoesNotExist:
         return render(request, "home.html",)
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "home.html",)
     
@@ -69,7 +69,7 @@ def perfil(request):
     except Categoria.DoesNotExist:
         return render(request, "perfil.html",)
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "perfil.html",)
     return render(request, 'perfil.html', {"categoria": categoria,"todosProductos":todosProductos})
@@ -254,7 +254,7 @@ def verificar_correo(request, token):
     mensaje = 'Tu correo electrónico ha sido verificado correctamente. Ahora puedes '
     
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "verificacion_exitosa.html",)
 
@@ -271,7 +271,7 @@ def pagina_inicio(request):
     except Carrusel.DoesNotExist:
         return render(request, "home.html",)
     try:
-        productos = Producto.objects.all()
+        productos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "home.html",)
     return render(request, "paginainicio.html", {"categoria": categoria,"carrusel":carrusel,"todosProductos":productos})
@@ -286,7 +286,7 @@ def pagina_inicio(request):
     except Carrusel.DoesNotExist:
         return render(request, "home.html",)
     try:
-        productos = Producto.objects.all()
+        productos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "home.html",)
     return render(request, "home.html", {"categoria": categoria,"carrusel":carrusel,"todosProductos":productos} )
@@ -307,7 +307,7 @@ def pagina_ofertas(request):
     except Producto.DoesNotExist:
         return render(request, "ofertas.html",)
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "ofertas.html",)
     #para el iva
@@ -358,7 +358,7 @@ def obtener_carrito(request):
 
     for producto_id in productos_carrito:
         # Utiliza get_object_or_404 para obtener el Producto por ID
-        producto = get_object_or_404(Producto, id=producto_id)
+        producto = get_object_or_404(Producto.objects.exclude(desactivado="si"), id=producto_id)
         
         #marca = get_object_or_404(Marca, id=producto.marca)
         
@@ -419,7 +419,7 @@ def obtener_carrito(request):
 
 def carrito(request):
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "carrito.html",)
     try:
@@ -452,7 +452,7 @@ def carrito(request):
 
     for producto_id in productos_carrito:
         # Utiliza get_object_or_404 para obtener el Producto por ID
-        producto = get_object_or_404(Producto, id=producto_id)
+        producto = get_object_or_404(Producto.objects.exclude(desactivado="si"), id=producto_id)
         
         #marca = get_object_or_404(Marca, id=producto.marca)
         

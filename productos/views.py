@@ -14,7 +14,7 @@ def pagina_productos(request, id):
     except Categoria.DoesNotExist:
         raise Http404
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "productos.html",)
     try:
@@ -49,94 +49,94 @@ def pagina_productos(request, id):
             if (opcion_seleccionada):
                 if opcion_seleccionada == 'MenorPrecio':
                     if(marca_seleccionada):
-                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id, marca = marca_seleccionada).order_by('precio').distinct()
+                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id, marca = marca_seleccionada).exclude(desactivado="si").order_by('precio').distinct()
                         
                     else:
-                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).order_by('precio').distinct()
+                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).exclude(desactivado="si").order_by('precio').distinct()
                         
                     pass
                 elif opcion_seleccionada == 'MayorPrecio':
                     if(marca_seleccionada):
-                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id,marca = marca_seleccionada).order_by('-precio').distinct()
+                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id,marca = marca_seleccionada).exclude(desactivado="si").order_by('-precio').distinct()
                     else:
-                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).order_by('-precio').distinct()
+                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).exclude(desactivado="si").order_by('-precio').distinct()
                     pass
                 elif opcion_seleccionada == 'Todo':
-                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).distinct()
+                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).exclude(desactivado="si").distinct()
                     pass
                 else:
                     if(marca_seleccionada):
-                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id, oferta = True, marca = marca_seleccionada).distinct()
+                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id, oferta = True, marca = marca_seleccionada).exclude(desactivado="si").distinct()
                     else:
-                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id, oferta = True).distinct()
+                        productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id, oferta = True).exclude(desactivado="si").distinct()
                     pass
             elif (marca_seleccionada):
-                productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id ,marca = marca_seleccionada).distinct()
+                productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id ,marca = marca_seleccionada).exclude(desactivado="si").distinct()
             else:
-                productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).distinct()
+                productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).exclude(desactivado="si").distinct()
                 #elimina_localstorage = True#ojo puede dar problema con el filtrado ****cada que se presiona en subcategoria se reinicia las variables locales de navegador
                 
         #para mayor menor precio y demas
         elif (opcion_seleccionada):
             if (subcategoria_id):
                 if opcion_seleccionada == 'MenorPrecio':
-                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).order_by('precio').distinct()
+                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).exclude(desactivado="si").order_by('precio').distinct()
                     pass
                 elif opcion_seleccionada == 'MayorPrecio':
-                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).order_by('-precio').distinct()
+                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).exclude(desactivado="si").order_by('-precio').distinct()
                     pass
                 elif opcion_seleccionada == 'Todo':
-                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).distinct()
+                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id).exclude(desactivado="si").distinct()
                     pass
                 else:
-                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id, oferta = True).distinct()
+                    productos = Producto.objects.filter(categoria = id, subcategoria = subcategoria_id, oferta = True).exclude(desactivado="si").distinct()
                     pass
             elif (marca_seleccionada):
                 if opcion_seleccionada == 'MenorPrecio':
-                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).order_by('precio').distinct()
+                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).exclude(desactivado="si").order_by('precio').distinct()
                     pass
                 elif opcion_seleccionada == 'MayorPrecio':
-                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).order_by('-precio').distinct()
+                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).exclude(desactivado="si").order_by('-precio').distinct()
                     pass
                 elif opcion_seleccionada == 'Todo':
-                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).distinct()
+                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).exclude(desactivado="si").distinct()
                     pass
                 else:
-                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada, oferta = True).distinct()
+                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada, oferta = True).exclude(desactivado="si").distinct()
                     pass
             else:
                 if opcion_seleccionada == 'MenorPrecio':
-                    productos = Producto.objects.filter(categoria = id).order_by('precio').distinct()
+                    productos = Producto.objects.filter(categoria = id).exclude(desactivado="si").order_by('precio').distinct()
                     pass
                 elif opcion_seleccionada == 'MayorPrecio':
-                    productos = Producto.objects.filter(categoria = id).order_by('-precio').distinct()
+                    productos = Producto.objects.filter(categoria = id).exclude(desactivado="si").order_by('-precio').distinct()
                     pass
                 elif opcion_seleccionada == 'Todo':
-                    productos = Producto.objects.filter(categoria = id).distinct()
+                    productos = Producto.objects.filter(categoria = id).exclude(desactivado="si").distinct()
                     pass
                 else:
-                    productos = Producto.objects.filter(categoria = id, oferta = True).distinct()
+                    productos = Producto.objects.filter(categoria = id, oferta = True).exclude(desactivado="si").distinct()
                     pass
         #para marcas y demas
         elif (marca_seleccionada):
             if (opcion_seleccionada):
                 if opcion_seleccionada == 'MenorPrecio':
-                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).order_by('precio').distinct()
+                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).exclude(desactivado="si").order_by('precio').distinct()
                     pass
                 elif opcion_seleccionada == 'MayorPrecio':
-                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).order_by('-precio').distinct()
+                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).exclude(desactivado="si").order_by('-precio').distinct()
                     pass
                 elif opcion_seleccionada == 'Todo':
-                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).distinct()
+                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).exclude(desactivado="si").distinct()
                     pass
                 else:
-                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada, oferta = True).distinct()
+                    productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada, oferta = True).exclude(desactivado="si").distinct()
                     pass
             else:
-                productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).distinct()
+                productos = Producto.objects.filter(categoria = id, marca = marca_seleccionada).exclude(desactivado="si").distinct()
         #para solo productos sin ningun filtro ******Todos*****
         else:
-            productos = Producto.objects.filter(categoria = id).distinct()
+            productos = Producto.objects.filter(categoria = id).exclude(desactivado="si").distinct()
             elimina_localstorage = True#ojo puede dar problema con el filtrado de marcas y precios
         #fin del filtrado 
     
@@ -172,7 +172,7 @@ def articulo(request):
         return render(request, "perfil.html",)
     
     try:
-        productos = Producto.objects.all()
+        productos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, 'articulo.html', {"categoria": categoria,})
     
@@ -195,7 +195,7 @@ def articulo(request):
         raise Http404
     
     try:
-        productosSugeridos = Producto.objects.filter(categoria=producto.categoria).exclude(id=producto.id)
+        productosSugeridos = Producto.objects.filter(categoria=producto.categoria).exclude(id=producto.id).exclude(desactivado="si")
         
         
         # Limita a 3 productos aleatorios (asegúrate de que haya al menos 3 productos en la categoría)

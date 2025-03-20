@@ -10,16 +10,25 @@
     <a href="/operacion">Panel operaciones</a>
     <span>›</span>
     <a href="/operacion/todosproductos">Todos productos</a>
+    <span>›</span>
+    <a href="/operacion/stock/nuevoproducto/detalle/idproducto={{producto.id}}/">Detalle del producto ({{producto.marca}} {{producto.modelo}})</a>
 </div>
 
     {% if messages %}
           {% for message in messages %}
-              <div class="alert alert-danger" role="alert">
+              <div class="alert alert-secondary" role="alert">
                   {{ message }}
                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
           {% endfor %}
       {% endif %}
+    
+    {% if producto.desactivado == "si"%}
+        <div class="alert alert-danger" role="alert">
+            Este producto se encuentra <b>desactivado </b>y no se muestra con los demás productos, por favor actívelo para poder visualizarlo en el Stand de productos!
+        </div>
+    {% endif %}
+
 <div class="container">
     
   <!-- 📌 Detalles del Producto -->
@@ -29,6 +38,19 @@
             <a href="/operacion/stock/editarproducto/productoid={{producto.id}}" class="btn btn-outline-success btn-sm">
                 <i class="fa-solid fa-pen-to-square"></i> Editar información
             </a>
+            {% if producto.desactivado == "si"%}
+                <button type="button" class="btn btn-primary btn-sm activar-btn" 
+                    data-bs-toggle="modal" data-bs-target="#modalActivar" 
+                    data-idproda="{{ producto.id }}">
+                    <i class="fa-solid fa-eye"></i> Activar
+                </button>
+            {%else%}
+                <button type="button" class="btn btn-outline-danger btn-sm desactivar-btn" 
+                    data-bs-toggle="modal" data-bs-target="#modalDesactivar" 
+                    data-idprod="{{ producto.id }}">
+                    <i class="fa-solid fa-eye-slash"></i> Desactivar
+                </button>
+            {% endif %}
           </h2>
           <p><strong>Código artículo:</strong> {{ producto.id }}</p>
           <p><strong>Categoría:</strong> {{ producto.categoria.nombre }}</p>
@@ -210,14 +232,66 @@
                 <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>-->
                 <form id="deleteForm" method="POST">
                     {% csrf_token %}
-                    <input type="hidden" name="producto_id" id="producto_id">
+                    <input type="hidden" name="producto_id" id="delete_producto_id"> <!-- Cambiado -->
                     <button type="submit" class="btn btn-danger">Eliminar</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<!-- Modal de Confirmación de desactivacion del producto-->
+<div class="modal fade" id="modalDesactivar" tabindex="-1" aria-labelledby="modalDesactivarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDesactivarLabel">
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i> Confirmación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ⚠️ <strong>Este producto será desactivado</strong> y no se podrá visualizar en ninguna parte de la página.
+                ¿Estás seguro de que deseas continuar?
+            </div>
+            <div class="modal-footer">
+                <form id="desactivarForm" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" id="desactivar_producto_id" name="producto_id">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa-solid fa-ban"></i> Desactivar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Modal de Confirmación de activacion del producto-->
+<div class="modal fade" id="modalActivar" tabindex="-1" aria-labelledby="modalActivarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDesactivarLabel">
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i> Confirmación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ⚠️ <strong>Este producto será activado</strong> y se podrá visualizar con el resto de productos, asegúrese de primero agregar correctamente toda su información.
+                ¿Estás seguro de que deseas continuar?
+            </div>
+            <div class="modal-footer">
+                <form id="activarForm" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" id="activar_producto_id" name="producto_id">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-ban"></i> Activar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 </div>
 
@@ -235,6 +309,7 @@
                 let imagenPreview = document.getElementById("preview-imagen");
                 let checkbox = document.getElementById("eliminar_imagen");
                 let labelCheckbox = document.getElementById("eliminar_imagen_label");
+                console.log("Editar color producto ID:");
 
                 if (imagenUrl) {
                     imagenPreview.src = imagenUrl;
@@ -257,10 +332,47 @@
     document.querySelectorAll(".delete-btn").forEach(function (button) {
         button.addEventListener("click", function () {
             var productId = this.getAttribute("data-id");
-            document.getElementById("producto_id").value = productId;
+            console.log("Eliminar producto ID:", productId);
+            document.getElementById("delete_producto_id").value = productId;
             deleteForm.action = "/operacion/stock/nuevoproducto/detalle/eliminar_colorproducto/" + productId + "/";  // URL de eliminación
         });
     });
+
+    document.querySelectorAll(".desactivar-btn").forEach(function (button) {
+        button.addEventListener("click", function () {
+            var productId = this.getAttribute("data-idprod");
+            console.log("Desactivar producto ID:", productId);
+
+            var inputHidden = document.getElementById("desactivar_producto_id");
+            var desactivarForm = document.getElementById("desactivarForm");
+
+            if (!inputHidden || !desactivarForm) {
+                console.error("Error: No se encontró el input o formulario de desactivación.");
+                return;
+            }
+
+            inputHidden.value = productId;
+            desactivarForm.action = "/operacion/stock/nuevoproducto/detalle/desactivar/" + productId + "/";
+        });
+    });
+
+    document.querySelectorAll(".activar-btn").forEach(function (button) {
+        button.addEventListener("click", function () {
+            var productId = this.getAttribute("data-idproda");
+
+            var inputHidden = document.getElementById("activar_producto_id");
+            var activarForm = document.getElementById("activarForm");
+
+            if (!inputHidden || !activarForm) {
+                console.error("Error: No se encontró el input o formulario de activación.");
+                return;
+            }
+
+            inputHidden.value = productId;
+            activarForm.action = "/operacion/stock/nuevoproducto/detalle/activar/" + productId + "/";
+        });
+    });
+
 });
 </script>
 

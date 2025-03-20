@@ -70,7 +70,7 @@ def inicio_ventas(request):
         usuarios_json = json.dumps(usuarios_con_datos_adicionales)
         
         try:
-            todosProductos = Producto.objects.prefetch_related('colores').all()
+            todosProductos = Producto.objects.prefetch_related('colores').exclude(desactivado="si")
         except Producto.DoesNotExist:
             return render(request, "ventas_inicio.html",)
         
@@ -996,7 +996,8 @@ def productos_facturar(request):
                 cantidad_decimal = Decimal(str(cantidad))
           
                 try:
-                    producto_bd = Producto.objects.get(id=id_producto)
+                    #producto_bd = Producto.objects.get(id=id_producto)
+                    producto_bd = get_object_or_404(Producto.objects.exclude(desactivado="si"), id=id_producto)
                     # Realiza las operaciones necesarias con el producto obtenido
                 except Producto.DoesNotExist:
                     return JsonResponse({'error': 'Datos no encontrados'}, )
@@ -1123,7 +1124,8 @@ def reciboPago(request):
                 cantidad_decimal = Decimal(str(cantidad))
                 
                 try:
-                    producto_bd = Producto.objects.get(id=id_producto)
+                    #producto_bd = Producto.objects.get(id=id_producto)
+                    producto_bd = get_object_or_404(Producto.objects.exclude(desactivado="si"), id=id_producto)
                     # Realiza las operaciones necesarias con el producto obtenido
                 except Producto.DoesNotExist:
                     return JsonResponse({'error': 'Datos no encontrados'}, )
@@ -1293,7 +1295,8 @@ def generarPdf(request):
                 cantidad_decimal = Decimal(str(cantidad))
                 
                 try:
-                    producto_bd = Producto.objects.get(id=id_producto)
+                    #producto_bd = Producto.objects.get(id=id_producto)
+                    producto_bd = get_object_or_404(Producto.objects.exclude(desactivado="si"), id=id_producto)
                     # Realiza las operaciones necesarias con el producto obtenido
                 except Producto.DoesNotExist:
                     return JsonResponse({'error': 'Datos no encontrados'}, )

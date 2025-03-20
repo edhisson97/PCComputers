@@ -55,7 +55,7 @@ def stock_operacion(request):
     proveedores_json = json.dumps(proveedores_datos)
     
     try:
-       todosProductos = Producto.objects.all()
+       todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "operacion_stock.html",)
     
@@ -762,7 +762,7 @@ def eliminar_color(request, color_id):
                 cloudinary.uploader.destroy(public_id)  # Elimina la imagen de Cloudinary
         
         color.delete()
-        messages.success(request, "Producto eliminado correctamente.")
+        messages.success(request, "Color eliminado correctamente.")
         
     producto = get_object_or_404(Producto, id=color.producto.id)
     colores = ColorStock.objects.filter(producto=producto)
@@ -896,3 +896,29 @@ def gestionar_imagenes(request, producto_id):
             return redirect("gestionar_imagenes", producto_id=producto.id)
 
     return render(request, "operacion_gestionarimagenes.html", {"producto": producto, "imagenes": imagenes})
+
+@operador_required
+def desactivar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    
+    if request.method == "POST":
+        producto.desactivado = "si"
+        producto.save()
+        messages.success(request, f"El producto '{producto.modelo}' ha sido desactivado correctamente.")
+    
+    # Redirigir a la vista de detalles del producto (ajusta según tu proyecto)
+    colores = ColorStock.objects.filter(producto=producto)
+    return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
+
+@operador_required
+def activar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    
+    if request.method == "POST":
+        producto.desactivado = ""
+        producto.save()
+        messages.success(request, f"El producto '{producto.modelo}' ha sido activado correctamente.")
+    
+    # Redirigir a la vista de detalles del producto (ajusta según tu proyecto)
+    colores = ColorStock.objects.filter(producto=producto)
+    return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})

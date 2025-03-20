@@ -9,7 +9,7 @@ def contactanos(request):
     except Categoria.DoesNotExist:
         return render(request, "contactanos.html",)
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "contactanos.html",)
     return render(request, 'contactanos.html', {"categoria": categoria,"todosProductos":todosProductos})
@@ -20,7 +20,7 @@ def servicios(request):
     except Categoria.DoesNotExist:
         return render(request, "servicios.html",)
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "servicios.html",)
     return render(request, 'servicios.html', {"categoria": categoria,"todosProductos":todosProductos})
@@ -31,7 +31,7 @@ def desarrollo_web(request):
     except Categoria.DoesNotExist:
         return render(request, "desarrolloWeb.html",)
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "desarrolloWeb.html",)
     return render(request, 'desarrolloWeb.html', {"categoria": categoria,"todosProductos":todosProductos})
@@ -42,7 +42,7 @@ def mantenimiento(request):
     except Categoria.DoesNotExist:
         return render(request, "mantenimiento.html",)
     try:
-        todosProductos = Producto.objects.all()
+        todosProductos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "mantenimiento.html",)
     return render(request, 'mantenimiento.html', {"categoria": categoria,"todosProductos":todosProductos})

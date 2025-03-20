@@ -13,7 +13,7 @@ class ColorStockInline(admin.TabularInline):
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ('modelo','categoria', 'subcategoria','marca','calidad','precio','oferta', 'precio_oferta','detalle','peso')
+    list_display = ('modelo','categoria', 'subcategoria','marca','calidad','precio','oferta', 'precio_oferta','detalle','peso', 'desactivado')
     inlines = [
         ImagenProductoInline,
         ColorStockInline
