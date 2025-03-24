@@ -88,11 +88,11 @@
         
       {% endif %}
       {% for color in colores %}
-        {% if not color.color and color.stock == 0 %}
+        {% if color.color %}
             
-            <h6>Aún no se han agregado colores.</h6>
+            <!--<h6>Aún no se han agregado colores.</h6>-->
             
-        {% else %}
+        
             <div class="color-box">
                 <div style="background: {{ color.codigo_color }}"></div>
                 <p><b>{{ color.color }}</b></p>
@@ -110,14 +110,21 @@
                     data-codigo="{{ color.codigo_referencial }}"
                     data-stock="{{ color.stock }}"
                     data-codigo_color="{{ color.codigo_color }}"
-                    data-imagen="{% if color.imagen %}{{ color.imagen.url }}{% endif %}">
+                    data-imagen="{% if color.imagen %}{{ color.imagen.url }}{% endif %}" title="Editar el color y stock del producto">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button type="button" class="btn btn-danger delete-btn"
-                    data-bs-toggle="modal" data-bs-target="#deleteModal"
-                    data-id="{{ color.id }}">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
+                {% if color.stock < 1%}
+                    <button type="button" class="btn btn-danger delete-btn"
+                        data-bs-toggle="modal" data-bs-target="#deleteModal"
+                        data-id="{{ color.id }}">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                {% else %}
+                    <button type="button" class="btn btn-danger delete-btn"
+                        title="El stock debe ser igual a 0 para poder eliminar el color" disabled>
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                {% endif %}
             </div>
         {% endif %}
       {% endfor %}
@@ -226,6 +233,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
+                
                 ¿Estás seguro de que deseas eliminar el color y stock de este producto? Esta acción no se puede deshacer.
             </div>
             <div class="modal-footer">
@@ -250,16 +258,26 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ⚠️ <strong>Este producto será desactivado</strong> y no se podrá visualizar en ninguna parte de la página.
-                ¿Estás seguro de que deseas continuar?
+                {%if existe_stock%}
+                    ⚠️ <strong>Este producto será desactivado</strong> y no se podrá visualizar en ninguna parte de la página.
+                    ¿Estás seguro de que deseas continuar?
+                {% else %}
+                    No es posible desactivar el producto porque aun tiene stocks, el stock deberia ser igual a 0 para esactivarlo.
+                {% endif %}
             </div>
             <div class="modal-footer">
                 <form id="desactivarForm" method="POST">
                     {% csrf_token %}
                     <input type="hidden" id="desactivar_producto_id" name="producto_id">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fa-solid fa-ban"></i> Desactivar
-                    </button>
+                    {%if existe_stock%}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa-solid fa-ban"></i> Desactivar
+                        </button>
+                    {% else %}
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="fa-solid fa-ban"></i> Cerrar
+                        </button>
+                    {% endif %}
                 </form>
             </div>
         </div>

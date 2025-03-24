@@ -708,6 +708,8 @@ def detalle_producto(request, producto_id):
             nuevoColorStock.producto = producto
             nuevoColorStock.save()
             
+            
+            
         except Producto.DoesNotExist:
             messages.error(request, "El producto no existe.")
         except Exception as e:
