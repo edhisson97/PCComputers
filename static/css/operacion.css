@@ -440,6 +440,13 @@ form button:hover {
   box-sizing: border-box;  /* Evita que el padding o margen afecten el ancho de la tarjeta */
   padding: 10px;  /* Opcional: puedes ajustar el padding si deseas espacio dentro de las tarjetas */
   transition: opacity 0.3s, max-height 0.3s;
+  min-width: 250px;
+}
+
+.producto-container .producto-card:nth-child(1):only-child {
+  flex: 0 1 100%;  /* La tarjeta ocupará todo el ancho disponible */
+  max-width: 400px; /* 📌 Puedes ajustar el ancho máximo según prefieras */
+  margin: auto; /* 📌 Centra la tarjeta */
 }
 
 /* Mantener la altura uniforme de las tarjetas */
