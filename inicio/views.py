@@ -299,11 +299,11 @@ def pagina_ofertas(request):
         return render(request, "ofertas.html",)
     try:
         if (option_value == "MenorPrecio"):
-            productos = Producto.objects.filter(oferta = True).order_by('precio_oferta').distinct()
+            productos = Producto.objects.filter(oferta = True).exclude(desactivado="si").order_by('precio_oferta').distinct()
         elif (option_value == "MayorPrecio"):
-            productos = Producto.objects.filter(oferta = True).order_by('-precio_oferta').distinct()
+            productos = Producto.objects.filter(oferta = True).exclude(desactivado="si").order_by('-precio_oferta').distinct()
         else:
-            productos = Producto.objects.filter(oferta = True).distinct()
+            productos = Producto.objects.filter(oferta = True).exclude(desactivado="si").distinct()
     except Producto.DoesNotExist:
         return render(request, "ofertas.html",)
     try:

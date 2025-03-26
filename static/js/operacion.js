@@ -4,7 +4,67 @@ window.onload = function() {
 };
 
 
+// Seleccionar todos los elementos con la clase "agregar-producto"
+var botonesAgregarProducto = document.querySelectorAll(".agregar-producto5");
 
+// Iterar sobre cada botón y agregar un manejador de eventos click
+botonesAgregarProducto.forEach(function(boton) {
+    console.log('dentro del boton');
+    boton.addEventListener("click", function() {
+        // Obtener el ID del producto del atributo data-producto-id
+        var productoId = this.getAttribute("data-producto-id");
+
+
+        // Obtener el color seleccionado
+        var colorSelect = document.getElementById('select-color-' + productoId);
+        var colorSeleccionado = colorSelect.options[colorSelect.selectedIndex].text;
+        console.log("color ",colorSeleccionado);
+
+        // Obtener la cantidad seleccionada
+        var stockSelect = document.getElementById('select-stock-' + productoId);
+        var cantidadSeleccionada = stockSelect.options[stockSelect.selectedIndex].text;
+        console.log("cantidad: ", cantidadSeleccionada);
+
+        // Obtener el código de artículo seleccionado
+        var codigoArticulo = colorSelect.options[colorSelect.selectedIndex].dataset.codigoArticulo;
+        console.log("codigo articulo: ", codigoArticulo);
+
+        // Obtener los IDs de productos guardados previamente del localStorage
+        var productosGuardados = localStorage.getItem("productos_facturacion");
+        
+        // Convertir la cadena de productos guardados en un arreglo (si existe)
+        var productosFacturacion = productosGuardados ? JSON.parse(productosGuardados) : [];
+
+        
+        // Verificar si el producto ya está guardado
+        var productoExistente = productosFacturacion.find(function(producto) {
+            return producto.codigo === codigoArticulo;
+        });
+
+        if (productoExistente) {
+            // Si el producto ya existe, actualizar su color y cantidad
+            productoExistente.color = colorSeleccionado;
+            productoExistente.cantidad = cantidadSeleccionada;
+        } else {
+            // Si el producto no existe, añadirlo a la lista
+            productosFacturacion.push({
+                id: productoId,
+                codigo: codigoArticulo,
+                color: colorSeleccionado,
+                cantidad: cantidadSeleccionada
+            });
+        }
+     
+        // Guardar la lista actualizada en el localStorage
+        localStorage.setItem("productos_facturacion", JSON.stringify(productosFacturacion));
+
+        actualizarTabla();
+     
+        // Cerrar el modal
+        $('#modalFondoBusqueda').fadeOut();
+        $('#miModalBusqueda').fadeOut();
+    });
+});
 
 function buscarProveedor() {
     var cedula = document.getElementById("ruc").value;
@@ -96,68 +156,6 @@ document.addEventListener("keyup", e => {
 
 
 
-
-
-// Seleccionar todos los elementos con la clase "agregar-producto"
-var botonesAgregarProducto = document.querySelectorAll(".agregar-producto");
-
-// Iterar sobre cada botón y agregar un manejador de eventos click
-botonesAgregarProducto.forEach(function(boton) {
-    boton.addEventListener("click", function() {
-        // Obtener el ID del producto del atributo data-producto-id
-        var productoId = this.getAttribute("data-producto-id");
-
-
-        // Obtener el color seleccionado
-        var colorSelect = document.getElementById('select-color-' + productoId);
-        var colorSeleccionado = colorSelect.options[colorSelect.selectedIndex].text;
-        console.log("color ",colorSeleccionado);
-
-        // Obtener la cantidad seleccionada
-        var stockSelect = document.getElementById('select-stock-' + productoId);
-        var cantidadSeleccionada = stockSelect.options[stockSelect.selectedIndex].text;
-        console.log("cantidad: ", cantidadSeleccionada);
-
-        // Obtener el código de artículo seleccionado
-        var codigoArticulo = colorSelect.options[colorSelect.selectedIndex].dataset.codigoArticulo;
-        console.log("codigo articulo: ", codigoArticulo);
-
-        // Obtener los IDs de productos guardados previamente del localStorage
-        var productosGuardados = localStorage.getItem("productos_facturacion");
-        
-        // Convertir la cadena de productos guardados en un arreglo (si existe)
-        var productosFacturacion = productosGuardados ? JSON.parse(productosGuardados) : [];
-
-        
-        // Verificar si el producto ya está guardado
-        var productoExistente = productosFacturacion.find(function(producto) {
-            return producto.codigo === codigoArticulo;
-        });
-
-        if (productoExistente) {
-            // Si el producto ya existe, actualizar su color y cantidad
-            productoExistente.color = colorSeleccionado;
-            productoExistente.cantidad = cantidadSeleccionada;
-        } else {
-            // Si el producto no existe, añadirlo a la lista
-            productosFacturacion.push({
-                id: productoId,
-                codigo: codigoArticulo,
-                color: colorSeleccionado,
-                cantidad: cantidadSeleccionada
-            });
-        }
-     
-        // Guardar la lista actualizada en el localStorage
-        localStorage.setItem("productos_facturacion", JSON.stringify(productosFacturacion));
-
-        actualizarTabla();
-     
-        // Cerrar el modal
-        $('#modalFondoBusqueda').fadeOut();
-        $('#miModalBusqueda').fadeOut();
-    });
-});
 
 function actualizarTabla(){
     // Obtener los datos del localStorage

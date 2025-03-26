@@ -89,9 +89,6 @@
       {% endif %}
       {% for color in colores %}
         {% if color.color %}
-            
-            <!--<h6>Aún no se han agregado colores.</h6>-->
-            
         
             <div class="color-box">
                 <div style="background: {{ color.codigo_color }}"></div>
@@ -127,6 +124,7 @@
                 {% endif %}
             </div>
         {% endif %}
+        
       {% endfor %}
     
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarColor">

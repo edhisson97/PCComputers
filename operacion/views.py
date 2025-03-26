@@ -715,10 +715,11 @@ def detalle_producto(request, producto_id):
         except Exception as e:
             messages.error(request, f"Error al agregar el color: {str(e)}")
             
+    existe_stock = ColorStock.objects.filter(stock__gt=0).exists()
     
     colores = ColorStock.objects.filter(producto=producto)
 
-    return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
+    return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores,"existe_stock":existe_stock})
 
 @operador_required
 def todos_productos(request):
