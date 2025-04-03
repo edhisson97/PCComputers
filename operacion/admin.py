@@ -3,7 +3,7 @@ from .models import Proveedor, Caja, Gasto, Ingreso
 # Register your models here.
 @admin.register(Proveedor)
 class ProveedorAdmin(admin.ModelAdmin):
-    list_display = ('id','ruc','nombre','ciudad','direccion','contacto','email','telefono','numeroFactura')
+    list_display = ('id','ruc','nombre','ciudad','direccion','contacto','email','telefono')
 
 @admin.register(Gasto)
 class GastosAdmin(admin.ModelAdmin):

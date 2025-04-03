@@ -682,3 +682,93 @@ form button:hover {
   font-weight: bold;
   color: #444;
 }
+
+/*****************MODAL STOCK**********************/
+.agregarStock {
+  display: block;
+  margin: 0 auto; /* Centrar el botón horizontalmente */
+  padding: 10px 20px; /* Ajustar el relleno del botón */
+  background-color: green; /* Color de fondo verde */
+  color: white; /* Color del texto blanco */
+  border: none; /* Quitar borde */
+  border-radius: 5px; /* Esquinas redondeadas */
+  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+  margin-bottom: 20px;
+}
+
+.agregarStock:hover {
+  background-color: rgb(44, 99, 44); /* Color de fondo verde */
+}
+
+.agregarStock i {
+  margin-right: 5px; /* Espacio entre el icono y el texto */
+}
+
+.centered, .centered-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
+
+
+
+#modalFondoBusqueda2 {
+display: none;
+position: fixed;
+top: 60px;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+z-index: 999; /* Asegurar que el fondo esté detrás del modal */
+}
+
+#miModalBusqueda2 {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+max-width: 1000px; /* Establecer un ancho máximo para evitar que sea demasiado ancho en pantallas grandes */
+border-radius: 10px;
+max-height: 500px;
+padding: 20px;
+background: #fff;
+z-index: 1000;
+}
+
+.cerrar-modal {
+position: absolute;
+top: 10px;
+right: 10px;
+cursor: pointer;
+}
+
+.actualizarStock {
+  font-size: 16px;
+  margin: 5px 10px;  /* Espaciado alrededor del select */
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #393939;
+  width: 50px; 
+}
+
+.agregar-stock {
+  display: block;
+  margin: 0 auto; /* Centrar el botón horizontalmente */
+  padding: 5px 10px; /* Ajustar el relleno del botón */
+  background-color: green; /* Color de fondo verde */
+  color: white; /* Color del texto blanco */
+  border: none; /* Quitar borde */
+  border-radius: 5px; /* Esquinas redondeadas */
+  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+  margin: 10px;
+}
+
+.agregar-stock:hover {
+  background-color: rgb(44, 99, 44); /* Color de fondo verde */
+}
+
+.agregar-stock i {
+  margin-right: 5px; /* Espacio entre el icono y el texto */
+}

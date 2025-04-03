@@ -108,16 +108,15 @@
                         {% for prod in todosProductos %}
                                 <div class="articulo" data-id="{{ prod.id }}">
                                     <div class="codigo-articulo">
-                                        <h6>Cód. Artículo</h6>
-                                        {% for color in prod.colores.all %}
-                                            <p>{{ color.codigo_articulo }}</p>
-                                            <!-- Otros datos de ColorStock -->
-                                        {% endfor %}
+                                        <h6>Cód. Art.</h6>
+                                        <p>{{ prod.id }}</p>
                                     </div>
                                     <div class="codigo-referencial">
-                                        <h6>Cód. Referencial</h6>
+                                        <h6>Cód. Ref.</h6>
                                         {% for color in prod.colores.all %}
-                                            <p>{{ color.codigo_referencial }}</p>
+                                            {% if color.codigo_referencial %}
+                                                <p>{{ color.codigo_referencial }}</p>
+                                            {% endif %}
                                             <!-- Otros datos de ColorStock -->
                                         {% endfor %}
                                     </div>
@@ -143,9 +142,9 @@
                                         <h6>Color</h6>
                                         <select class="select-color" id="select-color-{{ prod.id }}" data-product-id="{{ prod.id }}">
                                             {% for color in prod.colores.all %}
-                                                
-                                                <option value="{{ color.color }}" data-stock="{{ color.stock }}" data-codigo-articulo="{{ color.codigo_articulo }}">{{ color.color }} ({{ color.stock }})</option>
-                                                
+                                                {%if color.color%}
+                                                    <option value="{{ color.color }}" data-stock="{{ color.stock }}" data-codigo-articulo="{{ color.codigo_articulo }}">{{ color.color }} ({{ color.stock }})</option>
+                                                {% endif %}
                                             {% endfor %}
                                         </select>
                                     </div>

@@ -22,7 +22,7 @@ from inicio.views import pagina_inicio, pagina_ofertas, obtener_carrito, carrito
 from productos.views import pagina_productos, articulo
 from informacion.views import contactanos, servicios, desarrollo_web, mantenimiento
 from ventas.views import inicio_ventas, transacciones_ventas, productos_facturar, reciboPago, generarPdf, pago_pendiente, ventas_caja, buscar_deuda, agregarPago, registro_servicios, generar_recibo_servicios,home_ventas, gastos_ventas, comprobar_ventas_caja, finalizar_servicio, servicios_registros, descargar_pdf_servicios, generardescarga_pdf_servicios, politica_servicios, nuevo_abono, generarrecibo_nuevo_abono, cancelar_servicio, devolver_abono
-from operacion.views import stock_operacion, inicio_operacion, caja_operacion, caja_apertura_operacion, comprobar_operacion_caja, gastos_operacion, caja_panel, cerrar_caja,generardescarga_pdf_operaciones, descargar_pdf_operaciones, nuevo_producto, detalle_producto, todos_productos, editar_color, editar_producto, eliminar_color, actualizar_producto, gestionar_imagenes, desactivar_producto, activar_producto
+from operacion.views import stock_operacion, inicio_operacion, caja_operacion, caja_apertura_operacion, comprobar_operacion_caja, gastos_operacion, caja_panel, cerrar_caja,generardescarga_pdf_operaciones, descargar_pdf_operaciones, nuevo_producto, detalle_producto, todos_productos, editar_color, editar_producto, eliminar_color, actualizar_producto, gestionar_imagenes, desactivar_producto, activar_producto, productos_actualizarStock, guardar_stock, actualizar_precios, guardar_nuevoprecio, ofertas, agregar_oferta, quitar_oferta
 from django.contrib.auth import views as auth_views
 from django.conf.urls import handler404, handler500
 from django.shortcuts import render
@@ -124,6 +124,13 @@ urlpatterns = [
     path("producto/<int:producto_id>/imagenes/", gestionar_imagenes, name="gestionar_imagenes"),
     path("operacion/stock/nuevoproducto/detalle/desactivar/<int:producto_id>/", desactivar_producto, name="desactivar_producto"),
     path("operacion/stock/nuevoproducto/detalle/activar/<int:producto_id>/", activar_producto, name="activar_producto"),
+    path('operacion/actualizarstock', productos_actualizarStock),
+    path("operacion/guardar_stock", guardar_stock),
+    path("operacion/actualizarprecios/<int:id>", actualizar_precios),
+    path("operacion/guardarnuevoprecio", guardar_nuevoprecio),
+    path("operacion/ofertas", ofertas),
+    path("operacion/agregaroferta", agregar_oferta),
+    path("operacion/quitaroferta", quitar_oferta),
     #path('ventas/recibo', reciboPago,name='h'),
     #path('imprimir', reciboImpreso),
     

@@ -514,6 +514,8 @@ margin-right: auto;
 .codigo-referencial p,
 .detalles p,
 .color p,
+.precio p,
+.oferta p,
 .precio p{
   font-size: 17px;
   margin-top: 1px;
@@ -535,31 +537,29 @@ margin-right: auto;
   border-bottom: 1px;
 }
 
-
-.color select{
-  font-size: 17px;
-  margin-top: 1px;
-  margin-bottom: 1px;
-  margin-left: 10px;
-  padding-top: 1px;
-  padding-bottom: 1px;
-  border-top: 1px;
-  border-bottom: 1px;
-  border-radius: 5px;
-  border: 1px solid #393939;
+.color, .cantidad {
+  display: flex;         /* Hace que los elementos estén en línea */
+  flex-direction: column; /* Apila los elementos en una columna */
+  align-items: center;    /* Centra los elementos */
+  margin-bottom: 10px;    /* Agrega espacio entre los selects */
 }
 
-.cantidad select{
-  font-size: 17px;
-  margin-top: 1px;
-  margin-bottom: 1px;
-  margin-left: 10px;
-  padding-top: 1px;
-  padding-bottom: 1px;
-  border-top: 1px;
-  border-bottom: 1px;
+.color select {
+  font-size: 16px;
+  margin: 5px 10px;  /* Espaciado alrededor del select */
+  padding: 5px;
   border-radius: 5px;
   border: 1px solid #393939;
+  width: 110px;      /* Ajusta el ancho según sea necesario */
+}
+
+.cantidad select {
+  font-size: 16px;
+  margin: 5px 10px;  /* Espaciado alrededor del select */
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #393939;
+  width: 50px;      /* Ajusta el ancho según sea necesario */
 }
 
 .limpiar{
@@ -697,4 +697,29 @@ margin-right: auto;
   margin-bottom: 20px;
   height: 40px;
   
+}
+
+/**************descripcion del stock**********************/
+.form-row-descripcionstock {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.form-row-descripcionstock textarea {
+  width: 100%;
+  min-height: 60px;
+  resize: vertical;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.form-row-descripcionstock input[type="number"] {
+  width: 100px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  font-size: 14px;
 }

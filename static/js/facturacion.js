@@ -3,99 +3,25 @@ window.onload = function() {
     actualizarTabla();
 };
 
-document.addEventListener("DOMContentLoaded", function() {
 
-    // Obtener elementos del DOM
-    var btnMostrarModal = document.getElementById("mostrarModal");
-    var modalFondo = document.getElementById("modalFondoBusqueda");
-    var modal = document.getElementById("miModalBusqueda");
-    var btnCerrarModal = document.getElementById("cerrar-modal");
-    var inputBuscador = document.getElementById("buscadorModal");
+// Obtener elementos del DOM
+var btnMostrarModal = document.getElementById("mostrarModal");
+var modalFondo = document.getElementById("modalFondoBusqueda");
+var modal = document.getElementById("miModalBusqueda");
+var btnCerrarModal = document.getElementById("cerrar-modal");
+var inputBuscador = document.getElementById("buscadorModal");
 
-    if (btnMostrarModal) {
-        btnMostrarModal.addEventListener("click", function() {
-            modalFondo.style.display = "block";
-            modal.style.display = "block";
-        });
-    } else {
-        console.error("El botón para abrir el modal no se encontró en el DOM.");
-    }
-
-    // Cerrar el modal al hacer clic en la "x" o fuera del modal
-    $('.cerrar-modal, #modalFondoBusqueda').on('click', function () {
-        $('#modalFondoBusqueda').fadeOut();
-        $('#miModalBusqueda').fadeOut();
-    });
-
-    // Mostrar modal al hacer clic en el botón
-    btnMostrarModal.addEventListener("click", function() {
-        modalFondo.style.display = "block";
-        modal.style.display = "block";
-    });
+// Cerrar el modal al hacer clic en la "x" o fuera del modal
+$('.cerrar-modal, #modalFondoBusqueda').on('click', function () {
+    $('#modalFondoBusqueda').fadeOut();
+    $('#miModalBusqueda').fadeOut();
 });
 
-// Seleccionar todos los elementos con la clase "agregar-producto"
-var botonesAgregarProducto = document.querySelectorAll(".agregar-producto");
-
-// Iterar sobre cada botón y agregar un manejador de eventos click
-botonesAgregarProducto.forEach(function(boton) {
-    console.log('dentro del boton');
-    boton.addEventListener("click", function() {
-        // Obtener el ID del producto del atributo data-producto-id
-        var productoId = this.getAttribute("data-producto-id");
-
-
-        // Obtener el color seleccionado
-        var colorSelect = document.getElementById('select-color-' + productoId);
-        var colorSeleccionado = colorSelect.options[colorSelect.selectedIndex].text;
-        console.log("color ",colorSeleccionado);
-
-        // Obtener la cantidad seleccionada
-        var stockSelect = document.getElementById('select-stock-' + productoId);
-        var cantidadSeleccionada = stockSelect.options[stockSelect.selectedIndex].text;
-        console.log("cantidad: ", cantidadSeleccionada);
-
-        // Obtener el código de artículo seleccionado
-        var codigoArticulo = colorSelect.options[colorSelect.selectedIndex].dataset.codigoArticulo;
-        console.log("codigo articulo: ", codigoArticulo);
-
-        // Obtener los IDs de productos guardados previamente del localStorage
-        var productosGuardados = localStorage.getItem("productos_facturacion");
-        
-        // Convertir la cadena de productos guardados en un arreglo (si existe)
-        var productosFacturacion = productosGuardados ? JSON.parse(productosGuardados) : [];
-
-        
-        // Verificar si el producto ya está guardado
-        var productoExistente = productosFacturacion.find(function(producto) {
-            return producto.codigo === codigoArticulo;
-        });
-
-        if (productoExistente) {
-            // Si el producto ya existe, actualizar su color y cantidad
-            productoExistente.color = colorSeleccionado;
-            productoExistente.cantidad = cantidadSeleccionada;
-        } else {
-            // Si el producto no existe, añadirlo a la lista
-            productosFacturacion.push({
-                id: productoId,
-                codigo: codigoArticulo,
-                color: colorSeleccionado,
-                cantidad: cantidadSeleccionada
-            });
-        }
-     
-        // Guardar la lista actualizada en el localStorage
-        localStorage.setItem("productos_facturacion", JSON.stringify(productosFacturacion));
-
-        actualizarTabla();
-     
-        // Cerrar el modal
-        $('#modalFondoBusqueda').fadeOut();
-        $('#miModalBusqueda').fadeOut();
-    });
+// Mostrar modal al hacer clic en el botón
+btnMostrarModal.addEventListener("click", function() {
+    modalFondo.style.display = "block";
+    modal.style.display = "block";
 });
-
 
 var selects = document.querySelectorAll('.select-color');
         selects.forEach(function(select) {
@@ -183,6 +109,7 @@ function camposVacios() {
     // Otros campos
 }
 
+
 document.addEventListener("keyup", e => {
     if (e.target.matches("#buscador")) {
         if (e.key === "Escape") e.target.value = "";
@@ -212,6 +139,70 @@ document.addEventListener("keyup", e => {
 });
 
 
+
+
+
+// Seleccionar todos los elementos con la clase "agregar-producto"
+var botonesAgregarProducto = document.querySelectorAll(".agregar-producto");
+
+// Iterar sobre cada botón y agregar un manejador de eventos click
+botonesAgregarProducto.forEach(function(boton) {
+    console.log('dentro del boton')
+    boton.addEventListener("click", function() {
+        // Obtener el ID del producto del atributo data-producto-id
+        var productoId = this.getAttribute("data-producto-id");
+
+
+        // Obtener el color seleccionado
+        var colorSelect = document.getElementById('select-color-' + productoId);
+        var colorSeleccionado = colorSelect.options[colorSelect.selectedIndex].text;
+        console.log("color ",colorSeleccionado);
+
+        // Obtener la cantidad seleccionada
+        var stockSelect = document.getElementById('select-stock-' + productoId);
+        var cantidadSeleccionada = stockSelect.options[stockSelect.selectedIndex].text;
+        console.log("cantidad: ", cantidadSeleccionada);
+
+        // Obtener el código de artículo seleccionado
+        var codigoArticulo = colorSelect.options[colorSelect.selectedIndex].dataset.codigoArticulo;
+        console.log("codigo articulo: ", codigoArticulo);
+
+        // Obtener los IDs de productos guardados previamente del localStorage
+        var productosGuardados = localStorage.getItem("productos_facturacion");
+        
+        // Convertir la cadena de productos guardados en un arreglo (si existe)
+        var productosFacturacion = productosGuardados ? JSON.parse(productosGuardados) : [];
+
+        
+        // Verificar si el producto ya está guardado
+        var productoExistente = productosFacturacion.find(function(producto) {
+            return producto.codigo === codigoArticulo;
+        });
+
+        if (productoExistente) {
+            // Si el producto ya existe, actualizar su color y cantidad
+            productoExistente.color = colorSeleccionado;
+            productoExistente.cantidad = cantidadSeleccionada;
+        } else {
+            // Si el producto no existe, añadirlo a la lista
+            productosFacturacion.push({
+                id: productoId,
+                codigo: codigoArticulo,
+                color: colorSeleccionado,
+                cantidad: cantidadSeleccionada
+            });
+        }
+     
+        // Guardar la lista actualizada en el localStorage
+        localStorage.setItem("productos_facturacion", JSON.stringify(productosFacturacion));
+
+        actualizarTabla();
+     
+        // Cerrar el modal
+        $('#modalFondoBusqueda').fadeOut();
+        $('#miModalBusqueda').fadeOut();
+    });
+});
 
 function actualizarTabla(){
     // Obtener los datos del localStorage
@@ -259,7 +250,7 @@ function actualizarTabla(){
             // Itera sobre los productos y agrega cada uno como una fila a la tabla
             response.productos.forEach(function(producto) {
                 var row = $('<tr>');
-                row.append('<td><b>' +producto.codigo + '</b></td>');
+                row.append('<td><b>' +producto.id + '</b></td>');
                 row.append('<td>' +producto.modelo+' '+ producto.detalle + '</td>');
                 row.append('<td>' + producto.color + '</td>');
                 row.append('<td>' + producto.cantidad + '</td>');

@@ -1,0 +1,343 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion precios{% endblock %}
+
+{% block content %}
+{% load static %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<h5 class="title-detalle"> Actualizar Precios de Productos</h5>
+<div class="breadcrumb">
+    <a href="/operacion">Panel operaciones</a>
+    <span>›</span>
+    <a href="/operacion/todosproductos">Todos productos</a>
+    <span>›</span>
+    <a href="/operacion/stock">Actualizar stock</a>
+</div>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="containerActalizarP">
+    <p>* El precio que se actualizará es el precio actual de venta del producto, puede ser el precio normal o el precio de oferta.</p>
+    <div id="listaArticulosActualizarP">
+        {% if productosU %}
+            {% for prodU in productosU %}
+                    <div class="articuloActualizar" data-id="{{ prod.id }}">
+                        <div class="codigo-articuloN">
+                            <h6>Cód. Art.</h6>
+                            <p>{{ prodU.id }}</p>
+                        </div>
+                        <!--<div class="codigo-referencial">
+                            <h6>Cód. Ref.</h6>
+                            {% for color in prod.colores.all %}
+                                {% if color.codigo_referencial %}
+                                    <p>{{ color.codigo_referencial }}</p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>-->
+                        <div class="detallesN">
+                            <h3>{{ prodU.marca }} {{ prodU.modelo }}</h3>
+                            <p>{{ prodU.detalle }}</p>
+                        </div>
+                        
+                        <div class="colorN">
+                            <h6>Color/Cant.</h6>
+                            {% for prodA in productosA%}
+                                {% if prodA.producto == prodU%}
+                                    <p>{{prodA.colorstock.color}} - {{prodA.cantidad}}</p>
+                                {% endif %}
+                               
+                            {% endfor %}
+                        </div>
+
+                        <div class="ofertaN">
+                            <h6>Oferta</h6>
+                            {% if prodU.precio_oferta%}
+                                <p>si</p>
+                            {% else %}
+                                <p>no</p>
+                            {% endif%}
+                        </div>
+                        <div class="precioN">
+                            <h6>Precio</h6>
+                            {% if prodU.precio_oferta %}
+                                <p class="tachado">{{prodU.precio }}</p>
+                                <p>{{ prodU.precio_oferta }}</p>
+                            {% else %}
+                                <p>{{prodU.precio }}</p>
+                            {% endif%}
+                        </div>
+                        <div class="cantidadN">
+                            <h6>Nuevo Precio</h6>
+                            <input type="number" class="nuevoPrecio" name="nuevoPrecio" step="0.01" required>
+                        </div>
+                        <button class="agregar-stock" id="btnAgregarStock" data-producto-id="{{ prodU.id }}"><i class="fa-solid fa-dollar-sign"></i> Actualizar</button>
+                    </div>
+                    
+            {% endfor %}
+        {% else %}
+            <div class="alert-custom">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>¡Todos los productos ingresados han sido actualizados con éxito!</span>
+            </div>      
+        {% endif %}
+    </div>
+    <div class="botones-container">
+        {% if productosU %}
+            <!-- Botón para terminar actualización de precios -->
+            <a href="/operacion" class="btn-custom btn-success-custom" onclick="return confirmarAccion('¿Aún hay productos disponibles? ¿Desea continuar con la acción?')">
+                <i class="fa-solid fa-check"></i> Terminar Actualización de Precios
+            </a>
+        
+            <!-- Botón para actualizar ofertas -->
+            <a href="/operacion/ofertas" class="btn-custom btn-warning-custom" onclick="return confirmarAccion('¿Aún hay productos disponibles? ¿Desea continuar con la acción?')">
+                <i class="fa-solid fa-tag"></i> Actualizar Ofertas
+            </a>
+        {% else %}
+            <!-- Botón para terminar actualización de precios -->
+            <a href="/operacion" class="btn-custom btn-success-custom">
+                <i class="fa-solid fa-check"></i> Terminar Actualización de Precios
+            </a>
+        
+            <!-- Botón para actualizar ofertas -->
+            <a href="/operacion/ofertas" class="btn-custom btn-warning-custom">
+                <i class="fa-solid fa-tag"></i> Actualizar Ofertas
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript para la búsqueda en tiempo real -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".agregar-stock").forEach((boton) => {
+            boton.addEventListener("click", function () {
+                let productoId = this.getAttribute("data-producto-id");
+                let inputPrecio = this.closest(".articuloActualizar").querySelector(".nuevoPrecio");
+                let nuevoPrecio = inputPrecio.value.trim();
+    
+                // Validar que el campo no esté vacío y sea un número válido
+                if (nuevoPrecio === "" || isNaN(nuevoPrecio) || parseFloat(nuevoPrecio) <= 0) {
+                    alert("Ingrese un precio válido (número positivo).");
+                    inputPrecio.focus();
+                    return;
+                }
+    
+                // Confirmar la acción antes de enviar los datos
+                let confirmar = confirm("¿Está seguro de actualizar el precio?");
+                if (!confirmar) {
+                    return;
+                }
+    
+                // Enviar datos al backend con Fetch
+                fetch("/operacion/guardarnuevoprecio", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken(), // Agregar el token CSRF
+                    },
+                    body: JSON.stringify({
+                        producto_id: productoId,
+                        nuevo_precio: parseFloat(nuevoPrecio),
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Precio actualizado con éxito.");
+                        window.location.reload(); // Recargar la página
+                    } else {
+                        alert("Error al actualizar el precio.");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            });
+        });
+    });
+    
+    // Función para obtener el token CSRF desde la página
+    function getCSRFToken() {
+        let tokenElement = document.querySelector('meta[name="csrf-token"]') || document.querySelector("#csrf-token");
+        return tokenElement ? tokenElement.content || tokenElement.value : "";
+    }  
+    
+    function confirmarAccion(mensaje) {
+        return confirm(mensaje);
+    }
+</script>
+
+<style>
+    #listaArticulosActualizarP {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Espacio entre filas */
+        padding: 20px;
+    }
+    
+    .articuloActualizar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        background: #ffffff;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .articuloActualizar:hover {
+        transform: scale(1.0);
+    }
+    
+    .codigo-articuloN, .detallesN, .colorN, .ofertaN, .precioN, .cantidadN {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    
+    h6 {
+        font-size: 12px;
+        color: #555;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+    
+    p {
+        font-size: 14px;
+        font-weight: bold;
+        margin: 0;
+    }
+    
+    .detallesN h3 {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .select-color {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background: #f9f9f9;
+    }
+    
+    .tachado {
+        text-decoration: line-through;
+        color: #d9534f;
+        font-weight: bold;
+    }
+    
+    .nuevoPrecio {
+        padding: 5px;
+        width: 50px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    
+    .agregar-stock {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 10px;
+        transition: background 0.3s;
+    }
+    
+    .agregar-stock:hover {
+        background: #218838;
+    }
+
+    /* Contenedor de los botones */
+.botones-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+/* Estilo base para los botones */
+.btn-custom {
+    font-size: 18px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+
+/* Botón verde */
+.btn-success-custom {
+    background-color: #28a745;
+    color: white;
+    border: 2px solid #218838;
+}
+
+.btn-success-custom:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* Botón naranja */
+.btn-warning-custom {
+    background-color: #ff9800;
+    color: white;
+    border: 2px solid #e68900;
+}
+
+.btn-warning-custom:hover {
+    background-color: #e68900;
+    border-color: #cc7700;
+}
+
+/* Estilo de la alerta de éxito */
+.alert-custom {
+    background-color: #d4edda; /* Verde claro */
+    color: #155724; /* Texto verde oscuro */
+    font-size: 18px;
+    font-weight: bold;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    margin: 20px auto;
+    width: 80%;
+}
+
+/* Ícono */
+.alert-custom i {
+    color: green;
+    font-size: 24px;
+}
+
+
+    
+    /* Ajuste para pantallas pequeñas */
+    @media (max-width: 768px) {
+        .articuloActualizar {
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+        }
+    }
+    
+</style>
+
+{% endblock %} 

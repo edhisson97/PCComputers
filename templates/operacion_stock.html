@@ -43,12 +43,6 @@
                             <input type="text" id="nombre" name="nombre" required>
                         </div>
                         <div class="form-row">
-                            <label for="ciudad">Ciudad</label>
-                            <input type="text" id="ciudad" name="ciudad" required>
-                            <label for="direccion">Dirección</label>
-                            <input type="text" id="direccion" name="direccion" required>
-                        </div>
-                        <div class="form-row">
                             <label for="contacto">Contacto</label>
                             <input type="text" id="contacto" name="contacto" required>
                             <label for="email">Correo Electrónico</label>
@@ -57,9 +51,14 @@
                         <div class="form-row">
                             <label for="celular">Celular</label>
                             <input type="text" id="celular" name="celular" required>
-                            <label for="numeroFactura">Número de Factura</label>
-                            <input type="text" id="numeroFactura" name="numeroFactura" required>
-                                                      
+                            <label for="ciudad">Ciudad</label>
+                            <input type="text" id="ciudad" name="ciudad" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="direccion">Dirección</label>
+                            <input type="text" id="direccion" name="direccion" required>
+                                               
                         </div>
             </div>
 
@@ -80,7 +79,7 @@
             <a class="nuevoProducto" href="/operacion/stock/nuevoproducto"><i class="fa-solid fa-plus"></i> Nuevo producto </i></a>
             <a class="nuevoProducto" href=""><i class="fa-solid fa-pen-to-square"></i> Editar producto </i></a>
         </div>
-        <button class="agregarProducto9" id="mostrarModal2"><i class="fa-solid fa-cart-plus"></i> Agregar productos</button>
+        <button class="agregarStock" id="mostrarModal2"><i class="fa-solid fa-cart-plus"></i> Agregar productos</button>
 
         <div id="modalFondoBusqueda2" style="display: none;"></div>
         <div id="miModalBusqueda2" class="modal">
@@ -101,17 +100,15 @@
                         {% for prod in todosProductos %}
                                 <div class="articulo" data-id="{{ prod.id }}">
                                     <div class="codigo-articulo">
-                                        <h6>Cód. Artículo</h6>
-                                        {% for color in prod.colores.all %}
-                                            <p>{{ color.codigo_articulo }}</p>
-                                            <!-- Otros datos de ColorStock -->
-                                        {% endfor %}
+                                        <h6>Cód. Art.</h6>
+                                        <p>{{ prod.id }}</p>
                                     </div>
                                     <div class="codigo-referencial">
-                                        <h6>Cód. Referencial</h6>
+                                        <h6>Cód. Ref.</h6>
                                         {% for color in prod.colores.all %}
-                                            <p>{{ color.codigo_referencial }}</p>
-                                            <!-- Otros datos de ColorStock -->
+                                            {% if color.codigo_referencial %}
+                                                <p>{{ color.codigo_referencial }}</p>
+                                            {% endif %}
                                         {% endfor %}
                                     </div>
                                     <div class="detalles">
@@ -136,13 +133,17 @@
                                         <h6>Color</h6>
                                         <select class="select-color" id="select-color-{{ prod.id }}" data-product-id="{{ prod.id }}">
                                             {% for color in prod.colores.all %}
-                                                
-                                                <option value="{{ color.color }}" data-stock="{{ color.stock }}" data-codigo-articulo="{{ color.codigo_articulo }}">{{ color.color }} ({{ color.stock }})</option>
-                                                
+                                                {% if color.color %}
+                                                    <option value="{{ color.color }}" data-stock="{{ color.stock }}" data-codigo-articulo="{{ color.codigo_articulo }}">{{ color.color }} ({{ color.stock }})</option>
+                                                {% endif %}
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    <button class="agregar-producto" id="btnAgregarProducto" data-producto-id="{{ prod.id }}">+</button>
+                                    <div class="cantidad">
+                                        <h6>Cantidad</h6>
+                                        <input type="number" class="actualizarStock" id="stock-{{ prod.id }}" name="stock" min="1" required>
+                                    </div>
+                                    <button class="agregar-stock" id="btnAgregarStock" data-producto-id="{{ prod.id }}">+</button>
                                 </div>
                                 
                         {% endfor %}
@@ -163,7 +164,6 @@
                 <th scope="col">Cantidad</th>
                 <!--<th scope="col">Código</th>-->
                 <th scope="col">P/U</th>
-                <th scope="col">Total</th>
               </tr>
             </thead>
             <tbody id="productos-tbody">
@@ -171,9 +171,20 @@
             </tbody>
         </table>
         <!--<button class="limpiar"> Limpiar <i class="fa-solid fa-trash"></i></button>-->
-        <div class="seccion-button">
+        <div class="seccion-descripcion">
+            <div class="form-row-descripcionstock">
+                <label for="descripcion">Descripción </label>
+                <textarea id="descripcion" name="descripcion" rows="1" placeholder="Ingrese una descripción(opcional)"></textarea>
+                <label for="numeroFactura">Número de Factura</label>
+                <input type="text" id="numeroFactura" name="numeroFactura" required>
+            </div>
+            
+            <!--<div class="form-row-descripcionstock">
+                <label for="valorFactura">Valor adquirido (opcional)</label>
+                <input type="number" id="valorFactura" name="valorFactura" min="0" step="0.01" placeholder="0.00">
+            </div>
             <div class="form-row-pago">
-                <label for="tipoPago">Tipo pago</label>
+                <label for="tipoPago">Descripción</label>
                 <select name="tipoPago" id="tipoPago" onchange="mostrarNumeroCheque()">
                     <option value="Contado">Efectivo</option>
                     <option value="Crédito">Crédito</option>
@@ -182,12 +193,34 @@
                     <option value="Cheque">Cheque</option>
                     <option value="Combinado (Crédito/Contado)">Combinado</option>
                 </select>
-            </div>
-            <button class="generar-venta" onclick="enviarFormularioConLocalStorage()">Atualizar catálogo <i class="fa-solid fa-check"></i></button>
+            </div>-->
+        </div>
+        <div class="seccion-button">
+            <button class="generar-venta" onclick="validarProveedorYConfirmar()">Actualizar catálogo <i class="fa-solid fa-check"></i></button>
             <!--<button class="descuento" onclick="actualizarTabla()">Actualizar <i class="fa-solid fa-rotate"></i></button>-->
             <button class="cancelar">Limpiar <i class="fa-solid fa-ban"></i></button>
         </div>
-        <div id="numeroCheque" style="display: none;">
+
+        <!-- Modal de Confirmación Bootstrap -->
+        <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalConfirmacionLabel">Confirmar acción</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Está seguro de que deseas actualizar el stock de todos los productos ingresados? Esta acción no se podrá deshacer.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="btnConfirmarEnvioStock">Sí, continuar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--<div id="numeroCheque" style="display: none;">
             <label for="banco">Entidad Bancaria: </label>
             <select name="Banco" id="banco">
                 <option value="Banco de Machala">Banco de Machala</option>
@@ -269,7 +302,7 @@
     check3.addEventListener("change", function() {
         toggleInput(check3, input3);
     });
-        </script>
+        </script>-->
     </div>
 </div>
 

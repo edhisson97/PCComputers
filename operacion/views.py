@@ -4,6 +4,7 @@ from django.contrib.auth.models import User, Group
 from .models import Proveedor, Caja, Gasto, Ingreso
 from ventas.models import Registro, Servicio, PagoServicio, PagoServicioCombinado, PagoPendienteCombinado, PagoRegistroCombinado, Pago
 from productos.models import Producto, Categoria, subCategoria, Marca, ImagenProducto, ColorStock
+from operacion.models import ActualizacionStock, ProductosActualizacion
 from datetime import datetime
 from decimal import Decimal
 from django.http import JsonResponse
@@ -46,7 +47,6 @@ def stock_operacion(request):
             'contacto': proveedor_adicional.contacto,
             'email': proveedor_adicional.email,
             'telefono': proveedor_adicional.telefono,
-            'numeroFactura': proveedor_adicional.numeroFactura,
             # Agrega más campos de ser necesario
         }
         proveedores_datos.append(datos_adicionales)
@@ -925,3 +925,252 @@ def activar_producto(request, producto_id):
     # Redirigir a la vista de detalles del producto (ajusta según tu proyecto)
     colores = ColorStock.objects.filter(producto=producto)
     return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
+
+
+@operador_required
+def productos_actualizarStock(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)  # Obtén los datos del cuerpo de la solicitud
+        productos_stock = data.get('productosStock', None)  # Obtiene los productos
+        
+        productos_actualizar_stock = []
+        
+        if productos_stock:
+            # Procesa los productos como desees
+            for producto in productos_stock:
+                id_producto = producto.get('id')
+                color = producto.get('color')
+                cantidad = producto.get('cantidad')
+          
+                try:
+                    #producto_bd = Producto.objects.get(id=id_producto)
+                    producto_bd = get_object_or_404(Producto.objects.exclude(desactivado="si"), id=id_producto)
+                    # Realiza las operaciones necesarias con el producto obtenido
+                except Producto.DoesNotExist:
+                    return JsonResponse({'error': 'Datos no encontrados'}, )
+                #reviso si producto tiene oferta
+                if (producto_bd.precio_oferta):
+                    precio = producto_bd.precio_oferta
+                else:
+                    precio = producto_bd.precio
+               
+                productos_actualizar_stock.append({
+                    'id': producto_bd.id,
+                    'modelo': producto_bd.modelo,
+                    #'marca': marca_info,
+                    'color':color,
+                    'cantidad':cantidad,
+                    'precio': precio,
+                    'precio_oferta': producto_bd.precio_oferta,
+                    'detalle': producto_bd.detalle
+                    # Agrega otros campos que necesites
+                })
+               
+            
+            # Devuelve una respuesta exitosa
+            return JsonResponse({'productos': productos_actualizar_stock})
+        else:
+            # Si no se proporcionaron datos adecuados, devuelve un error
+            return JsonResponse({'error': 'Datos no proporcionados correctamente 1'}, status=400)
+    else:
+        # Si la solicitud no es de tipo POST, devuelve un error
+        return JsonResponse({'error': 'Método no permitido 2'}, status=405)
+
+@operador_required
+def guardar_stock(request):
+    if request.method == "POST":
+        try:
+            # Obtener los datos enviados en formato JSON
+            data = json.loads(request.body)
+
+            # Extraer los datos del proveedor
+            proveedor_data = data.get("proveedor", {})
+            descripcion = data.get("descripcion", "")
+            numeroFactura = data.get("numeroFactura","")
+            productos = data.get("productos", [])
+
+            print(numeroFactura)
+            # Validar que hay productos
+            if not productos:
+                return JsonResponse({"success": False, "error": "No hay productos para guardar"}, status=400)
+
+             # Buscar o actualizar el proveedor
+            proveedor, created = Proveedor.objects.update_or_create(
+                ruc=proveedor_data.get("ruc"),
+                defaults={
+                    "nombre": proveedor_data.get("nombre"),
+                    "ciudad": proveedor_data.get("ciudad"),
+                    "direccion": proveedor_data.get("direccion"),
+                    "contacto": proveedor_data.get("contacto"),
+                    "email": proveedor_data.get("email"),
+                    "telfono": proveedor_data.get("celular")
+                },
+            )
+            
+             # Crear el registro de actualización de stock
+            actualizacion = ActualizacionStock.objects.create(
+                proveedor=proveedor,
+                descripcion=descripcion,
+                numeroFactura=numeroFactura
+            )
+            
+            # Ahora recorremos el array de productos y procesamos cada uno
+            for producto in productos:
+                
+                producto_id = producto.get("id")
+                color = producto.get("color")
+                cantidad = producto.get("cantidad")
+                print(producto_id)
+                print(color)
+                print(cantidad)
+                try:
+                    prod = Producto.objects.get(id = producto_id)
+                    colorstock = ColorStock.objects.get(producto = prod, color = color)
+                    actualcantidad = colorstock.stock
+                    colorstock.stock = int(actualcantidad) + int(cantidad)
+                    colorstock.save()
+                    
+                    productoActualizado = ProductosActualizacion.objects.create(
+                    actualizacionstock = actualizacion,
+                    producto = prod,
+                    colorstock = colorstock,
+                    cantidad = cantidad)
+                    
+                except Producto.DoesNotExist:
+                    return JsonResponse({"success": False, "message": f"Producto con ID {producto_id} no encontrado."})
+                except ColorStock.DoesNotExist:
+                    return JsonResponse({"success": False, "message": f"No se encontró el color {color} para el producto {producto_id}."})
+
+            return JsonResponse({"success": True, "message": "Stock guardado con éxito", "id": actualizacion.id})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Error en el formato JSON"}, status=400)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)
+
+@operador_required
+def actualizar_precios(request, id):
+    actualizacionStock = get_object_or_404(ActualizacionStock, id=id)
+    productosActualizados = ProductosActualizacion.objects.filter(actualizacionstock = actualizacionStock)
+    
+    # Obtener solo los productos únicos de ProductosActualizacion
+    productos_unicos = Producto.objects.filter(
+        id__in=ProductosActualizacion.objects.filter(actualizacionstock=actualizacionStock).exclude(precio_actualizado__iexact="si")
+        .values_list('producto', flat=True).distinct()
+    )
+    
+    return render(request, "operacion_actualizarprecios.html", {"productosA": productosActualizados,"productosU":productos_unicos})
+
+@operador_required
+def guardar_nuevoprecio(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            producto_id = data.get("producto_id")
+            nuevo_precio = data.get("nuevo_precio")
+
+            if not producto_id or nuevo_precio is None:
+                return JsonResponse({"success": False, "message": "Datos inválidos."})
+
+            # Buscar el producto y actualizar el precio
+            producto = Producto.objects.get(id=producto_id)
+            if (producto.precio_oferta):
+                producto.precio_oferta = Decimal(nuevo_precio)
+            else:
+                producto.precio = Decimal(nuevo_precio)
+            producto.save()
+            
+            productosActualizacion = ProductosActualizacion.objects.filter(producto=producto)
+            for prodAct in productosActualizacion:
+                prodAct.precio_actualizado = 'si'
+                prodAct.save()
+            
+            messages.success(request, "Precio actualizado con éxito.")
+            
+
+            return JsonResponse({"success": True, "message": "Precio actualizado correctamente."})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)})
+
+    return JsonResponse({"success": False, "message": "Método no permitido."})
+
+@operador_required
+def ofertas(request):
+    # Obtener el valor del parámetro 'option' de la URL
+    option = request.GET.get('option', 'default_value')  # 'default_value' es un valor por defecto
+    
+    try:
+        if option == 'Ofertas':
+            productos = Producto.objects.filter(oferta=True)
+        elif option == 'sinOfertas':
+            productos = Producto.objects.filter(oferta=False)
+        else:
+           productos = Producto.objects.all()
+            
+        colorStock = ColorStock.objects.all()
+    
+    except Exception as e:
+        # Capturar errores y enviar mensaje de error
+        mensaje_error = f"Ocurrió un error al obtener los datos: {str(e)}"
+        return render(request, "operacion_ofertas.html", {"mensaje_error": mensaje_error})
+
+    return render(request, "operacion_ofertas.html", {"productos": productos,"colorStock":colorStock})
+
+@operador_required
+def agregar_oferta(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            producto_id = data.get("producto_id")
+            nuevo_precio = data.get("nuevo_precio")
+            
+            if not producto_id or nuevo_precio is None:
+                return JsonResponse({"success": False, "message": "Datos inválidos."})
+            
+            # Buscar el producto y actualizar el precio
+            producto = Producto.objects.get(id=producto_id)
+            
+            if producto.precio < Decimal(nuevo_precio):
+                return JsonResponse({"success": False, "message": "El precio de oferta no puede ser mayor al precio de venta."})
+
+            
+            producto.precio_oferta = Decimal(nuevo_precio)
+            producto.oferta = True
+            producto.save()
+            
+            
+            messages.success(request, "Oferta actualizada con éxito.")
+            
+
+            return JsonResponse({"success": True, "message": "Oferta actualizada con éxito."})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)})
+
+    return JsonResponse({"success": False, "message": "Método no permitido."})
+
+@operador_required
+def quitar_oferta(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            producto_id = data.get("producto_id")
+            
+            # Buscar el producto y actualizar el precio
+            producto = Producto.objects.get(id=producto_id)
+
+            
+            producto.precio_oferta = None
+            producto.oferta = False
+            producto.save()
+            
+            
+            messages.success(request, "Oferta quitada correctamente.")
+            
+
+            return JsonResponse({"success": True, "message": "Oferta quitada correctamente."})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)})
+    
+    return JsonResponse({"success": False, "message": "Método no permitido."})

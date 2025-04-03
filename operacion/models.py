@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from productos.models import ColorStock, Producto
 
 # Create your models here.
 class Proveedor(models.Model):
@@ -10,7 +11,6 @@ class Proveedor(models.Model):
     contacto = models.CharField(max_length=100, verbose_name='Contacto',null=True)
     email = models.EmailField(verbose_name='Email',null=True)
     telefono = models.CharField(max_length=20, verbose_name='Teléfono',null=True)
-    numeroFactura = models.CharField(max_length=20, verbose_name='Numero de Factura', null=True)
 
     def __str__(self):
         return self.nombre
@@ -48,3 +48,16 @@ class Ingreso(models.Model):
     descripcion = models.CharField(max_length=255)
     fecha_hora = models.DateTimeField(auto_now_add=True)
     usuario = models.CharField(max_length=20,null=True, blank=True)
+    
+class ActualizacionStock(models.Model):
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
+    descripcion = models.TextField(blank=True, null=True)
+    numeroFactura = models.CharField(max_length=20, null=True)
+    fecha_actualizacion = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    
+class ProductosActualizacion(models.Model):
+    actualizacionstock = models.ForeignKey(ActualizacionStock, on_delete=models.CASCADE,null=True, blank=True)
+    colorstock = models.ForeignKey(ColorStock, on_delete=models.CASCADE,null=True, blank=True)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE,null=True, blank=True)
+    cantidad = models.CharField(max_length=20, null=True)
+    precio_actualizado = models.CharField(max_length=10,null=True, blank=True)
