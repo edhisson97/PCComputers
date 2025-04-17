@@ -1,0 +1,297 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion Detalles problemas{% endblock %}
+
+{% block content %}
+{% load static %}
+<h5 class="title-detalle"><i class="fa-solid fa-list"></i> Problemas de {{equipo.nombre}}</h5>
+
+<div class="breadcrumb">
+    <a href="/operacion">Panel operaciones</a>
+    <span>›</span>
+    <a href="/operacion/todosequipos">Todos equipos</a>
+    <span>›</span>
+    <a href="/operacion/todosequipos/idequipo={{equipo.id}}/">Problemas del equipo ({{equipo.nombre}})</a>
+</div>
+
+    {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-secondary" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endfor %}
+      {% endif %}
+    
+
+<div class="container">
+    
+  <!-- 📌 Detalles del Producto -->
+  <div class="left">
+      <div class="product-info">
+          <h2 class="title-detalle"> Id Equipo: {{equipo.id}} - {{ equipo.nombre }} </h2>
+          <p>⚠️ <strong> Advertencia importante:</strong></p>
+            <p>Este equipo tiene información relacionada en el sistema, incluyendo reportes de problemas, mantenimientos y registros asociados.
+            Eliminar este equipo también eliminará permanentemente todos esos datos vinculados.</p>
+      </div><br>
+      
+      <a href="#" 
+        class="btn btn-outline-danger btn-sm"
+        data-bs-toggle="modal" 
+        data-bs-target="#modalDesactivar"
+        data-equipo-id="{{ equipo.id }}">
+        <i class="fa-solid fa-trash"></i> Eliminar Equipo
+    </a>
+    <a href="#" 
+        class="btn btn-outline-primary btn-sm equipo-edit"
+        data-bs-toggle="modal" 
+        data-bs-target="#modalEditarEquipo"
+        data-equipo-id="{{ equipo.id }}"
+        data-nombre-equipo="{{ equipo.nombre }}">
+        <i class="fa-solid fa-pencil"></i> Editar Equipo
+    </a>
+  </div>
+
+  <!-- 📌 Agregar colores y stock -->
+  <div class="right">
+        <!-- 📌 Lista de colores -->
+      <h2 class="title-detalle">Lista de Problemas</h2>
+      {% if not problemas%}
+        
+        <h6>Aún no se han agregado problemas al equipo.</h6>
+        
+      {% endif %}
+      {% for problema in problemas %}
+        
+            <div class="color-box">
+                <button type="button" class="btn btn-outline-primary btn-sm edit-btn-pro"
+                    data-bs-toggle="modal" data-bs-target="#editModal"
+                    data-id="{{ problema.id }}"
+                    data-problema="{{ problema.problema }}"
+                    data-costo="{{ problema.costo }}" title="Editar problema">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm delete-btn-pro"
+                    data-bs-toggle="modal" data-bs-target="#deleteModal"
+                    data-id="{{ problema.id }}" title="Eliminar problema">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <p><b>{{ problema.problema }}</b></p>
+                <p>Costo: ${{ problema.costo }}</p>
+            </div>
+        
+        
+      {% endfor %}
+    
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarProblema">
+        <i class="fa-solid fa-plus"></i> Agregar Nuevo Problema
+    </button>
+
+      <!-- Modal -->
+        <div class="modal fade" id="modalAgregarProblema" tabindex="-1" aria-labelledby="modalAgregarColorLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAgregarColorLabel">Agregar Probelma</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="tipo" value="crearProblema">
+                            <div class="mb-3">
+                                <label class="form-label">Probelma</label>
+                                <input type="text" name="problema" class="form-control" placeholder="Ej. Cambio de bisagras" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Costo $</label>
+                                <input type="number" name="costo" class="form-control" placeholder="Ej. $30" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Agregar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+  </div>
+  <!-- Modal de Edición -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Problema</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="editarProblema">
+                    <input type="hidden" name="edit-id" id="edit-id">
+                    
+                    <div class="mb-3">
+                        <label for="edit-problema" class="form-label">Problema</label>
+                        <input type="text" class="form-control" id="edit-problema" name="edit-problema" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit-costo" class="form-label">Costo $</label>
+                        <input type="number" class="form-control" id="edit-costo" name="edit-costo" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+ <!-- Modal de Edición del equipo-->
+ <div class="modal fade" id="modalEditarEquipo" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Equipo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="editarEquipo">
+                    <input type="hidden" name="edit-equipo-id" id="edit-equipo-id">
+                    
+                    <div class="mb-3">
+                        <label for="edit-problema" class="form-label">Nombre del equipo</label>
+                        <input type="text" class="form-control" id="nombre-equipo" name="nombre-equipo" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal de Confirmación de Eliminación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                
+                ¿Estás seguro de que deseas eliminar el problema y valor del mantemiento del equipo.
+            </div>
+            <div class="modal-footer">
+                <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>-->
+                <form id="deleteForm" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="eliminarProblema">
+                    <input type="hidden" name="delete_problema_id" id="delete_problema_id"> <!-- Cambiado -->
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal de Confirmación de desactivacion del producto-->
+<div class="modal fade" id="modalDesactivar" tabindex="-1" aria-labelledby="modalDesactivarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDesactivarLabel">
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i> Confirmación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ⚠️ Advertencia importante:
+                Este equipo tiene información relacionada en el sistema, incluyendo reportes de problemas, mantenimientos y registros asociados.
+
+                ¿Está seguro de que desea continuar con la eliminación?
+            </div>
+            <div class="modal-footer">
+                <form id="eliminarForm" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="tipo" value="eliminarEquipo">
+                    <input type="hidden" id="eliminar_equipo_id" name="equipo_id">
+                    <button type="submit" class="btn btn-danger">
+                        Confirmar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const botonesEditar = document.querySelectorAll(".edit-btn-pro");
+    
+        botonesEditar.forEach(boton => {
+            boton.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+                const problema = this.getAttribute("data-problema");
+                const costo = this.getAttribute("data-costo");
+    
+                // Asignar los valores a los inputs del modal
+                document.getElementById("edit-id").value = id;
+                document.getElementById("edit-problema").value = problema;
+                document.getElementById("edit-costo").value = parseFloat(costo) || 0;
+
+            });
+        });
+
+        const botonesEliminar = document.querySelectorAll(".delete-btn-pro");
+    
+        botonesEliminar.forEach(boton => {
+            boton.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+    
+                // Asignar los valores a los inputs del modal
+                document.getElementById("delete_problema_id").value = id;
+
+            });
+        });
+
+        const botonEditarPro = document.querySelector(".equipo-edit");
+    
+        botonEditarPro.addEventListener("click", function () {
+            const id = this.getAttribute("data-equipo-id");
+            const nombre = this.getAttribute("data-nombre-equipo");
+            console.log("Eliminar producto ID:", id);
+            // Asignar los valores a los inputs del modal
+            document.getElementById("edit-equipo-id").value = id;
+            document.getElementById("nombre-equipo").value = nombre;
+
+        });
+    });
+
+
+    var deleteModal = document.getElementById("deleteModal");
+    var deleteForm = document.getElementById("deleteForm");
+
+    // Detectar el botón de eliminar
+    document.querySelectorAll(".delete-btn").forEach(function (button) {
+        button.addEventListener("click", function () {
+            var productId = this.getAttribute("data-id");
+            console.log("Eliminar producto ID:", productId);
+            document.getElementById("delete_producto_id").value = productId;
+            deleteForm.action = "/operacion/stock/nuevoproducto/detalle/eliminar_colorproducto/" + productId + "/";  // URL de eliminación
+        });
+    });
+
+    const modalDesactivar = document.getElementById('modalDesactivar');
+    modalDesactivar.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Botón que abrió el modal
+        const productoId = button.getAttribute('data-equipo-id');
+        const inputProductoId = modalDesactivar.querySelector('#eliminar_equipo_id');
+        inputProductoId.value = productoId;
+    });
+</script>
+
+{% endblock %} 

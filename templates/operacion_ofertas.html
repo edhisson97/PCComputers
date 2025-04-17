@@ -41,14 +41,14 @@
                             <h6>Cód. Art.</h6>
                             <p>{{ prod.id }}</p>
                         </div>
-                        <!--<div class="codigo-referencial">
+                        <div class="codigo-referencialN">
                             <h6>Cód. Ref.</h6>
-                            {% for color in prod.colores.all %}
-                                {% if color.codigo_referencial %}
-                                    <p>{{ color.codigo_referencial }}</p>
+                            {% for color in colorStock%}
+                                {% if prod == color.producto and color.codigo_referencial %}
+                                    <p>{{color.codigo_referencial}}</p>
                                 {% endif %}
                             {% endfor %}
-                        </div>-->
+                        </div>
                         <div class="detallesN">
                             <h3>{{ prod.marca }} {{ prod.modelo }}</h3>
                             <p>{{ prod.detalle }}</p>
@@ -56,11 +56,10 @@
                         
                         <div class="colorN">
                             <h6>Color/Cant.</h6>
-                            {% for prodA in productosA%}
-                                {% if prodA.producto == prodU%}
-                                    <p>{{prodA.colorstock.color}} - {{prodA.cantidad}}</p>
+                            {% for color in colorStock%}
+                                {% if prod == color.producto and color.color %}
+                                    <p>{{color.color}} - {{color.stock}}u.</p>
                                 {% endif %}
-                            
                             {% endfor %}
                         </div>
 
@@ -81,19 +80,19 @@
                         <button class="quitar-oferta" id="btnQuitarOferta" data-producto-id="{{ prod.id }}"><i class="fa-solid fa-xmark"></i> Quitar Oferta</button>
                     </div>
                 {% else %}
-                    <div class="articuloActualizar" data-id="{{ prod.id }}" data-nombre="{{ prod.marca }} {{ prod.modelo }}">
+                    <div class="articuloActualizar" data-id="{{ prod.id }}" data-nombre="{{ prod.marca }} {{ prod.modelo }}" data-id="{{ prod.id }}">
                         <div class="codigo-articuloN">
                             <h6>Cód. Art.</h6>
                             <p>{{ prod.id }}</p>
                         </div>
-                        <!--<div class="codigo-referencial">
+                        <div class="codigo-referencialN">
                             <h6>Cód. Ref.</h6>
-                            {% for color in prod.colores.all %}
-                                {% if color.codigo_referencial %}
-                                    <p>{{ color.codigo_referencial }}</p>
+                            {% for color in colorStock%}
+                                {% if prod == color.producto and color.codigo_referencial %}
+                                    <p>{{color.codigo_referencial}}</p>
                                 {% endif %}
                             {% endfor %}
-                        </div>-->
+                        </div>
                         <div class="detallesN">
                             <h3>{{ prod.marca }} {{ prod.modelo }}</h3>
                             <p>{{ prod.detalle }}</p>
@@ -101,11 +100,10 @@
                         
                         <div class="colorN">
                             <h6>Color/Cant.</h6>
-                            {% for prodA in productosA%}
-                                {% if prodA.producto == prodU%}
-                                    <p>{{prodA.colorstock.color}} - {{prodA.cantidad}}</p>
+                            {% for color in colorStock%}
+                                {% if prod == color.producto and color.color %}
+                                    <p>{{color.color}} - {{color.stock}}u.</p>
                                 {% endif %}
-                               
                             {% endfor %}
                         </div>
 
@@ -234,8 +232,9 @@
 
             productos.forEach(producto => {
                 const nombreProducto = producto.getAttribute("data-nombre").toLowerCase();
+                const idProducto = producto.getAttribute("data-id").toLowerCase();
 
-                if (nombreProducto.includes(textoBusqueda)) {
+                if (nombreProducto.includes(textoBusqueda)|| idProducto.includes(textoBusqueda)) {
                     producto.style.visibility = "visible";  // Hacer visible
                 } else {
                     producto.style.visibility = "hidden";
@@ -250,8 +249,9 @@
 
             productosO.forEach(producto => {
                 const nombreProducto = producto.getAttribute("data-nombre").toLowerCase();
+                const idProducto = producto.getAttribute("data-id").toLowerCase();
 
-                if (nombreProducto.includes(textoBusqueda)) {
+                if (nombreProducto.includes(textoBusqueda)|| idProducto.includes(textoBusqueda)) {
                     producto.style.visibility = "visible";
                 } else {
                     producto.style.visibility = "hidden";

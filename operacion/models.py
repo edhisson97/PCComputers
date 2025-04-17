@@ -52,7 +52,7 @@ class Ingreso(models.Model):
 class ActualizacionStock(models.Model):
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
     descripcion = models.TextField(blank=True, null=True)
-    numeroFactura = models.CharField(max_length=20, null=True)
+    numeroFactura = models.CharField(max_length=20, null=True, blank=True)
     fecha_actualizacion = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     
 class ProductosActualizacion(models.Model):

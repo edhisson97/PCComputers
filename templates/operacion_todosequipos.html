@@ -1,0 +1,67 @@
+{% extends "operacion.html" %}
+
+{% block title %}PC Computers - Operacion mantenimiento{% endblock %}
+
+{% block content %}
+{% load static %}
+<h5 class="title-detalle"> Tipos de equipos a dar Mantenimiento</h5>
+<div class="breadcrumb">
+    <a href="/operacion">Panel operaciones</a>
+    <span>›</span>
+    <a href="/operacion/todosequipos">Todos equipos</a>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-secondary" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <input type="text" id="equipo" class="form-control w-50" placeholder="Ej. Laptop, Celular,Computadora de Escritorio, TV.">
+    <a href="#" id="btnAgregarEquipo" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Agregar nuevo 
+    </a>
+</div>
+
+<div class="container mt-4">
+
+    <div class="row" id="productosContainer">
+        {% for equipo in equipos %}
+        <div class="col-md-2 producto-card">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{equipo.id}}: {{ equipo.nombre }}</h5>
+                    <a href="/operacion/todosequipos/idequipo={{equipo.id}}/"> Detalles</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No hay equipos disponibles.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- JavaScript para la búsqueda en tiempo real -->
+<script>
+    document.getElementById("btnAgregarEquipo").addEventListener("click", function (e) {
+        e.preventDefault(); // Evita que el link se ejecute inmediatamente
+        const nombre = document.getElementById("equipo").value.trim();
+
+        if (nombre !== "") {
+            const confirmar = confirm(`¿Desea agregar "${nombre}" como un nuevo equipo?`);
+
+            if (confirmar) {
+                const url = `/operacion/todosequipos?nuevo=${encodeURIComponent(nombre)}`;
+                window.location.href = url;
+            }
+        } else {
+            alert("Por favor ingrese un nombre para continuar.");
+        }
+    });
+</script>
+
+{% endblock %} 

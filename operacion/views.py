@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .decorators import operador_required
 from django.contrib.auth.models import User, Group
 from .models import Proveedor, Caja, Gasto, Ingreso
-from ventas.models import Registro, Servicio, PagoServicio, PagoServicioCombinado, PagoPendienteCombinado, PagoRegistroCombinado, Pago
+from ventas.models import Registro, Servicio, PagoServicio, PagoServicioCombinado, PagoPendienteCombinado, PagoRegistroCombinado, Pago, Equipo, DescripcionEquipo
 from productos.models import Producto, Categoria, subCategoria, Marca, ImagenProducto, ColorStock
 from operacion.models import ActualizacionStock, ProductosActualizacion
 from datetime import datetime
@@ -1174,3 +1174,68 @@ def quitar_oferta(request):
             return JsonResponse({"success": False, "message": str(e)})
     
     return JsonResponse({"success": False, "message": "Método no permitido."})
+
+@operador_required
+def todos_equipos(request):
+    nuevo_nombre = request.GET.get("nuevo")
+    if nuevo_nombre:
+        equipo = Equipo.objects.create(
+            nombre = nuevo_nombre
+        )
+        return redirect("/operacion/todosequipos")
+    equipos = Equipo.objects.all()
+    return render(request, "operacion_todosequipos.html", {"equipos": equipos})
+
+@operador_required
+def detalles_equipo(request, id):
+    equipo = get_object_or_404(Equipo, id=id)
+    
+    if request.method == "POST":
+        tipo = request.POST.get("tipo")
+        
+        if tipo == "eliminarEquipo":
+            equipo_id = request.POST.get("equipo_id")
+            equipod = Equipo.objects.get(id = equipo_id)
+            equipod.delete()
+            equipos = Equipo.objects.all()
+            messages.success(request, "✅ El equipo ha sido eliminado correctamente.")
+            return render(request, "operacion_todosequipos.html", {"equipos": equipos})
+        
+        elif tipo == "crearProblema":
+            problema = request.POST.get("problema")
+            costo = request.POST.get("costo")
+            nuevoProblema = DescripcionEquipo()
+            nuevoProblema.equipo = equipo
+            nuevoProblema.problema = problema
+            nuevoProblema.costo = int(costo)      
+            nuevoProblema.save()    
+            messages.success(request, "✅ El problema a sido creado correctamente.")
+        
+        elif tipo == "editarProblema":
+            id = request.POST.get("edit-id")
+            problema = request.POST.get("edit-problema")
+            costo = request.POST.get("edit-costo")
+            desProblema = DescripcionEquipo.objects.get(id=id)
+            desProblema.problema = problema
+            desProblema.costo = int(costo)      
+            desProblema.save()    
+            messages.success(request, "✅ El problema a sido editado correctamente.")
+            
+        elif tipo == "eliminarProblema":
+            id = request.POST.get("delete_problema_id")
+            costo = request.POST.get("edit-costo")
+            desProblema = DescripcionEquipo.objects.get(id=id)
+            desProblema.delete()
+            messages.success(request, "✅ El problema a sido eliminado correctamente.")
+            
+        elif tipo == "editarEquipo":
+            equipo_id = request.POST.get("edit-equipo-id")
+            print(equipo_id)
+            nombre = request.POST.get("nombre-equipo")
+            equipo = Equipo.objects.get(id = equipo_id)
+            equipo.nombre = nombre
+            equipo.save()
+            messages.success(request, "✅ El equipo ha sido editado correctamente.")
+            
+    problemas = DescripcionEquipo.objects.filter(equipo=equipo)
+    return render(request, "operacion_detalleproblemas.html", {"equipo": equipo, "problemas":problemas})
