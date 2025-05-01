@@ -4,183 +4,285 @@
 
 {% block content %}
 {% load static %}
+
 <style>
-    .contact-container {
-      padding: 3rem 1rem;
-      max-width: 1200px;
-      margin: auto;
-    }
-    .intro {
-      text-align: center;
-      font-size: 1.25rem;
-      color: #374151;
-      margin-bottom: 3rem;
-    }
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
-    }
-    .team-card {
-      background-color: white;
-      border-radius: 1rem;
-      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-      padding: 1.5rem;
-      text-align: center;
-    }
-    .team-card img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 9999px;
-      margin-bottom: 1rem;
-    }
-    .section-title {
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #1e3a8a;
-      margin-bottom: 2rem;
-    }
-    .info-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 3rem;
-    }
-    .info-card {
-      background-color: #eff6ff;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.05);
-    }
-    .info-card h3 {
-      font-size: 1.25rem;
-      color: #1e40af;
-      margin-bottom: 0.5rem;
-    }
-    .services {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-    }
-    .service-card {
-      background-color: white;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-    }
-    .service-card h4 {
-      color: #1d4ed8;
-      margin-bottom: 0.75rem;
-      font-weight: 600;
-    }
-    .achievements {
-      margin-top: 3rem;
-      text-align: center;
-    }
-    .achievements ul {
-      max-width: 600px;
-      margin: auto;
-      text-align: left;
-      color: #374151;
-    }
-  </style>
+  html {
+    scroll-behavior: smooth;
+  }
 
-<h2 class="title-contact">¿Quiénes Somos?
-    <div class="social-links">
-        <a href="https://www.facebook.com/PcComputersNet" target="_blank"><i class="fa-brands fa-square-facebook"></i></a>
-        <a href="https://www.instagram.com/pccomputers.ec/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-        <a href="https://www.tiktok.com/@pccomputers.ec" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
-    </div>
-</h2>
+  body {
+    margin: 0;
+  }
 
-<div class="contact-container">
+  .pc-section {
+    background-color: rgb(241, 243, 247);
+    min-height: 100vh;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    color: #1f2937;
+  }
 
-    <p class="intro">Somos un equipo que ofrece herramientas, equipos y soluciones tecnológicas de calidad, de forma ágil, segura y con un enfoque prometedor hacia la sostenibilidad de las empresas.</p>
-  
-    <div class="team-grid">
-      <div class="team-card">
-        <img src="https://via.placeholder.com/150" alt="Cecilia Avila Gallegos">
-        <h3>Cecilia Avila Gallegos</h3>
-        <p>Fundadora</p>
-        <small>Máster en Auditoría TI<br>Ingeniera en Informática</small>
-      </div>
-      <div class="team-card">
-        <img src="https://via.placeholder.com/150" alt="Luis Alberto Robles Ramón">
-        <h3>Luis Alberto Robles Ramón</h3>
-        <p>Fundador</p>
-        <small>Ingeniero de Sistemas</small>
-      </div>
-      <div class="team-card">
-        <img src="https://via.placeholder.com/150" alt="Alberto Alexander Robles Loaiza">
-        <h3>Alberto Alexander Robles Loaiza</h3>
-        <p>Co-fundador</p>
-        <small>Candidato doctoral en Bioingeniería<br>Ing. en Biotecnología</small>
-      </div>
-      <div class="team-card">
-        <img src="https://via.placeholder.com/150" alt="Alexis">
-        <h3>Alexis</h3>
-        <p>Co-fundador</p>
-        <small>Candidato doctoral en Bioingeniería<br>Ing. en Biotecnología</small>
-      </div>
+  .pc-section::before,
+  .pc-section::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 10%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .pc-section::before {
+    left: 0;
+    background: linear-gradient(to right, white, transparent);
+  }
+
+  .pc-section::after {
+    right: 0;
+    background: linear-gradient(to left, white, transparent);
+  }
+
+  .pc-floating-menu-horizontal {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f3f4f6;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    display: flex;
+    gap: 1rem;
+    z-index: 999;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgb(238, 240, 242);
+    backdrop-filter: blur(4px);
+  }
+
+  .pc-floating-menu-horizontal a {
+    color: #1f2937;
+    text-decoration: none;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  .pc-floating-menu-horizontal a:hover {
+    background-color: #e5e7eb;
+    transform: scale(1.05);
+  }
+
+  .pc-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    max-width: 1000px;
+  }
+
+  .pc-card {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    text-align: left;
+    transition: transform 0.3s ease;
+  }
+
+  .pc-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .pc-card i {
+    font-size: 1.8rem;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .pc-card p {
+    font-size: 1.05rem;
+    line-height: 1.5;
+  }
+
+  .intro-text {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1.5s ease-out forwards;
+    max-width: 800px;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pc-section {
+      padding: 1rem;
+    }
+
+    .intro-text {
+      font-size: 1.1rem;
+    }
+
+    .pc-floating-menu-horizontal {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .pc-floating-menu-horizontal a {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 580px) {
+    .pc-floating-menu-horizontal {
+      bottom: 10px;
+      width: 85%;
+      left: 5%;
+      transform: none;
+      justify-content: center;
+    }
+  }
+</style>
+
+<!-- Sección Nosotros -->
+<div id="pc-nosotros" class="pc-section">
+  <h1>¿Quiénes Somos?</h1>
+  <p class="intro-text">
+    Somos un equipo que ofrece herramientas, equipos y soluciones tecnológicas de calidad,
+    de forma ágil, segura y con un enfoque prometedor hacia la sostenibilidad de las empresas.
+  </p>
+</div>
+
+<!-- Sección Equipo -->
+<div id="pc-equipo" class="pc-section">
+  <h1>Integrantes</h1>
+  <div class="pc-cards">
+    <div class="pc-card">
+      <i class="fas fa-user-tie"></i>
+      <h3>Cecilia Avila Gallegos</h3>
+      <p>Fundadora<br>Máster en Auditoría de Tecnologías de la Información<br>Ingeniera en Informática</p>
     </div>
-  
-    <div class="info-cards">
-      <div class="info-card">
-        <h3>Misión</h3>
-        <p>Ofrecer soluciones integrales e innovadoras que incrementen la competitividad y sostenibilidad de nuestros clientes.</p>
-      </div>
-      <div class="info-card">
-        <h3>Visión</h3>
-        <p>Ser líderes nacionales en servicios tecnológicos ágiles y seguros, promoviendo el desarrollo sostenible.</p>
-      </div>
-      <div class="info-card">
-        <h3>Valores</h3>
-        <p>Ética, seriedad, responsabilidad y compromiso.</p>
-      </div>
+    <div class="pc-card">
+      <i class="fas fa-user-gear"></i>
+      <h3>Luis Alberto Robles Ramón</h3>
+      <p>Fundador<br>Ingeniero de Sistemas</p>
     </div>
-  
-    <h3 class="section-title">Nuestros Servicios</h3>
-    <div class="services">
-      <div class="service-card">
-        <h4>Asesoría y Desarrollo Tecnológico</h4>
-        <ul>
-          <li>Soluciones integrales de TI</li>
-          <li>Asesoría e implementación de proyectos</li>
-          <li>Desarrollo de software web y móvil</li>
-          <li>Analítica de datos con ML, IA, Big Data, IoT</li>
-        </ul>
-      </div>
-      <div class="service-card">
-        <h4>Venta y Mantenimiento de Computadores</h4>
-        <ul>
-          <li>Venta de equipos y accesorios</li>
-          <li>Ensamble de equipos gamer</li>
-          <li>Mantenimiento y reparación de computadoras</li>
-          <li>Redes alámbricas e inalámbricas</li>
-        </ul>
-      </div>
-      <div class="service-card">
-        <h4>Redes y Cableado</h4>
-        <ul>
-          <li>Diseño e implementación de cableado estructurado</li>
-          <li>Redes LAN, WIFI y fibra óptica</li>
-          <li>Mantenimiento con personal técnico calificado</li>
-        </ul>
-      </div>
+    <div class="pc-card">
+      <i class="fas fa-flask"></i>
+      <h3>Alberto Alexander Robles Loaiza</h3>
+      <p>Co-fundador<br>Candidato doctoral en Bioingeniería<br>Ing. en Biotecnología</p>
     </div>
-  
-    <div class="achievements">
-      <h3 class="section-title">Nuestros Logros</h3>
-      <ul>
-        <li>15 años al servicio de la provincia y del país.</li>
-        <li>Más de 100 empresas atendidas con soluciones de alto rendimiento.</li>
-        <li>Mejora continua en procesos enfocados en economía circular.</li>
-        <li>Aplicación de remanufactura en reparaciones críticas de hardware.</li>
-      </ul>
+    <div class="pc-card">
+      <i class="fas fa-microscope"></i>
+      <h3>Alexis</h3>
+      <p>Co-fundador<br>Ingeniero en Sistemas<br>Desarrollador web</p>
     </div>
-  
   </div>
+</div>
 
-{% endblock %} 
+<!-- Sección Servicios -->
+<div id="pc-servicios" class="pc-section">
+  <h1>Servicios</h1>
+  <div class="pc-cards">
+    <div class="pc-card">
+      <i class="fas fa-laptop-code"></i>
+      <h3>Asesoría y Desarrollo Tecnológico</h3>
+      <p>Soluciones integrales de TI. Asesoría para proyectos tecnológicos, desarrollo web y móvil, analítica de datos con Machine Learning, IA, Big Data, IoT y más.</p>
+    </div>
+    <div class="pc-card">
+      <i class="fas fa-tools"></i>
+      <h3>Venta y Mantenimiento de Computadores</h3>
+      <p>Venta de computadores, repuestos, accesorios y equipos gamer. Mantenimiento técnico de PCs, laptops, impresoras y redes.</p>
+    </div>
+    <div class="pc-card">
+      <i class="fas fa-network-wired"></i>
+      <h3>Redes y Cableado</h3>
+      <p>Diseño e instalación de cableado estructurado, redes LAN/WIFI y fibra óptica, con técnicos especializados.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Sección Objetivos -->
+<div id="pc-objetivos" class="pc-section">
+  <h1>Nuestros Objetivos</h1>
+  <div class="pc-cards">
+    <div class="pc-card">
+      <i class="fas fa-bullseye"></i>
+      <h3>Misión</h3>
+      <p>Ofrecer soluciones innovadoras y sostenibles que incrementen la productividad de nuestros clientes.</p>
+    </div>
+    <div class="pc-card">
+      <i class="fas fa-eye"></i>
+      <h3>Visión</h3>
+      <p>Ser una empresa líder nacional en venta y servicios tecnológicos, con enfoque ágil y seguro.</p>
+    </div>
+    <div class="pc-card">
+      <i class="fas fa-lightbulb"></i>
+      <h3>Propuesta</h3>
+      <p>Integrar hardware y software eficientemente, con servicios como analítica de datos y protección de la información.</p>
+    </div>
+    <div class="pc-card">
+      <i class="fas fa-handshake"></i>
+      <h3>Valores</h3>
+      <p>Ética, seriedad, responsabilidad y compromiso.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Sección Logros -->
+<div id="pc-logros" class="pc-section">
+  <h1>Logros</h1>
+  <div class="pc-cards">
+    <div class="pc-card">
+      <i class="fas fa-calendar-check"></i>
+      <h3>15 Años de Servicio</h3>
+      <p>Comprometidos con la tecnología en beneficio de la Provincia y el País.</p>
+    </div>
+    <div class="pc-card">
+      <i class="fas fa-building"></i>
+      <h3>+100 Empresas Atendidas</h3>
+      <p>Con soluciones accesibles y de alto rendimiento.</p>
+    </div>
+    <div class="pc-card">
+      <i class="fas fa-sync-alt"></i>
+      <h3>Mejora Continua</h3>
+      <p>Procesos internos y externos enfocados en economía circular.</p>
+    </div>
+    <div class="pc-card">
+      <i class="fas fa-screwdriver-wrench"></i>
+      <h3>Reparaciones Críticas</h3>
+      <p>Aplicamos remanufactura en hardware con garantía y confianza.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Menú flotante -->
+<div class="pc-floating-menu-horizontal">
+  <a href="#pc-nosotros">Nosotros</a>
+  <a href="#pc-equipo">Equipo</a>
+  <a href="#pc-servicios">Servicios</a>
+  <a href="#pc-objetivos">Objetivos</a>
+  <a href="#pc-logros">Logros</a>
+</div>
+
+{% endblock %}
