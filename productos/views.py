@@ -193,22 +193,21 @@ def articulo(request):
         ca = Categoria.objects.get(nombre=producto.categoria)
     except Categoria.DoesNotExist:
         raise Http404
-    
+
     try:
-        productosSugeridos = Producto.objects.filter(categoria=producto.categoria).exclude(id=producto.id).exclude(desactivado="si")
+        productosSugeridos = Producto.objects.filter(categoria=producto.categoria)\
+            .exclude(id=producto.id).exclude(desactivado="si")
         
+        productosSugeridos = list(productosSugeridos)
         
-        # Limita a 3 productos aleatorios (asegúrate de que haya al menos 3 productos en la categoría)
-        if productosSugeridos.count() >= 3:
-            productos_sugeridos_aleatorios = sample(list(productosSugeridos), 3)
-        else:
-            # Manejar el caso donde hay menos de 3 productos en la categoría
-            productosAux =Producto.objects.all().exclude(id=producto.id)
-            productosSugeridos = productosAux
-            productos_sugeridos_aleatorios = sample(list(productosSugeridos), 3)
-        
+        if len(productosSugeridos) < 3:
+            productosSugeridos = list(Producto.objects.exclude(id=producto.id).exclude(desactivado="si"))
+
+        cantidad = min(len(productosSugeridos), 3)
+        productos_sugeridos_aleatorios = sample(productosSugeridos, cantidad)
+
     except Producto.DoesNotExist:
-        return render(request, 'articulo.html', {"categoria": categoria,"productos":productos,"marca":marcas})
+        return render(request, 'articulo.html', {"categoria": categoria, "productos": productos, "marca": marcas})
     
     #para el iva
     try:

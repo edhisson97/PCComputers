@@ -33,8 +33,8 @@
                 <img src={{ prod.imagenes.first.imagen.url }} alt="Categoría 5"></a>
             {% endif %}
             <div class="info">
-                <h3>{{ prod.marca }} - {{ prod.modelo }}</h3>
-                <p>{{ prod.detalle }}</p>
+                <h3>{{ prod.modelo }} - {{ prod.detalle }}</h3>
+                <p>{{ prod.marca }}</p>
                 {% if prod.oferta == False %}
                     <p class="precio">${{ prod.precio }}</p>
                 {% else %}
@@ -75,8 +75,8 @@
                         </div>
                     </div>
                     {% endif %}
-                    <h3>{{ prod.marca }} - {{ prod.modelo }}</h3>
-                    <p class="detalle">{{ prod.detalle }}</p>
+                    <h3>{{ prod.modelo }}</h3>
+                    <p class="detalle">{{ prod.marca }} - {{ prod.detalle }}</p>
                     {% if prod.oferta == False %}
                         <p class="etiqueta-precio">Precio: </p>
                         <p class="precio">${{ prod.precio }}</p>
