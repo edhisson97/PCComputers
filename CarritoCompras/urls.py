@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from inicio.views import pagina_inicio, pagina_ofertas, obtener_carrito, carrito, registro, ingresar, perfil, verificar_correo, cerrar_sesion, ventas_sesion, operacion_sesion
 from productos.views import pagina_productos, articulo
-from informacion.views import contactanos, servicios, desarrollo_web, mantenimiento
+from informacion.views import contactanos, servicios, desarrollo_web, mantenimiento, quienes_somos
 from ventas.views import inicio_ventas, transacciones_ventas, productos_facturar, reciboPago, generarPdf, pago_pendiente, ventas_caja, buscar_deuda, agregarPago, registro_servicios, generar_recibo_servicios,home_ventas, gastos_ventas, comprobar_ventas_caja, finalizar_servicio, servicios_registros, descargar_pdf_servicios, generardescarga_pdf_servicios, politica_servicios, nuevo_abono, generarrecibo_nuevo_abono, cancelar_servicio, devolver_abono
 from operacion.views import stock_operacion, inicio_operacion, caja_operacion, caja_apertura_operacion, comprobar_operacion_caja, gastos_operacion, caja_panel, cerrar_caja,generardescarga_pdf_operaciones, descargar_pdf_operaciones, nuevo_producto, detalle_producto, todos_productos, editar_color, editar_producto, eliminar_color, actualizar_producto, gestionar_imagenes, desactivar_producto, activar_producto, productos_actualizarStock, guardar_stock, actualizar_precios, guardar_nuevoprecio, ofertas, agregar_oferta, quitar_oferta, todos_equipos, detalles_equipo
 from django.contrib.auth import views as auth_views
@@ -75,6 +75,7 @@ urlpatterns = [
     path('cerrar-sesion/',cerrar_sesion),
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('articulo/', articulo),
+    path('acerca-de/', quienes_somos),
     #ventas
     path('ventaspccomputers/', ventas_sesion),
     path('ventas/', home_ventas),

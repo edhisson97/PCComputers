@@ -46,3 +46,14 @@ def mantenimiento(request):
     except Producto.DoesNotExist:
         return render(request, "mantenimiento.html",)
     return render(request, 'mantenimiento.html', {"categoria": categoria,"todosProductos":todosProductos})
+
+def quienes_somos(request):
+    try:
+        categoria = Categoria.objects.all()
+    except Categoria.DoesNotExist:
+        return render(request, "quienes_somos.html",)
+    try:
+        todosProductos = Producto.objects.exclude(desactivado="si")
+    except Producto.DoesNotExist:
+        return render(request, "quienes_somos.html",)
+    return render(request, 'quienes_somos.html', {"categoria": categoria,"todosProductos":todosProductos})

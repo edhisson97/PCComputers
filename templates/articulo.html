@@ -20,8 +20,8 @@
             </div>
         </div>
         {% endif %}
-        <h3>{{ prod.marca }} - {{ prod.modelo }}</h3>
-        <p class="detalle">{{ prod.detalle }}</p>
+        <h3>{{ prod.modelo }}</h3>
+        <p class="detalle">{{ prod.marca }} {{ prod.detalle }}</p>
         {% if prod.oferta == False %}
             <p class="etiqueta-precio">Precio: </p>
             <p class="precio">${{ prod.precio }}</p>
@@ -91,7 +91,8 @@
                 {% endif %}
                 
                 <div class="detalles-sugeridos">
-                    <h4>{{prodS.marca}} {{prodS.modelo}}</h4>
+                    <h4>{{prodS.modelo}}</h4>
+                    <p>{{prodS.marca}} {{prodS.detalle}}</p>
                     <!--<p>{{prodS.detalle}}</p>-->
                     {% if prodS.oferta == False %}
                         <p class="precio">${{ prodS.precio }}</p>

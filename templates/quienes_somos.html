@@ -1,0 +1,186 @@
+{% extends "paginaInicio.html" %}
+
+{% block title %}PC Computers - ¿Quiénes Somos?{% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+    .contact-container {
+      padding: 3rem 1rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .intro {
+      text-align: center;
+      font-size: 1.25rem;
+      color: #374151;
+      margin-bottom: 3rem;
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+    .team-card {
+      background-color: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .team-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1e3a8a;
+      margin-bottom: 2rem;
+    }
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .info-card {
+      background-color: #eff6ff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.05);
+    }
+    .info-card h3 {
+      font-size: 1.25rem;
+      color: #1e40af;
+      margin-bottom: 0.5rem;
+    }
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    .service-card {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+    }
+    .service-card h4 {
+      color: #1d4ed8;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+    .achievements {
+      margin-top: 3rem;
+      text-align: center;
+    }
+    .achievements ul {
+      max-width: 600px;
+      margin: auto;
+      text-align: left;
+      color: #374151;
+    }
+  </style>
+
+<h2 class="title-contact">¿Quiénes Somos?
+    <div class="social-links">
+        <a href="https://www.facebook.com/PcComputersNet" target="_blank"><i class="fa-brands fa-square-facebook"></i></a>
+        <a href="https://www.instagram.com/pccomputers.ec/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@pccomputers.ec" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+    </div>
+</h2>
+
+<div class="contact-container">
+
+    <p class="intro">Somos un equipo que ofrece herramientas, equipos y soluciones tecnológicas de calidad, de forma ágil, segura y con un enfoque prometedor hacia la sostenibilidad de las empresas.</p>
+  
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="https://via.placeholder.com/150" alt="Cecilia Avila Gallegos">
+        <h3>Cecilia Avila Gallegos</h3>
+        <p>Fundadora</p>
+        <small>Máster en Auditoría TI<br>Ingeniera en Informática</small>
+      </div>
+      <div class="team-card">
+        <img src="https://via.placeholder.com/150" alt="Luis Alberto Robles Ramón">
+        <h3>Luis Alberto Robles Ramón</h3>
+        <p>Fundador</p>
+        <small>Ingeniero de Sistemas</small>
+      </div>
+      <div class="team-card">
+        <img src="https://via.placeholder.com/150" alt="Alberto Alexander Robles Loaiza">
+        <h3>Alberto Alexander Robles Loaiza</h3>
+        <p>Co-fundador</p>
+        <small>Candidato doctoral en Bioingeniería<br>Ing. en Biotecnología</small>
+      </div>
+      <div class="team-card">
+        <img src="https://via.placeholder.com/150" alt="Alexis">
+        <h3>Alexis</h3>
+        <p>Co-fundador</p>
+        <small>Candidato doctoral en Bioingeniería<br>Ing. en Biotecnología</small>
+      </div>
+    </div>
+  
+    <div class="info-cards">
+      <div class="info-card">
+        <h3>Misión</h3>
+        <p>Ofrecer soluciones integrales e innovadoras que incrementen la competitividad y sostenibilidad de nuestros clientes.</p>
+      </div>
+      <div class="info-card">
+        <h3>Visión</h3>
+        <p>Ser líderes nacionales en servicios tecnológicos ágiles y seguros, promoviendo el desarrollo sostenible.</p>
+      </div>
+      <div class="info-card">
+        <h3>Valores</h3>
+        <p>Ética, seriedad, responsabilidad y compromiso.</p>
+      </div>
+    </div>
+  
+    <h3 class="section-title">Nuestros Servicios</h3>
+    <div class="services">
+      <div class="service-card">
+        <h4>Asesoría y Desarrollo Tecnológico</h4>
+        <ul>
+          <li>Soluciones integrales de TI</li>
+          <li>Asesoría e implementación de proyectos</li>
+          <li>Desarrollo de software web y móvil</li>
+          <li>Analítica de datos con ML, IA, Big Data, IoT</li>
+        </ul>
+      </div>
+      <div class="service-card">
+        <h4>Venta y Mantenimiento de Computadores</h4>
+        <ul>
+          <li>Venta de equipos y accesorios</li>
+          <li>Ensamble de equipos gamer</li>
+          <li>Mantenimiento y reparación de computadoras</li>
+          <li>Redes alámbricas e inalámbricas</li>
+        </ul>
+      </div>
+      <div class="service-card">
+        <h4>Redes y Cableado</h4>
+        <ul>
+          <li>Diseño e implementación de cableado estructurado</li>
+          <li>Redes LAN, WIFI y fibra óptica</li>
+          <li>Mantenimiento con personal técnico calificado</li>
+        </ul>
+      </div>
+    </div>
+  
+    <div class="achievements">
+      <h3 class="section-title">Nuestros Logros</h3>
+      <ul>
+        <li>15 años al servicio de la provincia y del país.</li>
+        <li>Más de 100 empresas atendidas con soluciones de alto rendimiento.</li>
+        <li>Mejora continua en procesos enfocados en economía circular.</li>
+        <li>Aplicación de remanufactura en reparaciones críticas de hardware.</li>
+      </ul>
+    </div>
+  
+  </div>
+
+{% endblock %} 
