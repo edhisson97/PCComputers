@@ -161,6 +161,13 @@ h3{
     font-size: 13px;
 }
 
+@media (max-width: 1000px) {
+    .filtrar-container select{
+        font-size: 12px;
+        max-width: 100px;
+    }
+}
+
 @media (max-width: 768px) {
     .contenedor-comprar{
         width: 50%;
@@ -171,5 +178,10 @@ h3{
     .contenedor-articulo,
     .contenedor-sugeridos {
         width: 100%; /* En pantallas más pequeñas, ocupan el 100% del ancho */
+    }
+
+    .filtrar-container select{
+        font-size: 14px;
+        max-width: 150px;
     }
 }
