@@ -144,8 +144,8 @@
                         {% for prod in todosProductos %}
                                 <div class="articulo" data-id="{{ prod.id }}">
                                     <div class="detalles">
-                                        <h3>{{ prod.modelo }}</h3>
-                                        <p>{{ prod.marca }} - {{ prod.detalle }}</p>
+                                        <h3>{{ prod.detalle }}</h3>
+                                        <p>{{ prod.marca }} - {{ prod.modelo }}</p>
                                     </div>
                                     <div class="img-container">
                                     {% if prod.imagenes %}

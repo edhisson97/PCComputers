@@ -57,8 +57,8 @@
                 <img src={{ prod.imagenes.first.imagen.url }} alt="Categoría 5"></a>
             {% endif %}
             <div class="info">
-                <h3>{{ prod.modelo }} - {{ prod.detalle }}</h3>
-                <p>{{ prod.marca }} </p>
+                <h3>{{ prod.detalle }}</h3>
+                <p>{{ prod.marca }} - {{ prod.modelo }}</p>
                 {% if prod.oferta == False %}
                     <p class="precio">${{ prod.precio }}</p>
                 {% else %}
@@ -99,8 +99,8 @@
                         </div>
                     </div>
                     {% endif %}
-                    <h3>{{ prod.marca }} - {{ prod.modelo }}</h3>
-                    <p class="detalle">{{prod.marca}} {{ prod.detalle }}</p>
+                    <h3>{{ prod.detalle }}</h3>
+                    <p class="detalle">{{ prod.marca }} - {{ prod.modelo }} </p>
                     {% if prod.oferta == False %}
                         <p class="etiqueta-precio">Precio: </p>
                         <p class="precio">${{ prod.precio }}</p>
@@ -179,7 +179,9 @@
                         <p class="producto-agotado">Producto Agotado <i class="fa-regular fa-face-frown-open"></i></p>
                     {% endif %}
                     
+                    <p class="titulo-descripcion"><b>Descripción del artículo:</b></p>
                     <p class="descripcion">{{ prod.descripcion }}</p>
+                    <p class="peso"><b>Peso:</b> {{prod.peso}}Kg</p>
                     <!--<div class="video-container">
                         <iframe width="100%" height="100%" src="https://www.youtube.com/embed/XHTrLYShBRQ?si=7tsYyQVN7PFyEfht" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                     </div>-->

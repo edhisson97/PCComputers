@@ -263,7 +263,7 @@ button:hover {
     overflow: hidden; /* Oculta el contenido que sobresale del modal */
     border: none;
     background-color: rgb(255, 252, 252);  /* Fondo oscuro detrás del modal */
-    border-radius: 20px;
+    border-radius: 15px;
     z-index: 99;
     overflow-y: auto;
 }
