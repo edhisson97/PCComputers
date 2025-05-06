@@ -67,7 +67,7 @@ urlpatterns = [
     path('perfil/', perfil),
     path('contactanos/', contactanos),
     path('servicios/', servicios),
-    path('servicios/desarrollo-web', desarrollo_web),
+    path('codebyedhisson', desarrollo_web),
     path('servicios/mantenimiento', mantenimiento),
     path('registro/', registro, name='registro'),
     path('ingresar/', ingresar, name='ingresar'),

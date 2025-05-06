@@ -1,12 +1,12 @@
 footer {
-    background-color: #031E54;/*interfaz 1 #333*/
-    color: #fff;
-    padding: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding-top: 3vh;
-  }
+  background-color: #031E54;
+  color: #fff;
+  padding: 10px 20px 10px 20px; /* Reduje el padding */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 0; /* Añadido */
+}
   
   .footer-section {
     flex: 1;
@@ -49,13 +49,27 @@ footer {
     transform: scale(1.05);
   }
 
-  .copyright-text {
-    margin-bottom: 20px;
+  .codebyedhisson {
+    background-color: #031E54;
     text-align: center;
-    font-size: 12px; /* Puedes ajustar el tamaño de fuente según tus preferencias */
+    padding: 5px 0; /* Menos padding */
+    margin: 0;
+}
+
+  .codebyedhisson img {
+      width: 120px;
+      height: auto;
+  }
+
+
+  .copyright-text {
+    text-align: center;
+    font-size: 12px;
     background-color: #031E54;
     color: #fff;
-  }
+    margin: 0; /* Elimina margen por defecto del <p> */
+    padding: 5px 0; /* Agrega algo de padding si quieres espacio visual controlado */
+}
 
   @media (max-width: 767px) {
     footer {
