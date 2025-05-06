@@ -4,6 +4,15 @@
 
 {% block content %}
 {% load static %}
+
+<h3 class="titulo-articulo"><i class="fa-solid fa-arrow-pointer"></i> Artículo buscado <b>"{{prod.marca}} {{prod.modelo}}"</b></h3>
+<div class="breadcrumb">
+    <a href="/">Inicio</a>
+    <span>›</span>
+    <a href="/productos/{{ categoria_actual }}/?marca=">Todos productos</a>
+    <span>›</span>
+    <a href="/articulo/?id={{prod.id}}">Producto actual "{{prod.marca}} {{prod.modelo}}"</a>
+</div>
 <div class="contenedor-principal">
     <div class="contenedor-articulo">
         {% if prod.imagenes %}
@@ -58,7 +67,9 @@
             <p class="producto-agotado">Producto Agotado <i class="fa-regular fa-face-frown-open"></i></p>
         {% endif %}
         <br>
+        <p class="titulo-descripcion"><b>Descripción del artículo:</b></p>
         <p class="descripcion">{{ prod.descripcion }}</p>
+        <p class="peso"><b>Peso:</b> {{prod.peso}}Kg</p>
     </div>
 
 
