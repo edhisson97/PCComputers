@@ -8,6 +8,7 @@
     margin-bottom: 30px;
     display: flex;
     height: 350px;
+    border-radius: 15px;
 }
 
 .servicio-mantenimiento a, .servicio-desarrollo a, .servicio-analisis a, .servicio-capacitaciones a{
@@ -33,11 +34,15 @@
 .img-mantenimiento, .img-analisis{
     flex: 50%;
     overflow: hidden;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
 }
 
 .img-desarrollo, .img-capacitaciones {
     flex: 50%;
     overflow: hidden;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
 }
 
 .img-mantenimiento img, 
