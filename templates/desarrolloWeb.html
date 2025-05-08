@@ -44,6 +44,7 @@
       opacity: 0;
       transform: translateY(30px);
       transition: all 1s ease;
+      z-index: 1;
     }
 
     .fade-in.visible {
@@ -103,6 +104,43 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
     }
+    
+    
+    .terminal-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 60px 40px 40px 40px;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      z-index: 0;
+      text-align: left;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      pointer-events: none;
+    }
+    
+    .terminal-output {
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+    
+    .blink-cursor {
+      display: inline-block;
+      width: 10px;
+      animation: blink 1s step-end infinite;
+      color: #00ffcc;
+    }
+    
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    
     
 
     .card-custom {
@@ -175,6 +213,10 @@
   </nav>
 
   <section class="hero" id="hero">
+    <div class="terminal-bg">
+      <pre id="terminal-text" class="terminal-output"></pre>
+    </div>
+    
     <div class="fade-in">
       <h1 class="section-title">CodeByEdhisson</h1>
       <p class="section-subtitle">Creamos soluciones web funcionales, elegantes y responsivas.<br>Desde una idea, hasta el desarrollo completo.</p>
@@ -264,6 +306,64 @@
     }, { threshold: 0.2 });
 
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    
+
+    const lines = [
+    "> Iniciando servidor...",
+    "> Cargando módulos... 30%",
+    "> Cargando módulos... 100%",
+    "> Conectando a base de datos...",
+    "> Proyecto desplegado exitosamente!!! 🎉"
+  ];
+
+  const terminal = document.getElementById('terminal-text');
+  let lineIndex = 0;
+  let charIndex = 0;
+  let currentLineElement = null;
+
+  function createNewLine() {
+    const line = document.createElement('div');
+    const textSpan = document.createElement('span');
+    const cursorSpan = document.createElement('span');
+
+    cursorSpan.classList.add('blink-cursor');
+    cursorSpan.textContent = '|';
+
+    line.appendChild(textSpan);
+    line.appendChild(cursorSpan);
+    terminal.appendChild(line);
+
+    currentLineElement = { textSpan, cursorSpan };
+  }
+
+  function typeLine() {
+    if (lineIndex >= lines.length) {
+      if (currentLineElement) currentLineElement.cursorSpan.remove(); // quitar cursor final
+      return;
+    }
+
+    if (!currentLineElement) createNewLine();
+
+    const currentLine = lines[lineIndex];
+    currentLineElement.textSpan.textContent += currentLine[charIndex] || '';
+
+    charIndex++;
+
+    if (charIndex < currentLine.length) {
+      setTimeout(typeLine, 80); // más lento
+    } else {
+      charIndex = 0;
+      currentLineElement.cursorSpan.remove();
+      currentLineElement = null;
+      lineIndex++;
+      setTimeout(typeLine, 600); // pausa antes de siguiente línea
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    typeLine();
+  });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
