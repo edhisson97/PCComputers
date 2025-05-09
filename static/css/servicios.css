@@ -4,7 +4,7 @@
 }
 
 .servicio-mantenimiento, .servicio-desarrollo, .servicio-analisis, .servicio-capacitaciones{
-    background: linear-gradient(to top right, #031E54, rgb(83, 83, 83));
+    background: linear-gradient(to top right, #031E54, #0054bb);
     margin-bottom: 30px;
     display: flex;
     height: 350px;
@@ -15,6 +15,7 @@
     text-decoration: none;
     font-size: 20px;
     display: inline-block;
+    color: aliceblue;
 }
 
 .servicio-mantenimiento span, .servicio-desarrollo span, .servicio-analisis span, .servicio-capacitaciones span{
@@ -75,23 +76,16 @@
     display: none;
 }
 
-.motivational-phrase {
-    margin: 3rem auto 2rem auto;
+.frase-responsive {
+    font-size: clamp(0.9rem, 3.5vw, 1.6rem);
+    background: linear-gradient(90deg, #0072ff, #031E54, #0072ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
     text-align: center;
-    font-size: 20px;
-    font-weight: 500;
-    color: #2c3e50;
-    line-height: 1.6;
-    padding: 0 1rem;
-    max-width: 1000px;
-  }
-  
-  @media (max-width: 768px) {
-    .motivational-phrase {
-      font-size: 1.5rem;
-    }
-  }
-     
+    width: 100%;
+}
+ 
 
 /*************Servicio Mantenimiento***********/
 .header-mantenimiento {

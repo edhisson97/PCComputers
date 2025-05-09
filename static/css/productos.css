@@ -30,7 +30,7 @@
     cursor: pointer;
     padding: 10px;
     border-bottom: 2px solid transparent;
-    min-width: 100px; /* Establece un ancho mínimo para las categorías */
+    min-width: auto; /* Establece un ancho mínimo para las categorías */
 }
 
 .category.selected {
