@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+
 from django.contrib.auth.decorators import login_required
 from ventas.decorators import vendedor_required
 from django.contrib.auth.models import User, Group
@@ -17,6 +18,7 @@ from datetime import date, datetime, timedelta
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
 import base64
+from django.contrib import messages
 
 
 
@@ -2279,3 +2281,79 @@ def comprobar_ventas_caja(request):
 
     # Si la solicitud no es POST, devolver un error apropiado (en desarrollo, puede ser 405 Method Not Allowed)
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@vendedor_required
+def ventas_clientes(request):
+    if request.method == 'POST':
+        id = request.POST.get('id', '').strip()
+        
+        # Obtener datos del formulario
+        nombres = request.POST.get('nombres', '').strip()
+        apellidos = request.POST.get('apellidos', '').strip()
+        cedula = request.POST.get('cedula', '').strip()
+        celular = request.POST.get('celular', '').strip()
+        ciudad = request.POST.get('ciudad', '').strip()
+        direccion = request.POST.get('direccion', '').strip()
+        direccion_envio = request.POST.get('direccionEnvio', '').strip()
+        correo = request.POST.get('correo', '').strip()
+
+        # Validaciones básicas
+        errores = []
+        if not nombres:
+            errores.append("El campo 'Nombres' es obligatorio.")
+        if not apellidos:
+            errores.append("El campo 'Apellidos' es obligatorio.")
+        if not id:
+            if len(cedula) != 10 or not cedula.isdigit():
+                errores.append("La cédula debe tener 10 dígitos.")
+            # Validación de unicidad
+            if adicionalUsuario.objects.filter(cedula=cedula).exists():
+                errores.append("Ya existe un cliente con esa cédula.")
+            if User.objects.filter(email=correo).exists():
+                errores.append("Ya existe un cliente con ese correo.")
+        if not ciudad:
+            errores.append("El campo 'Ciudad' es obligatorio.")
+        if not direccion:
+            errores.append("El campo 'Dirección' es obligatorio.")
+        if not direccion_envio:
+            errores.append("El campo 'Dirección de Envío' es obligatorio.")
+
+        # Si hay errores, mostrar mensajes
+        if errores:
+            for error in errores:
+                messages.error(request, error)
+            return redirect('vistaclientes')  # Asegúrate que este sea tu URL name
+        
+        
+        if id:
+            adicionalusuario = adicionalUsuario.objects.get(id = id)
+            usuario = adicionalusuario.user
+        else:
+            usuario = User()
+            adicionalusuario = adicionalUsuario()
+            adicionalusuario.cedula = cedula
+            usuario.username = cedula
+        
+        usuario.first_name = nombres
+        usuario.last_name = apellidos
+        usuario.email = correo
+        usuario.save()
+        
+        adicionalusuario.celular = celular
+        adicionalusuario.ciudad = ciudad
+        adicionalusuario.direccion = direccion
+        adicionalusuario.direccionEnvio = direccion_envio
+        adicionalusuario.user = usuario
+        adicionalusuario.save()
+        
+        if id:
+            messages.success(request, "Usuario '"+nombres+" "+apellidos+"' editado exitosamente.")
+        else:
+            messages.success(request, "Usuario '"+nombres+" "+apellidos+"' creado exitosamente.")
+    # Usuarios que NO tienen grupos ni permisos
+    usuarios_sin_grupos_permisos = User.objects.filter(groups=None, user_permissions=None)
+
+    # Traer los adicionalUsuario cuyo user esté en esa lista
+    usuariosfiltrados = adicionalUsuario.objects.filter(user__in=usuarios_sin_grupos_permisos)
+    
+    return render(request, 'ventas_clientes.html',{"usuarios":usuariosfiltrados})
