@@ -1,6 +1,6 @@
-{% extends "ventas.html" %}
+{% extends "operacion.html" %}
 
-{% block title %}PC Computers - Clientes{% endblock %}
+{% block title %}PC Computers - Proveedores{% endblock %}
 
 {% block content %}
 
@@ -40,12 +40,12 @@
 
 {% load static %}
 
-<h5 class="title-detalle"><i class="fa-solid fa-users"></i> Listado de Clientes </h5>
+<h5 class="title-detalle">  <i class="fa-regular fa-building"></i> Listado de Proveedores </h5>
 
 <div class="breadcrumb">
-    <a href="/ventas">Panel ventas</a>
+    <a href="/operacion">Panel operaciones</a>
     <span>›</span>
-    <a href="/ventas/clientes">Clientes</a>
+    <a href="/operacion/proveedores">Proveedores</a>
 </div>
 
     {% if messages %}
@@ -61,9 +61,9 @@
       <div class="container my-5">
         <div class="d-flex flex-column align-items-center mb-4 flex-wrap gap-3">
           <div class="d-flex align-items-center gap-2 flex-wrap">
-            <input type="text" id="clientes-buscador" class="form-control clientes-input-buscar" placeholder="Buscar cliente...">
+            <input type="text" id="clientes-buscador" class="form-control clientes-input-buscar" placeholder="Buscar proveedor...">
             <button class="btn btn-primary clientes-btn-agregar" data-bs-toggle="modal" data-bs-target="#modalAgregarCliente">
-              <i class="fa fa-user-plus"></i> Agregar Cliente
+              <i class="fa fa-user-plus"></i> Agregar Proveedor
             </button>
           </div>
         </div>
@@ -73,40 +73,35 @@
             <thead>
               <tr>
                 <th>Nombres</th>
-                <th>Cédula</th>
-                <th>Celular</th>
+                <th>RUC</th>
+                <th>Contacto</th>
                 <th>Dirección</th>
-                <th>Envío</th>
                 <th>Correo</th>
+                <th>Teléfono</th>
               </tr>
             </thead>
             <tbody id="clientes-listado">
-              {% for usuario in usuarios %}
+              {% for proveedor in proveedores %}
               <tr>
-                <td>{{ usuario.user.first_name }} {{usuario.user.last_name}}</td>
-                <td>{{ usuario.cedula }}</td>
-                <td>{{ usuario.celular }}</td>
-                <td>{{ usuario.ciudad }} - {{ usuario.direccion }}</td>
-                <td>{{ usuario.direccionEnvio }}</td>
-                <td>{{ usuario.user.email }}</td>
+                <td>{{ proveedor.nombre }}</td>
+                <td>{{ proveedor.ruc }}</td>
+                <td>{{ proveedor.contacto }}</td>
+                <td>{{ proveedor.ciudad }} {{ proveedor.direccion }}</td>
+                <td>{{ proveedor.email }}</td>
+                <td>{{ proveedor.telefono }}</td>
                 <td>
-                  {% if usuario.cedula == "0000000000" or usuario.cedula == "0000000001"%}
-                    <button type="button" class="btn btn-success edit-btn" disabled><i class="fa-solid fa-pen-to-square"></i></button>
-                  {%else%}
                     <button type="button" class="btn btn-success edit-btn"
                       data-bs-toggle="modal" data-bs-target="#modalAgregarCliente"
-                      data-id="{{ usuario.id }}"
-                      data-nombre="{{ usuario.user.first_name }}"
-                      data-apellido="{{ usuario.user.last_name }}"
-                      data-cedula="{{ usuario.cedula }}"
-                      data-celular="{{ usuario.celular }}"
-                      data-ciudad="{{ usuario.ciudad }}"
-                      data-direccion="{{ usuario.direccion }}"
-                      data-envio="{{ usuario.direccionEnvio }}"
-                      data-correo="{{ usuario.user.email }}">
+                      data-id="{{ proveedor.id }}"
+                      data-nombre="{{ proveedor.nombre }}"
+                      data-ruc="{{ proveedor.ruc }}"
+                      data-telefono="{{ proveedor.telefono }}"
+                      data-ciudad="{{ proveedor.ciudad }}"
+                      data-direccion="{{ proveedor.direccion }}"
+                      data-contacto="{{ proveedor.contacto }}"
+                      data-correo="{{ proveedor.email }}">
                       <i class="fa-solid fa-pen-to-square"></i>
                     </button>
-                  {% endif %}
                 </td>
               </tr>
               {% endfor %}
@@ -120,30 +115,26 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content clientes-modal">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalClienteLabel">Cliente</h5>
+          <h5 class="modal-title" id="modalClienteLabel">Proveedores</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
-        <form method="POST" action="{% url 'vistaclientes' %}">
+        <form method="POST" action="{% url 'vistaproveedores' %}">
           {% csrf_token %}
           <input type="hidden" id="edit-id" name="id">
           <div class="modal-body">
             <div class="container-fluid">
               <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="nombres" class="form-label">Nombres</label>
-                    <input type="text" id="edit-nombres" name="nombres" class="form-control"  required>
-                  </div>
-                  <div class="col-md-6">
-                    <label for="apellidos" class="form-label">Apellidos</label>
-                    <input type="text" name="apellidos" id="edit-apellidos" class="form-control"  required>
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" id="edit-nombre" name="nombre" class="form-control"  required>
                   </div>
                 <div class="col-md-4">
-                  <label for="cedula" class="form-label">Cédula</label>
-                  <input type="number" name="cedula" id="edit-cedula" class="form-control" maxlength="10" required>
+                  <label for="ruc" class="form-label">RUC</label>
+                  <input type="number" name="ruc" id="edit-ruc" class="form-control" maxlength="13" required>
                 </div>
                 <div class="col-md-4">
-                  <label for="celular" class="form-label">Celular</label>
-                  <input type="number" name="celular" id="edit-celular" class="form-control" maxlength="10" required>
+                  <label for="telefono" class="form-label">Teléfono</label>
+                  <input type="number" name="telefono" id="edit-telefono" class="form-control" maxlength="10" required>
                 </div>
                 <div class="col-md-4">
                   <label for="ciudad" class="form-label">Ciudad</label>
@@ -155,8 +146,8 @@
                   <input type="text" name="direccion" id="edit-direccion" class="form-control" required>
                 </div>
                 <div class="col-md-6">
-                  <label for="direccionEnvio" class="form-label">Dirección de Envío</label>
-                  <input type="text" name="direccionEnvio" id="edit-envio" class="form-control"  required>
+                  <label for="contacto" class="form-label">Contacto</label>
+                  <input type="text" name="contacto" id="edit-contacto" class="form-control" >
                 </div>
                 <div class="col-md-6">
                     <label for="correo" class="form-label">Correo electrónico</label>
@@ -197,26 +188,24 @@
           // Extraer los datos del botón
           const id = button.getAttribute('data-id');
           const nombre = button.getAttribute('data-nombre');
-          const apellido = button.getAttribute('data-apellido');
-          const cedula = button.getAttribute('data-cedula');
-          const celular = button.getAttribute('data-celular');
+          const ruc = button.getAttribute('data-ruc');
+          const telefono = button.getAttribute('data-telefono');
           const ciudad = button.getAttribute('data-ciudad');
           const direccion = button.getAttribute('data-direccion');
-          const envio = button.getAttribute('data-envio');
+          const contacto = button.getAttribute('data-contacto');
           const correo = button.getAttribute('data-correo');
     
           // Asignar los valores a los inputs
           document.getElementById('edit-id').value = id;
-          document.getElementById('edit-nombres').value = nombre;
-          document.getElementById('edit-apellidos').value = apellido;
-          document.getElementById('edit-cedula').value = cedula;
-          document.getElementById('edit-celular').value = celular;
+          document.getElementById('edit-nombre').value = nombre;
+          document.getElementById('edit-ruc').value = ruc;
+          document.getElementById('edit-telefono').value = telefono;
           document.getElementById('edit-ciudad').value = ciudad;
           document.getElementById('edit-direccion').value = direccion;
-          document.getElementById('edit-envio').value = envio;
+          document.getElementById('edit-contacto').value = contacto;
           document.getElementById('edit-correo').value = correo;
 
-          document.getElementById('edit-cedula').disabled = true;
+          document.getElementById('edit-ruc').disabled = true;
         });
     
         // Si quieres resetear el formulario al cerrarse:

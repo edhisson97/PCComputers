@@ -5,15 +5,21 @@
 {% block content %}
 {% load static %}
 
-<div class="container mt-5">
-    <h3 class="title">Gastos/Ingresos</h3>
-  <!-- Botón para abrir modal de nuevo gasto -->
+<h3 class="title">Gastos/Ingresos</h3>
+
+<div class="breadcrumb">
+    <a href="/ventas">Panel ventas</a>
+    <span>›</span>
+    <a href="/ventas/ingresos">Gastos - Ingresos</a>
+</div>
+
+<!-- Botón para abrir modal de nuevo gasto -->
   {%if caja.estado == 'abierta' %}
-    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#modalNuevoGasto">
+    <button type="button" class="btn btn-primary mb-1" data-toggle="modal" data-target="#modalNuevoGasto">
         <i class="fas fa-plus"></i> Nuevo Gasto
     </button>
 
-    <button type="button" class="btn btn-secondary mb-3" data-toggle="modal" data-target="#modalNuevoIngreso">
+    <button type="button" class="btn btn-secondary mb-1" data-toggle="modal" data-target="#modalNuevoIngreso">
         <i class="fas fa-plus"></i> Nuevo Ingreso
     </button>
     
@@ -23,12 +29,20 @@
         <p class="alerta-leyenda">Apertura la caja para agregar nuevos gastos o ingresos.</p>
     </div>
   {%endif%}
-  <h4>Lista de Gastos</h4>
+
+<div class="container mt-5">
+  <!--<h4>Lista de Gastos</h4>-->
   <!-- Tabla de Gastos -->
   <table class="table">
       <thead>
+        <tr>
+            <th colspan="6" class="text-center text-primary fs-5">
+                <b>Gastos</b>
+            </th>
+        </tr>
           <tr>
               <th>#</th>
+              <th><b>Tipo</b></th>
               <th>Valor</th>
               <th>Descripción</th>
               <th>Fecha/Hora</th>
@@ -38,8 +52,10 @@
       <tbody>
           <!-- Ejemplo de datos estáticos -->
            {% for gasto in gastos%}
+           
             <tr>
                 <td>{{gasto.id}}</td>
+                <td><b>Gasto</b></td>
                 <td>{{gasto.valor}}</td>
                 <td>{{gasto.descripcion}}</td>
                 <td>{{gasto.fecha_hora}}</td>
@@ -48,10 +64,37 @@
           {% endfor %}
           <!-- Puedes usar un bucle de Django para mostrar los gastos dinámicamente -->
       </tbody>
+      <thead>
+        <tr>
+            <th colspan="6" class="text-center text-primary fs-5">
+                <b>Ingresos</b>
+            </th>
+        </tr>
+          <tr>
+              <th>#</th>
+              <th><b>Tipo</b></th>
+              <th>Valor</th>
+              <th>Descripción</th>
+              <th>Fecha/Hora</th>
+              <th>Usuario</th>
+          </tr>
+      </thead>
+      <tbody>
+           {% for ingreso in ingresos%}
+            <tr>
+                <td>{{ingreso.id}}</td>
+                <td><b>Ingreso</b></td>
+                <td>{{ingreso.valor}}</td>
+                <td>{{ingreso.descripcion}}</td>
+                <td>{{ingreso.fecha_hora}}</td>
+                <td>{{ingreso.usuario}}</td>
+            </tr>
+          {% endfor %}
+      </tbody>
   </table>
 
-  <h4>Lista de Ingresos</h4>
-  <!-- Tabla de Gastos -->
+  <!--<h4>Lista de Ingresos</h4>
+  
   <table class="table">
       <thead>
           <tr>
@@ -63,7 +106,6 @@
           </tr>
       </thead>
       <tbody>
-          <!-- Ejemplo de datos estáticos -->
            {% for ingreso in ingresos%}
             <tr>
                 <td>{{ingreso.id}}</td>
@@ -73,9 +115,8 @@
                 <td>{{ingreso.usuario}}</td>
             </tr>
           {% endfor %}
-          <!-- Puedes usar un bucle de Django para mostrar los gastos dinámicamente -->
       </tbody>
-  </table>
+  </table>-->
 </div>
 
 <!-- Modal para Nuevo Gasto -->

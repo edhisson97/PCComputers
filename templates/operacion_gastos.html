@@ -5,9 +5,15 @@
 {% block content %}
 {% load static %}
 
-<div class="container mt-5">
-  <h2>Lista de Gastos</h2>
-  <!-- Botón para abrir modal de nuevo gasto -->
+<h3 class="title">Gastos/Ingresos</h3>
+
+<div class="breadcrumb">
+    <a href="/operacion">Panel operaciones</a>
+    <span>›</span>
+    <a href="/operacion/ingresos">Gastos - Ingresos</a>
+</div>
+
+<!-- Botón para abrir modal de nuevo gasto -->
   {%if caja.estado == 'abierta' %}
     <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#modalNuevoGasto">
         <i class="fas fa-plus"></i> Nuevo Gasto
@@ -24,11 +30,19 @@
     </div>
   {%endif%}
 
+<div class="container mt-5">
+
   <!-- Tabla de Gastos -->
   <table class="table">
       <thead>
+        <tr>
+            <th colspan="6" class="text-center text-primary fs-5">
+                <b>Gastos</b>
+            </th>
+        </tr>
           <tr>
               <th>#</th>
+              <th><b>Tipo</b></th>
               <th>Valor</th>
               <th>Descripción</th>
               <th>Fecha/Hora</th>
@@ -40,6 +54,7 @@
            {% for gasto in gastos%}
             <tr>
                 <td>{{gasto.id}}</td>
+                <td><b>Gasto</b></td>
                 <td>{{gasto.valor}}</td>
                 <td>{{gasto.descripcion}}</td>
                 <td>{{gasto.fecha_hora}}</td>
@@ -47,6 +62,33 @@
             </tr>
           {% endfor %}
           <!-- Puedes usar un bucle de Django para mostrar los gastos dinámicamente -->
+      </tbody>
+      <thead>
+        <tr>
+            <th colspan="6" class="text-center text-primary fs-5">
+                <b>Ingresos</b>
+            </th>
+        </tr>
+          <tr>
+              <th>#</th>
+              <th><b>Tipo</b></th>
+              <th>Valor</th>
+              <th>Descripción</th>
+              <th>Fecha/Hora</th>
+              <th>Usuario</th>
+          </tr>
+      </thead>
+      <tbody>
+           {% for ingreso in ingresos%}
+            <tr>
+                <td>{{ingreso.id}}</td>
+                <td><b>Ingreso</b></td>
+                <td>{{ingreso.valor}}</td>
+                <td>{{ingreso.descripcion}}</td>
+                <td>{{ingreso.fecha_hora}}</td>
+                <td>{{ingreso.usuario}}</td>
+            </tr>
+          {% endfor %}
       </tbody>
   </table>
 </div>

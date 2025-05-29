@@ -1239,3 +1239,64 @@ def detalles_equipo(request, id):
             
     problemas = DescripcionEquipo.objects.filter(equipo=equipo)
     return render(request, "operacion_detalleproblemas.html", {"equipo": equipo, "problemas":problemas})
+
+@operador_required
+def operador_proveedores(request):
+    if request.method == 'POST':
+        id = request.POST.get('id', '').strip()
+        
+        # Obtener datos del formulario
+        nombre = request.POST.get('nombre', '').strip()
+        ruc = request.POST.get('ruc', '').strip()
+        telefono = request.POST.get('telefono', '').strip()
+        ciudad = request.POST.get('ciudad', '').strip()
+        direccion = request.POST.get('direccion', '').strip()
+        contacto = request.POST.get('contacto', '').strip()
+        correo = request.POST.get('correo', '').strip()
+
+        # Validaciones básicas
+        errores = []
+        if not nombre:
+            errores.append("El campo 'Nombres' es obligatorio.")
+        if not id:
+            if len(ruc) != 13 or not ruc.isdigit():
+                errores.append("El ruc debe tener 13 dígitos.")
+            # Validación de unicidad
+            if Proveedor.objects.filter(ruc=ruc).exists():
+                errores.append("Ya existe un proveedor con ese ruc.")
+            if Proveedor.objects.filter(email=correo).exists():
+                errores.append("Ya existe un cliente con ese correo.")
+        if not ciudad:
+            errores.append("El campo 'Ciudad' es obligatorio.")
+        if not direccion:
+            errores.append("El campo 'Dirección' es obligatorio.")
+
+        # Si hay errores, mostrar mensajes
+        if errores:
+            for error in errores:
+                messages.error(request, error)
+            return redirect('vistaproveedores')  # Asegúrate que este sea tu URL name
+        
+        
+        if id:
+            proveedor = Proveedor.objects.get(id = id)
+        else:
+            proveedor = Proveedor()
+            proveedor.ruc = ruc
+        
+        proveedor.nombre = nombre
+        proveedor.telefono = telefono
+        proveedor.email = correo
+        proveedor.ciudad = ciudad
+        proveedor.direccion = direccion
+        proveedor.contacto = contacto
+        proveedor.save()
+        
+        if id:
+            messages.success(request, "Proveedor '"+nombre+" - "+ruc+"' editado exitosamente.")
+        else:
+            messages.success(request, "Proveedor '"+nombre+" - "+ruc+"' creado exitosamente.")
+    # Usuarios que NO tienen grupos ni permisos
+    proveedores = Proveedor.objects.all()
+    
+    return render(request, 'operacion_proveedores.html',{"proveedores":proveedores})
