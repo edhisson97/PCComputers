@@ -12,7 +12,7 @@ Seller_group, created = Group.objects.get_or_create(name='Tecnicos')
 class adicionalUsuario(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     token = models.CharField(max_length=255, unique=True, null=True)
-    cedula = models.CharField(max_length=10, unique=True, null=True)
+    cedula = models.CharField(max_length=13, unique=True, null=True)
     celular = models.CharField(max_length=10, null=True)
     ciudad = models.CharField(max_length=100, null=True)
     direccion = models.CharField(max_length=200, null=True)
