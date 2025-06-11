@@ -12,16 +12,18 @@ python manage.py collectstatic --no-input
 python manage.py migrate
 
 # Crear superusuario automáticamente si no existe
-python manage.py shell <<EOF
-from django.contrib.auth import get_user_model
-User = get_user_model()
-username = "admin"
-email = "edhisson97sanmartin@gmail.com"
-password = "admin123"
+#python manage.py shell <<EOF
+#from django.contrib.auth import get_user_model
+#User = get_user_model()
+#username = "admin"
+#email = "edhisson97sanmartin@gmail.com"
+#password = "admin123"
 
-if not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(username, email, password)
-    print("Superusuario creado con éxito.")
-else:
-    print("El superusuario ya existe.")
-EOF
+#if not User.objects.filter(username=username).exists():
+#    User.objects.create_superuser(username, email, password)
+#    print("Superusuario creado con éxito.")
+#else:
+#    print("El superusuario ya existe.")
+#EOF
+
+#python subirClientes.py

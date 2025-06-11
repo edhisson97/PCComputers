@@ -19,8 +19,8 @@ class adicionalUsuario(models.Model):
     direccionEnvio = models.CharField(max_length=300, null=True)
     deuda = models.CharField(max_length=3, default='no')
 
-    def __str__(self):
-        return self.token
+    #def __str__(self):
+    #    return self.token
 
 # Create your models here.
 class Categoria(models.Model):
