@@ -26,4 +26,4 @@ python manage.py migrate
 #    print("El superusuario ya existe.")
 #EOF
 
-python subirClientes.py
+#python subirClientes.py
