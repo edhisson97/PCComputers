@@ -27,3 +27,4 @@ python manage.py migrate
 #EOF
 
 #python subirClientes.py
+python subirProveedores.py
