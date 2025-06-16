@@ -10,15 +10,15 @@ from operacion.models import Proveedor  # Reemplaza 'app' con el nombre de tu ap
 
 # Cargar archivo Excel
 df = pd.read_excel("PROVEEDORES.xlsx", dtype={
-    'ruc': str,
-    'telefono': str
+    'RUC': str,
+    'TELEFONO': str
 })
 
 creados = 0
 omitidos = 0
 
 for _, row in df.iterrows():
-    ruc = str(row['ruc']).strip().zfill(13)
+    ruc = str(row['RUC']).strip().zfill(13)
     
     if not ruc.isdigit() or len(ruc) != 13:
         continue  # Ignorar ruc inválido
@@ -30,12 +30,12 @@ for _, row in df.iterrows():
 
     proveedor = Proveedor.objects.create(
         ruc=ruc,
-        nombre=row['nombre'],
-        ciudad=row.get('ciudad', ''),
-        direccion=row.get('direccion', ''),
-        contacto=row.get('contacto', ''),
-        email=row.get('email', ''),
-        telefono=str(row.get('telefono', '')).strip()
+        nombre=row['NOMBRE'],
+        ciudad=row.get('CIUDAD', ''),
+        direccion=row.get('DIRECCION', ''),
+        contacto=row.get('CONTACTO', ''),
+        email=row.get('EMAIL', ''),
+        telefono=str(row.get('TELEFONO', '')).strip()
     )
     creados += 1
 
