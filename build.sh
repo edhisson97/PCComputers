@@ -17,7 +17,7 @@ python manage.py migrate
 #User = get_user_model()
 #username = "admin"
 #email = "edhisson97sanmartin@gmail.com"
-#password = "admin123"
+#password = "****"
 
 #if not User.objects.filter(username=username).exists():
 #    User.objects.create_superuser(username, email, password)

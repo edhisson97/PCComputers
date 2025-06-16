@@ -6,8 +6,8 @@ from productos.models import ColorStock, Producto
 class Proveedor(models.Model):
     ruc = models.CharField(max_length=13, unique=True, verbose_name='RUC')
     nombre = models.CharField(max_length=100, verbose_name='Nombre')
-    ciudad = models.CharField(max_length=200, verbose_name='Ciudad')
-    direccion = models.CharField(max_length=200, verbose_name='Dirección')
+    ciudad = models.CharField(max_length=200, verbose_name='Ciudad',null=True)
+    direccion = models.CharField(max_length=200, verbose_name='Dirección',null=True)
     contacto = models.CharField(max_length=100, verbose_name='Contacto',null=True)
     email = models.EmailField(verbose_name='Email',null=True)
     telefono = models.CharField(max_length=20, verbose_name='Teléfono',null=True)
