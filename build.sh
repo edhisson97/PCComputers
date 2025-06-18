@@ -15,8 +15,8 @@ python manage.py migrate
 #python manage.py shell <<EOF
 #from django.contrib.auth import get_user_model
 #User = get_user_model()
-#username = "admin"
-#email = "edhisson97sanmartin@gmail.com"
+#username = "*****"
+#email = "*******@gmail.com"
 #password = "****"
 
 #if not User.objects.filter(username=username).exists():
@@ -27,4 +27,4 @@ python manage.py migrate
 #EOF
 
 #python subirClientes.py
-python subirProveedores.py
+#python subirProveedores.py

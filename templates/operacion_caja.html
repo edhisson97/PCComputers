@@ -340,7 +340,8 @@
                     },
                     error: function(xhr, status, error) {
                         // Manejar errores si es necesario
-                        alert('Ocurrió un error al comprobar la caja. Intente nuevamente en unos minutos.');
+                        alert('Ocurrió un error al comprobar la caja. Intente nuevamente en unos minutos. 1');
+                        console.error(error);
                     }
                 });
                 
@@ -399,7 +400,8 @@
                     },
                     error: function(xhr, status, error) {
                         // Manejar errores si es necesario
-                        alert('Ocurrió un error al comprobar la caja. Intente nuevamente en unos minutos.');
+                        alert('Ocurrió un error al comprobar la caja. Intente nuevamente en unos minutos. 2');
+                        console.error(error);
                     }
                 });
             });
