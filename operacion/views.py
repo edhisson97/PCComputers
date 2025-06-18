@@ -475,88 +475,93 @@ def comprobar_operacion_caja(request):
         
         # Devuelve una respuesta JSON
         if accion == 'cerrar':
-            detalle = data.get('detalle', None)
-            ventas = totalVendido + cheques_ventas + tarjetas_credito_ventas + tarjetas_debito_ventas + transferencias_ventas
-            servicios = total_servicios + cheques_servicios + tarjetas_credito_servicios + tarjetas_debito_servicios + transferencias_servicios
-            totalGeneral = ventas + servicios
-            fechaCierre = timezone.now()
-            
-            context = {
-            'aperturaCaja':caja.fecha_hora_inicio,
-            'cierreCaja':fechaCierre,
-            'cajero':caja.cajero.first_name +" " +caja.cajero.last_name +" ("+caja.cajero.username+")",
-            'numeroCaja':caja.id,
-            'detalle':detalle,
-            'numero_ventas':numero_ventas,
-            'numero_ventas_contado':numero_ventas_contado,
-            'numero_ventas_credito':numero_ventas_credito,
-            'numero_ventas_apartado':numero_ventas_apartado,
-            'enEfectivo':totalVendido,
-            'chequesVentas':cheques_ventas,
-            'tarjetas_credito_ventas':tarjetas_credito_ventas,
-            'tarjetas_debito_ventas':tarjetas_debito_ventas,
-            'transferenciasVentas':transferencias_ventas,
-            'ventas_contado':ventas,
-            'efectivoServicios':total_servicios,
-            'chequesServicios':cheques_servicios,
-            'tarjetas_credito_servicios':tarjetas_credito_servicios,
-            'tarjetas_debito_servicios':tarjetas_debito_servicios,
-            'transferencias_servicios':transferencias_servicios,
-            'totalServicios': servicios,
-            #'ventasContado': totalVendido + cheques_ventas + tarjetas_credito_ventas + tarjetas_debito_ventas + transferencias_ventas,
-            'efectivoContado': efectivoContado,
-            'inicioCaja':fondoCaja,
-            'totalGeneral': totalGeneral,
-            'totalEgresos':totalEgresos,
-            'totalIngresos':totalIngresos,
-            'totalEfectivo':totalEfectivo,
-            'aux':aux,
-            }
-            
-            #generar pdf y enviar
-            html_content = render_to_string('cierre_caja_recibo.html', context)
-
-            # Guardar el contenido HTML en un archivo temporal
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
-                temp_html.write(html_content.encode('utf-8'))
-                temp_html_path = temp_html.name
+            try:
+                detalle = data.get('detalle', None)
+                ventas = totalVendido + cheques_ventas + tarjetas_credito_ventas + tarjetas_debito_ventas + transferencias_ventas
+                servicios = total_servicios + cheques_servicios + tarjetas_credito_servicios + tarjetas_debito_servicios + transferencias_servicios
+                totalGeneral = ventas + servicios
+                fechaCierre = timezone.now()
                 
-                # Cerrar el archivo HTML temporal
-                temp_html.close()
-                # Eliminar el archivo PDF temporal
-        
-            wkhtmltopdf_path = getattr(settings, 'WKHTMLTOPDF_PATH', None)
+                context = {
+                'aperturaCaja':caja.fecha_hora_inicio,
+                'cierreCaja':fechaCierre,
+                'cajero':caja.cajero.first_name +" " +caja.cajero.last_name +" ("+caja.cajero.username+")",
+                'numeroCaja':caja.id,
+                'detalle':detalle,
+                'numero_ventas':numero_ventas,
+                'numero_ventas_contado':numero_ventas_contado,
+                'numero_ventas_credito':numero_ventas_credito,
+                'numero_ventas_apartado':numero_ventas_apartado,
+                'enEfectivo':totalVendido,
+                'chequesVentas':cheques_ventas,
+                'tarjetas_credito_ventas':tarjetas_credito_ventas,
+                'tarjetas_debito_ventas':tarjetas_debito_ventas,
+                'transferenciasVentas':transferencias_ventas,
+                'ventas_contado':ventas,
+                'efectivoServicios':total_servicios,
+                'chequesServicios':cheques_servicios,
+                'tarjetas_credito_servicios':tarjetas_credito_servicios,
+                'tarjetas_debito_servicios':tarjetas_debito_servicios,
+                'transferencias_servicios':transferencias_servicios,
+                'totalServicios': servicios,
+                #'ventasContado': totalVendido + cheques_ventas + tarjetas_credito_ventas + tarjetas_debito_ventas + transferencias_ventas,
+                'efectivoContado': efectivoContado,
+                'inicioCaja':fondoCaja,
+                'totalGeneral': totalGeneral,
+                'totalEgresos':totalEgresos,
+                'totalIngresos':totalIngresos,
+                'totalEfectivo':totalEfectivo,
+                'aux':aux,
+                }
+                
+                #generar pdf y enviar
+                html_content = render_to_string('cierre_caja_recibo.html', context)
 
-            if not wkhtmltopdf_path or not os.path.exists(wkhtmltopdf_path):
-                return JsonResponse({'error': 'wkhtmltopdf no está disponible en el servidor'}, status=500)
-
-
-            # Configuración de pdfkit
-            config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
-        
-            # Convertir el archivo HTML temporal a PDF
-            output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
-            pdfkit.from_file(temp_html_path, output_path, configuration=config)
+                # Guardar el contenido HTML en un archivo temporal
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+                    temp_html.write(html_content.encode('utf-8'))
+                    temp_html_path = temp_html.name
+                    
+                    # Cerrar el archivo HTML temporal
+                    temp_html.close()
+                    # Eliminar el archivo PDF temporal
             
-            # Suponiendo que tienes output_path definido y quieres codificarlo
-            encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+                wkhtmltopdf_path = getattr(settings, 'WKHTMLTOPDF_PATH', None)
 
-            # Crear el diccionario de contexto
-            context = {'encoded_path': encoded_path}
+                if not wkhtmltopdf_path or not os.path.exists(wkhtmltopdf_path):
+                    return JsonResponse({'error': 'wkhtmltopdf no está disponible en el servidor'}, status=500)
+
+
+                # Configuración de pdfkit
+                config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
             
-            caja.estado = "cerrada"
-            caja.fecha_hora_cierre = fechaCierre
-            caja.observaciones = detalle
-            caja.efectivo_ventas = totalVendido
-            caja.total_ventas = ventas
-            caja.efectivo_servicios = total_servicios
-            caja.total_servicios = servicios
-            caja.total_general = totalGeneral
-            caja.efectivo_contado = efectivoContado
-            caja.save()
-            
-            return JsonResponse(context)
-        
+                # Convertir el archivo HTML temporal a PDF
+                output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
+                pdfkit.from_file(temp_html_path, output_path, configuration=config)
+                
+                # Suponiendo que tienes output_path definido y quieres codificarlo
+                encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+
+                # Crear el diccionario de contexto
+                context = {'encoded_path': encoded_path}
+                
+                caja.estado = "cerrada"
+                caja.fecha_hora_cierre = fechaCierre
+                caja.observaciones = detalle
+                caja.efectivo_ventas = totalVendido
+                caja.total_ventas = ventas
+                caja.efectivo_servicios = total_servicios
+                caja.total_servicios = servicios
+                caja.total_general = totalGeneral
+                caja.efectivo_contado = efectivoContado
+                caja.save()
+                
+                return JsonResponse(context)
+            except Exception as e:
+                import traceback
+                print("EL ERROR ES: ")
+                print(traceback.format_exc())  # Verás esto en los logs de Render
+                return JsonResponse({'error': str(e)}, status=500)
         else:
             response_data = {
                 'message': 'Datos recibidos correctamente',
