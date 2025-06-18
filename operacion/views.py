@@ -219,259 +219,266 @@ def caja_apertura_operacion(request):
 @operador_required
 def comprobar_operacion_caja(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        efectivoContado = data.get('efectivo', None)
-        print(efectivoContado)
-        cajero_username = data.get('cajero', None)
-        accion = data.get('accion', None)
-        print('--------------------------------')
-        print(cajero_username)
-        vendedor = User.objects.get(username=cajero_username)
-        print('-------------------')
-        print(vendedor)
-        caja = Caja.objects.filter(cajero=vendedor).latest('fecha_hora_inicio')
-        print('----------------------------------------------------')
-        print(caja)
-        # Aquí puedes procesar los datos como necesites
-        #caja = Caja.objects.latest('fecha_hora_inicio')
-        
-        # Obtener la fecha y hora de inicio de la caja
-        fecha_inicio = caja.fecha_hora_inicio
-        
-        # Obtener la fecha y hora actual
-        fecha_actual = timezone.now()
-        
-        # Filtrar los registros que están dentro del rango de fecha desde fecha_inicio hasta fecha_actual
-        registros = Registro.objects.filter(fecha_hora__range=(fecha_inicio, fecha_actual))
-        pagosRegistros = Pago.objects.filter(fecha_hora__range=(fecha_inicio, fecha_actual))
+        try:
+            data = json.loads(request.body)
+            efectivoContado = data.get('efectivo', None)
+            print(efectivoContado)
+            cajero_username = data.get('cajero', None)
+            accion = data.get('accion', None)
+            print('--------------------------------')
+            print(cajero_username)
+            vendedor = User.objects.get(username=cajero_username)
+            print('-------------------')
+            print(vendedor)
+            caja = Caja.objects.filter(cajero=vendedor).latest('fecha_hora_inicio')
+            print('----------------------------------------------------')
+            print(caja)
+            # Aquí puedes procesar los datos como necesites
+            #caja = Caja.objects.latest('fecha_hora_inicio')
+            
+            # Obtener la fecha y hora de inicio de la caja
+            fecha_inicio = caja.fecha_hora_inicio
+            
+            # Obtener la fecha y hora actual
+            fecha_actual = timezone.now()
+            
+            # Filtrar los registros que están dentro del rango de fecha desde fecha_inicio hasta fecha_actual
+            registros = Registro.objects.filter(fecha_hora__range=(fecha_inicio, fecha_actual))
+            pagosRegistros = Pago.objects.filter(fecha_hora__range=(fecha_inicio, fecha_actual))
 
-        fondoCaja = Decimal(caja.valor_apertura)
-        
-        totalVendido = 0
-        transferencias_ventas = 0
-        cheques_ventas = 0
-        tarjetas_ventas = 0
-        numero_ventas = registros.count()
-        numero_ventas_contado = 0
-        numero_ventas_credito = 0
-        numero_ventas_apartado = 0
-        tarjetas_credito_ventas = 0
-        tarjetas_debito_ventas = 0
-        
-        for r in registros:
-            if r.tipo_venta == 'Contado':
-                numero_ventas_contado += 1
-                if r.tipo_pago == 'Efectivo':
-                    totalVendido = totalVendido + Decimal(r.total_vendido)
-                if r.tipo_pago == 'Transferencia':
-                    transferencias_ventas = transferencias_ventas + Decimal(r.total_vendido)
-                if r.tipo_pago == 'Tarjeta de Crédito':
-                    tarjetas_ventas = tarjetas_ventas + Decimal(r.total_vendido)
-                    tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.total_vendido)
-                if r.tipo_pago == 'Tarjeta de Débito':
-                    tarjetas_ventas = tarjetas_ventas + Decimal(r.total_vendido)
-                    tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.total_vendido)
-                if r.tipo_pago == 'Cheque':
-                    cheques_ventas = cheques_ventas + Decimal(r.total_vendido)
-                if r.tipo_pago == 'Combinado':
-                    try:
-                        pagoRegistroCombinado = PagoRegistroCombinado.objects.get(registro = r)
-                        if pagoRegistroCombinado.valorEfectivo:
-                            totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
-                        if pagoRegistroCombinado.valorTarjetaCredito:
-                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
-                            tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
-                        if pagoRegistroCombinado.valorTarjetaDebito:
-                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
-                            tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
-                        if pagoRegistroCombinado.valorCheque:
-                            cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
-                        if pagoRegistroCombinado.valorTransferencia:
-                            transferencias_ventas = transferencias_ventas + Decimal(pagoRegistroCombinado.valorCheque)
-                    except PagoServicioCombinado.DoesNotExist:
-                        pagoRegistroCombinado = ''
-            if r.tipo_venta == 'Crédito':
-                numero_ventas_credito +=1
-                if r.tipo_pago == 'Efectivo':
-                    totalVendido = totalVendido + Decimal(r.adelanto)
-                if r.tipo_pago == 'Transferencia':
-                    transferencias_ventas = transferencias_ventas + Decimal(r.adelanto)
-                if r.tipo_pago == 'Tarjeta de Crédito':
-                    tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
-                    tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.adelanto)
-                if r.tipo_pago == 'Tarjeta de Débito':
-                    tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
-                    tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.adelanto)
-                if r.tipo_pago == 'Cheque':
-                    cheques_ventas = cheques_ventas + Decimal(r.adelanto)
-                if r.tipo_pago == 'Combinado':
-                    try:
-                        pagoRegistroCombinado = PagoRegistroCombinado.objects.get(registro = r)
-                        if pagoRegistroCombinado.valorEfectivo:
-                            totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
-                        if pagoRegistroCombinado.valorTarjetaCredito:
-                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
-                            tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
-                        if pagoRegistroCombinado.valorTarjetaDebito:
-                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
-                            tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
-                        if pagoRegistroCombinado.valorCheque:
-                            cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
-                        if pagoRegistroCombinado.valorTransferencia:
-                            transferencias_ventas = transferencias_ventas + Decimal(pagoRegistroCombinado.valorCheque)
-                    except PagoServicioCombinado.DoesNotExist:
-                        pagoRegistroCombinado = ''
-            if r.tipo_venta == 'Apartado':
-                numero_ventas_apartado += 1
-                if r.tipo_pago == 'Efectivo':
-                    totalVendido = totalVendido + Decimal(r.adelanto)
-                if r.tipo_pago == 'Transferencia':
-                    transferencias_ventas = transferencias_ventas + Decimal(r.adelanto)
-                if r.tipo_pago == 'Tarjeta de Crédito':
-                    tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
-                    tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.adelanto)
-                if r.tipo_pago == 'Tarjeta de Débito':
-                    tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
-                    tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.adelanto)
-                if r.tipo_pago == 'Cheque':
-                    cheques_ventas = cheques_ventas + Decimal(r.adelanto)
-                if r.tipo_pago == 'Combinado':
-                    try:
-                        pagoRegistroCombinado = PagoRegistroCombinado.objects.get(registro = r)
-                        if pagoRegistroCombinado.valorEfectivo:
-                            totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
-                        if pagoRegistroCombinado.valorTarjetaCredito:
-                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
-                            tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
-                        if pagoRegistroCombinado.valorTarjetaDebito:
-                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
-                            tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
-                        if pagoRegistroCombinado.valorCheque:
-                            cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
-                        if pagoRegistroCombinado.valorTransferencia:
-                            transferencias_ventas = transferencias_ventas + Decimal(pagoRegistroCombinado.valorCheque)
-                    except PagoServicioCombinado.DoesNotExist:
-                        pagoRegistroCombinado = ''
-                
-        for pr in pagosRegistros:
-            #if pr.deuda.registro.tipo_venta != "Apartado":
-            if pr.tipoPago == 'Efectivo':
-                totalVendido = totalVendido + Decimal(pr.cuota)
-            if pr.tipoPago == 'Transferencia':
-                transferencias_ventas = transferencias_ventas + Decimal(pr.cuota)
-            if pr.tipoPago == 'Tarjeta de Crédito':
-                tarjetas_ventas = tarjetas_ventas + Decimal(pr.cuota)
-                tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pr.cuota)
-            if pr.tipoPago == 'Tarjeta de Débito':
-                tarjetas_ventas = tarjetas_ventas + Decimal(pr.cuota)
-                tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pr.cuota)
-            if pr.tipoPago == 'Cheque':
-                cheques_ventas = cheques_ventas + Decimal(pr.cuota)
-            if pr.tipoPago == 'Combinado':
-                try:
-                    pagoPendienteCombinado = PagoPendienteCombinado.objects.get(pago = pr)
-                    if pagoPendienteCombinado.valorEfectivo:
-                        totalVendido = totalVendido + Decimal(pagoPendienteCombinado.valorEfectivo)
-                    if pagoPendienteCombinado.valorTarjetaCredito:
-                        tarjetas_ventas = tarjetas_ventas + Decimal(pagoPendienteCombinado.valorTarjetaCredito)
-                        tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoPendienteCombinado.valorTarjetaCredito)
-                    if pagoPendienteCombinado.valorTarjetaDebito:
-                        tarjetas_ventas = tarjetas_ventas + Decimal(pagoPendienteCombinado.valorTarjetaDebito)
-                        tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoPendienteCombinado.valorTarjetaDebito)
-                    if pagoPendienteCombinado.valorCheque:
-                        cheques_ventas = cheques_ventas + Decimal(pagoPendienteCombinado.valorCheque)
-                    if pagoPendienteCombinado.valorTransferencia:
-                        transferencias_ventas = transferencias_ventas + Decimal(pagoPendienteCombinado.valorCheque)
-                except PagoPendienteCombinado.DoesNotExist:
-                    pagoPendienteCombinado = ''
+            fondoCaja = Decimal(caja.valor_apertura)
             
-        totalEgresos = Decimal(0)
-        try:
-            egresos = Gasto.objects.filter(caja = caja)
-            for e in egresos:
-                totalEgresos = totalEgresos + Decimal(e.valor)
-        except Gasto.DoesNotExist:
-            totalEgresos = Decimal(0)
+            totalVendido = 0
+            transferencias_ventas = 0
+            cheques_ventas = 0
+            tarjetas_ventas = 0
+            numero_ventas = registros.count()
+            numero_ventas_contado = 0
+            numero_ventas_credito = 0
+            numero_ventas_apartado = 0
+            tarjetas_credito_ventas = 0
+            tarjetas_debito_ventas = 0
             
-        totalIngresos = Decimal(0)
-        try:
-            ingresos = Ingreso.objects.filter(caja = caja)
-            for i in ingresos:
-                totalIngresos = totalIngresos + Decimal(i.valor)
-        except Ingreso.DoesNotExist:
-            totalIngresos = Decimal(0)
-            
-        total_servicios = 0
-        transferencias_servicios = 0
-        cheques_servicios = 0
-        tarjetas_servicios = 0  
-        tarjetas_credito_servicios = 0
-        tarjetas_debito_servicios = 0
-        try:
-            pagoservicios = PagoServicio.objects.filter(caja = caja)
-            for s in pagoservicios:
-                if s.tipoPago == 'Efectivo':
-                    total_servicios = total_servicios + Decimal(s.abono)
+            for r in registros:
+                if r.tipo_venta == 'Contado':
+                    numero_ventas_contado += 1
+                    if r.tipo_pago == 'Efectivo':
+                        totalVendido = totalVendido + Decimal(r.total_vendido)
+                    if r.tipo_pago == 'Transferencia':
+                        transferencias_ventas = transferencias_ventas + Decimal(r.total_vendido)
+                    if r.tipo_pago == 'Tarjeta de Crédito':
+                        tarjetas_ventas = tarjetas_ventas + Decimal(r.total_vendido)
+                        tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.total_vendido)
+                    if r.tipo_pago == 'Tarjeta de Débito':
+                        tarjetas_ventas = tarjetas_ventas + Decimal(r.total_vendido)
+                        tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.total_vendido)
+                    if r.tipo_pago == 'Cheque':
+                        cheques_ventas = cheques_ventas + Decimal(r.total_vendido)
+                    if r.tipo_pago == 'Combinado':
+                        try:
+                            pagoRegistroCombinado = PagoRegistroCombinado.objects.get(registro = r)
+                            if pagoRegistroCombinado.valorEfectivo:
+                                totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
+                            if pagoRegistroCombinado.valorTarjetaCredito:
+                                tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                                tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                            if pagoRegistroCombinado.valorTarjetaDebito:
+                                tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                                tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                            if pagoRegistroCombinado.valorCheque:
+                                cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                            if pagoRegistroCombinado.valorTransferencia:
+                                transferencias_ventas = transferencias_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                        except PagoServicioCombinado.DoesNotExist:
+                            pagoRegistroCombinado = ''
+                if r.tipo_venta == 'Crédito':
+                    numero_ventas_credito +=1
+                    if r.tipo_pago == 'Efectivo':
+                        totalVendido = totalVendido + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Transferencia':
+                        transferencias_ventas = transferencias_ventas + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Tarjeta de Crédito':
+                        tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                        tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Tarjeta de Débito':
+                        tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                        tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Cheque':
+                        cheques_ventas = cheques_ventas + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Combinado':
+                        try:
+                            pagoRegistroCombinado = PagoRegistroCombinado.objects.get(registro = r)
+                            if pagoRegistroCombinado.valorEfectivo:
+                                totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
+                            if pagoRegistroCombinado.valorTarjetaCredito:
+                                tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                                tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                            if pagoRegistroCombinado.valorTarjetaDebito:
+                                tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                                tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                            if pagoRegistroCombinado.valorCheque:
+                                cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                            if pagoRegistroCombinado.valorTransferencia:
+                                transferencias_ventas = transferencias_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                        except PagoServicioCombinado.DoesNotExist:
+                            pagoRegistroCombinado = ''
+                if r.tipo_venta == 'Apartado':
+                    numero_ventas_apartado += 1
+                    if r.tipo_pago == 'Efectivo':
+                        totalVendido = totalVendido + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Transferencia':
+                        transferencias_ventas = transferencias_ventas + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Tarjeta de Crédito':
+                        tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                        tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Tarjeta de Débito':
+                        tarjetas_ventas = tarjetas_ventas + Decimal(r.adelanto)
+                        tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Cheque':
+                        cheques_ventas = cheques_ventas + Decimal(r.adelanto)
+                    if r.tipo_pago == 'Combinado':
+                        try:
+                            pagoRegistroCombinado = PagoRegistroCombinado.objects.get(registro = r)
+                            if pagoRegistroCombinado.valorEfectivo:
+                                totalVendido = totalVendido + Decimal(pagoRegistroCombinado.valorEfectivo)
+                            if pagoRegistroCombinado.valorTarjetaCredito:
+                                tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                                tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaCredito)
+                            if pagoRegistroCombinado.valorTarjetaDebito:
+                                tarjetas_ventas = tarjetas_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                                tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoRegistroCombinado.valorTarjetaDebito)
+                            if pagoRegistroCombinado.valorCheque:
+                                cheques_ventas = cheques_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                            if pagoRegistroCombinado.valorTransferencia:
+                                transferencias_ventas = transferencias_ventas + Decimal(pagoRegistroCombinado.valorCheque)
+                        except PagoServicioCombinado.DoesNotExist:
+                            pagoRegistroCombinado = ''
                     
-                if s.tipoPago == 'Transferencia':
-                    transferencias_servicios = transferencias_servicios + Decimal(s.abono)
-                if s.tipoPago == 'Cheque':
-                    cheques_servicios = cheques_servicios + Decimal(s.abono)
-                if s.tipoPago == 'Tarjeta de Crédito':
-                    tarjetas_servicios = tarjetas_servicios + Decimal(s.abono)
-                    tarjetas_credito_servicios = tarjetas_credito_servicios + Decimal(s.abono)
-                if s.tipoPago == 'Tarjeta de Débito':
-                    tarjetas_servicios = tarjetas_servicios + Decimal(s.abono)
-                    tarjetas_debito_servicios = tarjetas_debito_servicios + Decimal(s.abono)
-                if s.tipoPago == 'Combinado':
+            for pr in pagosRegistros:
+                #if pr.deuda.registro.tipo_venta != "Apartado":
+                if pr.tipoPago == 'Efectivo':
+                    totalVendido = totalVendido + Decimal(pr.cuota)
+                if pr.tipoPago == 'Transferencia':
+                    transferencias_ventas = transferencias_ventas + Decimal(pr.cuota)
+                if pr.tipoPago == 'Tarjeta de Crédito':
+                    tarjetas_ventas = tarjetas_ventas + Decimal(pr.cuota)
+                    tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pr.cuota)
+                if pr.tipoPago == 'Tarjeta de Débito':
+                    tarjetas_ventas = tarjetas_ventas + Decimal(pr.cuota)
+                    tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pr.cuota)
+                if pr.tipoPago == 'Cheque':
+                    cheques_ventas = cheques_ventas + Decimal(pr.cuota)
+                if pr.tipoPago == 'Combinado':
                     try:
-                        pagoCombinado = PagoServicioCombinado.objects.get(pagoServicio = s)
-                        if pagoCombinado.valorEfectivo:
-                            total_servicios = total_servicios + Decimal(pagoCombinado.valorEfectivo)
-                        if pagoCombinado.valorTarjetaCredito:
-                            tarjetas_servicios = tarjetas_servicios + Decimal(pagoCombinado.valorTarjetaCredito)
-                            tarjetas_credito_servicios = tarjetas_credito_servicios + Decimal(pagoCombinado.valorTarjetaCredito)
-                        if pagoCombinado.valorTarjetaDebito:
-                            tarjetas_servicios = tarjetas_servicios + Decimal(pagoCombinado.valorTarjetaDebito)
-                            tarjetas_debito_servicios = tarjetas_debito_servicios + Decimal(pagoCombinado.valorTarjetaDebito)
-                        if pagoCombinado.valorCheque:
-                            cheques_servicios = cheques_servicios + Decimal(pagoCombinado.valorCheque)
-                        if pagoCombinado.valorTransferencia:
-                            transferencias_servicios = transferencias_servicios + Decimal(pagoCombinado.valorTransferencia)
-                    except PagoServicioCombinado.DoesNotExist:
-                        pagoCombinado = ''
-        except PagoServicio.DoesNotExist:
-            total_servicios = Decimal(0)
-        
-        totalEfectivo = fondoCaja + totalVendido + total_servicios + totalIngresos - totalEgresos
+                        pagoPendienteCombinado = PagoPendienteCombinado.objects.get(pago = pr)
+                        if pagoPendienteCombinado.valorEfectivo:
+                            totalVendido = totalVendido + Decimal(pagoPendienteCombinado.valorEfectivo)
+                        if pagoPendienteCombinado.valorTarjetaCredito:
+                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoPendienteCombinado.valorTarjetaCredito)
+                            tarjetas_credito_ventas = tarjetas_credito_ventas + Decimal(pagoPendienteCombinado.valorTarjetaCredito)
+                        if pagoPendienteCombinado.valorTarjetaDebito:
+                            tarjetas_ventas = tarjetas_ventas + Decimal(pagoPendienteCombinado.valorTarjetaDebito)
+                            tarjetas_debito_ventas = tarjetas_debito_ventas + Decimal(pagoPendienteCombinado.valorTarjetaDebito)
+                        if pagoPendienteCombinado.valorCheque:
+                            cheques_ventas = cheques_ventas + Decimal(pagoPendienteCombinado.valorCheque)
+                        if pagoPendienteCombinado.valorTransferencia:
+                            transferencias_ventas = transferencias_ventas + Decimal(pagoPendienteCombinado.valorCheque)
+                    except PagoPendienteCombinado.DoesNotExist:
+                        pagoPendienteCombinado = ''
+                
+            totalEgresos = Decimal(0)
+            try:
+                egresos = Gasto.objects.filter(caja = caja)
+                for e in egresos:
+                    totalEgresos = totalEgresos + Decimal(e.valor)
+            except Gasto.DoesNotExist:
+                totalEgresos = Decimal(0)
+                
+            totalIngresos = Decimal(0)
+            try:
+                ingresos = Ingreso.objects.filter(caja = caja)
+                for i in ingresos:
+                    totalIngresos = totalIngresos + Decimal(i.valor)
+            except Ingreso.DoesNotExist:
+                totalIngresos = Decimal(0)
+                
+            total_servicios = 0
+            transferencias_servicios = 0
+            cheques_servicios = 0
+            tarjetas_servicios = 0  
+            tarjetas_credito_servicios = 0
+            tarjetas_debito_servicios = 0
+            try:
+                pagoservicios = PagoServicio.objects.filter(caja = caja)
+                for s in pagoservicios:
+                    if s.tipoPago == 'Efectivo':
+                        total_servicios = total_servicios + Decimal(s.abono)
+                        
+                    if s.tipoPago == 'Transferencia':
+                        transferencias_servicios = transferencias_servicios + Decimal(s.abono)
+                    if s.tipoPago == 'Cheque':
+                        cheques_servicios = cheques_servicios + Decimal(s.abono)
+                    if s.tipoPago == 'Tarjeta de Crédito':
+                        tarjetas_servicios = tarjetas_servicios + Decimal(s.abono)
+                        tarjetas_credito_servicios = tarjetas_credito_servicios + Decimal(s.abono)
+                    if s.tipoPago == 'Tarjeta de Débito':
+                        tarjetas_servicios = tarjetas_servicios + Decimal(s.abono)
+                        tarjetas_debito_servicios = tarjetas_debito_servicios + Decimal(s.abono)
+                    if s.tipoPago == 'Combinado':
+                        try:
+                            pagoCombinado = PagoServicioCombinado.objects.get(pagoServicio = s)
+                            if pagoCombinado.valorEfectivo:
+                                total_servicios = total_servicios + Decimal(pagoCombinado.valorEfectivo)
+                            if pagoCombinado.valorTarjetaCredito:
+                                tarjetas_servicios = tarjetas_servicios + Decimal(pagoCombinado.valorTarjetaCredito)
+                                tarjetas_credito_servicios = tarjetas_credito_servicios + Decimal(pagoCombinado.valorTarjetaCredito)
+                            if pagoCombinado.valorTarjetaDebito:
+                                tarjetas_servicios = tarjetas_servicios + Decimal(pagoCombinado.valorTarjetaDebito)
+                                tarjetas_debito_servicios = tarjetas_debito_servicios + Decimal(pagoCombinado.valorTarjetaDebito)
+                            if pagoCombinado.valorCheque:
+                                cheques_servicios = cheques_servicios + Decimal(pagoCombinado.valorCheque)
+                            if pagoCombinado.valorTransferencia:
+                                transferencias_servicios = transferencias_servicios + Decimal(pagoCombinado.valorTransferencia)
+                        except PagoServicioCombinado.DoesNotExist:
+                            pagoCombinado = ''
+            except PagoServicio.DoesNotExist:
+                total_servicios = Decimal(0)
+            
+            totalEfectivo = fondoCaja + totalVendido + total_servicios + totalIngresos - totalEgresos
 
-        sobrante = Decimal('0')
-        faltante = Decimal('0')
+            sobrante = Decimal('0')
+            faltante = Decimal('0')
+            
+            aux = ''
+            #compruebo que el total efectivo no sea negativo
+            if totalEfectivo > 0:
+                diferencia = Decimal(totalEfectivo) - Decimal(efectivoContado)
+                # Determinar el sobrante o el faltante basado en la diferencia
+                if diferencia < 0:
+                    sobrante = abs(diferencia)
+                    aux = "sobra"
+                elif diferencia > 0:
+                    faltante = abs(diferencia)
+                    aux = "falta"
+            else:
+                diferencia = Decimal(totalEfectivo) + Decimal(efectivoContado)
+                # Determinar el sobrante o el faltante basado en la diferencia
+                if diferencia > 0:
+                    sobrante = abs(diferencia)
+                    aux = "sobra"
+                elif diferencia < 0:
+                    faltante = abs(diferencia)
+                    aux = "falta"
+            
+            totalCheques = cheques_ventas + cheques_servicios
+            totalTransferencias = transferencias_servicios + transferencias_ventas
+            totalTarjetas = tarjetas_servicios + tarjetas_ventas
         
-        aux = ''
-        #compruebo que el total efectivo no sea negativo
-        if totalEfectivo > 0:
-            diferencia = Decimal(totalEfectivo) - Decimal(efectivoContado)
-            # Determinar el sobrante o el faltante basado en la diferencia
-            if diferencia < 0:
-                sobrante = abs(diferencia)
-                aux = "sobra"
-            elif diferencia > 0:
-                faltante = abs(diferencia)
-                aux = "falta"
-        else:
-            diferencia = Decimal(totalEfectivo) + Decimal(efectivoContado)
-            # Determinar el sobrante o el faltante basado en la diferencia
-            if diferencia > 0:
-                sobrante = abs(diferencia)
-                aux = "sobra"
-            elif diferencia < 0:
-                faltante = abs(diferencia)
-                aux = "falta"
-        
-        totalCheques = cheques_ventas + cheques_servicios
-        totalTransferencias = transferencias_servicios + transferencias_ventas
-        totalTarjetas = tarjetas_servicios + tarjetas_ventas
+        except Exception as e:
+            import traceback
+            print("❌ ERROR FUERA de cerrar:")
+            print(traceback.format_exc())
+            return JsonResponse({'error': str(e)}, status=500)
         
         # Devuelve una respuesta JSON
         if accion == 'cerrar':
