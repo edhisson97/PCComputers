@@ -13,6 +13,7 @@ import json
 from django.template.loader import render_to_string
 import tempfile
 import pdfkit
+import os
 from django.conf import settings
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.http import HttpResponse
@@ -524,6 +525,12 @@ def comprobar_operacion_caja(request):
                 temp_html.close()
                 # Eliminar el archivo PDF temporal
         
+            wkhtmltopdf_path = getattr(settings, 'WKHTMLTOPDF_PATH', None)
+
+            if not wkhtmltopdf_path or not os.path.exists(wkhtmltopdf_path):
+                return JsonResponse({'error': 'wkhtmltopdf no está disponible en el servidor'}, status=500)
+
+
             # Configuración de pdfkit
             config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
         
