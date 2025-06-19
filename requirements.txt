@@ -73,5 +73,4 @@ urllib3==2.1.0
 virtualenv==20.25.1
 webencodings==0.5.1
 whitenoise==6.9.0
-wkhtmltopdf==0.2
 zopfli==0.2.3
