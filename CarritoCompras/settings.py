@@ -17,6 +17,7 @@ import dj_database_url
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+import platform
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dqphy48oi',
@@ -116,7 +117,14 @@ DATABASES = {
     )
 }
 
-WKHTMLTOPDF_PATH = 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
+#PARA ENTORNO LOCAL
+#WKHTMLTOPDF_PATH = 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
+if platform.system() == 'Windows':
+    # Ruta local en su PC (Windows)
+    WKHTMLTOPDF_PATH = 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
+else:
+    # Ruta para Render (Linux)
+    WKHTMLTOPDF_PATH = os.path.join(BASE_DIR, 'bin', 'wkhtmltopdf')
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
