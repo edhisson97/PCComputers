@@ -22,6 +22,7 @@ from django.contrib import messages  # Para mostrar alertas en la plantilla
 from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404
 import cloudinary.uploader
+from weasyprint import HTML
 
 # Create your views here.
 def cerrar_caja(request):
@@ -521,34 +522,54 @@ def comprobar_operacion_caja(request):
                 'aux':aux,
                 }
                 
+                
+                ###         PARA WHTMLTOPDF
                 #generar pdf y enviar
-                html_content = render_to_string('cierre_caja_recibo.html', context)
+                #html_content = render_to_string('cierre_caja_recibo.html', context)
 
                 # Guardar el contenido HTML en un archivo temporal
-                with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
-                    temp_html.write(html_content.encode('utf-8'))
-                    temp_html_path = temp_html.name
+                #with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+                #    temp_html.write(html_content.encode('utf-8'))
+                #    temp_html_path = temp_html.name
                     
                     # Cerrar el archivo HTML temporal
-                    temp_html.close()
+                #    temp_html.close()
                     # Eliminar el archivo PDF temporal
             
-                wkhtmltopdf_path = getattr(settings, 'WKHTMLTOPDF_PATH', None)
+                #wkhtmltopdf_path = getattr(settings, 'WKHTMLTOPDF_PATH', None)
 
-                if not wkhtmltopdf_path or not os.path.exists(wkhtmltopdf_path):
-                    return JsonResponse({'error': 'wkhtmltopdf no está disponible en el servidor'}, status=500)
+                #if not wkhtmltopdf_path or not os.path.exists(wkhtmltopdf_path):
+                #    return JsonResponse({'error': 'wkhtmltopdf no está disponible en el servidor'}, status=500)
 
 
                 # Configuración de pdfkit
-                config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
+                #config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
             
                 # Convertir el archivo HTML temporal a PDF
-                output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
-                pdfkit.from_file(temp_html_path, output_path, configuration=config)
+                #output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
+                #pdfkit.from_file(temp_html_path, output_path, configuration=config)
                 
                 # Suponiendo que tienes output_path definido y quieres codificarlo
-                encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+                #encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
 
+
+
+                #### PARA WEASYPRINT
+                # Generar PDF y enviar
+                html_content = render_to_string('cierre_caja_recibo.html', context)
+
+                # Convertir directamente a PDF usando WeasyPrint
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+                    HTML(string=html_content).write_pdf(output_pdf.name)
+                    output_path = output_pdf.name
+
+                # Codificar la ruta
+                encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+                
+                
+                
+                
+                
                 # Crear el diccionario de contexto
                 context = {'encoded_path': encoded_path}
                 
