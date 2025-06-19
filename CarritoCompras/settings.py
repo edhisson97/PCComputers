@@ -123,8 +123,8 @@ if platform.system() == 'Windows':
     # Ruta local en su PC (Windows)
     WKHTMLTOPDF_PATH = 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
 else:
-    # Ruta para Render (Linux)
-    WKHTMLTOPDF_PATH = os.path.join(BASE_DIR, 'bin', 'wkhtmltopdf')
+    # En Docker/Linux ya estará disponible en el PATH del sistema
+    WKHTMLTOPDF_PATH = 'wkhtmltopdf'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
