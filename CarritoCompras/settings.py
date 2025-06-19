@@ -118,13 +118,8 @@ DATABASES = {
 }
 
 #PARA ENTORNO LOCAL
-#WKHTMLTOPDF_PATH = 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
-if platform.system() == 'Windows':
-    # Ruta local en su PC (Windows)
-    WKHTMLTOPDF_PATH = 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
-else:
-    # En Docker/Linux ya estará disponible en el PATH del sistema
-    WKHTMLTOPDF_PATH = 'wkhtmltopdf'
+WKHTMLTOPDF_PATH = 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
