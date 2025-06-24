@@ -552,8 +552,6 @@ def comprobar_operacion_caja(request):
                 # Suponiendo que tienes output_path definido y quieres codificarlo
                 #encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
 
-
-
                 #### PARA WEASYPRINT
                 # Generar PDF y enviar
                 html_content = render_to_string('cierre_caja_recibo.html', context)

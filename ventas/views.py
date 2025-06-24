@@ -31,6 +31,7 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_http_methods
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.db.models import Q
+from weasyprint import HTML
 
 
     
@@ -345,26 +346,43 @@ def generar_recibo_servicios(request):
             'saldo':costo
         }
         
+        
+        
+        ####### PARA WHTMLTOPDF #######
         #generar pdf y enviar
-        html_content = render_to_string('registro_servicios_recibo.html', context)
+        #html_content = render_to_string('registro_servicios_recibo.html', context)
 
         # Guardar el contenido HTML en un archivo temporal
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
-            temp_html.write(html_content.encode('utf-8'))
-            temp_html_path = temp_html.name
+        #with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+        #    temp_html.write(html_content.encode('utf-8'))
+        #    temp_html_path = temp_html.name
             
             # Cerrar el archivo HTML temporal
-            temp_html.close()
+        #    temp_html.close()
             # Eliminar el archivo PDF temporal
        
 
         # Configuración de pdfkit
-        config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
+        #config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
        
 
         # Convertir el archivo HTML temporal a PDF
-        output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
-        pdfkit.from_file(temp_html_path, output_path, configuration=config)
+        #output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
+        #pdfkit.from_file(temp_html_path, output_path, configuration=config)
+
+        ##### PARA WEASYPRINT   ######
+        #generar pdf y enviar
+        html_content = render_to_string('registro_servicios_recibo.html', context)
+
+        # Convertir directamente a PDF usando WeasyPrint
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+            HTML(string=html_content).write_pdf(output_pdf.name)
+            output_path = output_pdf.name
+
+        # Codificar la ruta
+        encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+        
+
 
         #enviar por correo el pdf
         destinatario = email  # O la dirección de correo electrónico a la que deseas enviar el correo
