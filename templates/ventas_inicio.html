@@ -143,7 +143,7 @@
                                         <select class="select-color" id="select-color-{{ prod.id }}" data-product-id="{{ prod.id }}">
                                             {% for color in prod.colores.all %}
                                                 {%if color.color%}
-                                                    <option value="{{ color.color }}" data-stock="{{ color.stock }}" data-codigo-articulo="{{ color.codigo_articulo }}">{{ color.color }} ({{ color.stock }})</option>
+                                                    <option value="{{ color.color }}" data-stock="{{ color.stock }}" data-codigo-articulo="{{ color.id }}">{{ color.color }} ({{ color.stock }})</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
@@ -214,7 +214,7 @@
             </div>
             <button class="generar-venta" onclick="enviarFormularioConLocalStorage()">Generar venta <i class="fa-solid fa-check"></i></button>
             <!--<button class="descuento" onclick="actualizarTabla()">Actualizar <i class="fa-solid fa-rotate"></i></button>-->
-            <button class="cancelar">Limpiar <i class="fa-solid fa-ban"></i></button>
+            <button class="cancelar" onclick="limpiarlocalstorage()">Limpiar <i class="fa-solid fa-ban"></i></button>
         </div>
         <div id="numeroCheque" style="display: none;">
             <label for="banco">Entidad Bancaria: </label>

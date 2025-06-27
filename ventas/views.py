@@ -414,7 +414,7 @@ def generar_recibo_servicios(request):
         #context['archivo_pdf'] = pdf_content
         # Después de enviar el correo electrónico exitosamente
         # Devolver el PDF como una respuesta HTTP
-        encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+        #encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
             
         context = {'encoded_path': encoded_path}
         return render(request, 'descargar_pdf_servicios.html', context)
@@ -561,26 +561,40 @@ def generarrecibo_nuevo_abono(request):
             'saldo':saldo
         }
         
+        ###         PARA WHTMLTOPDF
         #generar pdf y enviar
-        html_content = render_to_string('registro_servicios_reciboabono.html', context)
+        #html_content = render_to_string('registro_servicios_reciboabono.html', context)
 
         # Guardar el contenido HTML en un archivo temporal
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
-            temp_html.write(html_content.encode('utf-8'))
-            temp_html_path = temp_html.name
+        #with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+        #    temp_html.write(html_content.encode('utf-8'))
+        #    temp_html_path = temp_html.name
             
             # Cerrar el archivo HTML temporal
-            temp_html.close()
+        #    temp_html.close()
             # Eliminar el archivo PDF temporal
        
 
         # Configuración de pdfkit
-        config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
+        #config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
        
 
         # Convertir el archivo HTML temporal a PDF
-        output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
-        pdfkit.from_file(temp_html_path, output_path, configuration=config)
+        #output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
+        #pdfkit.from_file(temp_html_path, output_path, configuration=config)
+
+        #### PARA WEASYPRINT
+        # Generar PDF y enviar
+        html_content = render_to_string('registro_servicios_reciboabono.html', context)
+
+        # Convertir directamente a PDF usando WeasyPrint
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+            HTML(string=html_content).write_pdf(output_pdf.name)
+            output_path = output_pdf.name
+
+        # Codificar la ruta
+        #encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+                
 
         #enviar por correo el pdf
         destinatario = servicio.usuario.email  # O la dirección de correo electrónico a la que deseas enviar el correo
@@ -795,26 +809,40 @@ def finalizar_servicio(request):
             'estado': estado
         }
         
+        ###         PARA WHTMLTOPDF
         #generar pdf y enviar
-        html_content = render_to_string('registro_servicios_recibo.html', context)
+        #html_content = render_to_string('registro_servicios_recibo.html', context)
 
         # Guardar el contenido HTML en un archivo temporal
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
-            temp_html.write(html_content.encode('utf-8'))
-            temp_html_path = temp_html.name
+        #with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+        #    temp_html.write(html_content.encode('utf-8'))
+        #    temp_html_path = temp_html.name
             
             # Cerrar el archivo HTML temporal
-            temp_html.close()
+        #    temp_html.close()
             # Eliminar el archivo PDF temporal
        
 
         # Configuración de pdfkit
-        config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
+        #config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
        
 
         # Convertir el archivo HTML temporal a PDF
-        output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
-        pdfkit.from_file(temp_html_path, output_path, configuration=config)
+        #output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf').name
+        #pdfkit.from_file(temp_html_path, output_path, configuration=config)
+
+        #### PARA WEASYPRINT
+        # Generar PDF y enviar
+        html_content = render_to_string('registro_servicios_recibo.html', context)
+
+        # Convertir directamente a PDF usando WeasyPrint
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+            HTML(string=html_content).write_pdf(output_pdf.name)
+            output_path = output_pdf.name
+
+        # Codificar la ruta
+        #encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+                
 
         #enviar por correo el pdf
         destinatario = servicio.usuario.email  # O la dirección de correo electrónico a la que deseas enviar el correo
@@ -1378,23 +1406,37 @@ def generarPdf(request):
         }
         
         if (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
-            html_content = render_to_string('ventas_recibopagocredito.html', context)
+            ###         PARA WHTMLTOPDF
+            #html_content = render_to_string('ventas_recibopagocredito.html', context)
             # Guardar el contenido HTML en un archivo temporal
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
-                temp_html.write(html_content.encode('utf-8'))
-                temp_html_path = temp_html.name
+            #with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+            #    temp_html.write(html_content.encode('utf-8'))
+            #    temp_html_path = temp_html.name
 
             # Configuración de pdfkit
-            config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
+            #config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
             
             # Personalizar el nombre del archivo PDF
             # Personalizar el nombre del archivo PDF
-            nombre_archivo_pdf = 'Factura_{}_{}_{}.pdf'.format(numero_factura, nombre, apellidos)
+            #nombre_archivo_pdf = 'Factura_{}_{}_{}.pdf'.format(numero_factura, nombre, apellidos)
 
             # Convertir el archivo HTML temporal a PDF
-            output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', prefix=nombre_archivo_pdf).name
-            pdfkit.from_file(temp_html_path, output_path, configuration=config)
+            #output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', prefix=nombre_archivo_pdf).name
+            #pdfkit.from_file(temp_html_path, output_path, configuration=config)
 
+            #### PARA WEASYPRINT
+            # Generar PDF y enviar
+            html_content = render_to_string('ventas_recibopagocredito.html', context)
+
+            # Convertir directamente a PDF usando WeasyPrint
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+                HTML(string=html_content).write_pdf(output_pdf.name)
+                output_path = output_pdf.name
+
+            # Codificar la ruta
+            encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+                
+            
             #enviar por correo el pdf
             destinatario = email  # O la dirección de correo electrónico a la que deseas enviar el correo
             asunto = 'Facturacion emitida por PC Computers'
@@ -1409,24 +1451,37 @@ def generarPdf(request):
             
             
         else:
-        
-            html_content = render_to_string('reciboPagoPdf.html', context)
+            ###         PARA WHTMLTOPDF
+            #html_content = render_to_string('reciboPagoPdf.html', context)
 
             # Guardar el contenido HTML en un archivo temporal
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
-                temp_html.write(html_content.encode('utf-8'))
-                temp_html_path = temp_html.name
+            #with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+            #    temp_html.write(html_content.encode('utf-8'))
+            #    temp_html_path = temp_html.name
 
             # Configuración de pdfkit
-            config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
+            #config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
             
             # Personalizar el nombre del archivo PDF
             # Personalizar el nombre del archivo PDF
-            nombre_archivo_pdf = 'Factura_{}_{}_{}.pdf'.format(numero_factura, nombre, apellidos)
+            #nombre_archivo_pdf = 'Factura_{}_{}_{}.pdf'.format(numero_factura, nombre, apellidos)
 
             # Convertir el archivo HTML temporal a PDF
-            output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', prefix=nombre_archivo_pdf).name
-            pdfkit.from_file(temp_html_path, output_path, configuration=config)
+            #output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', prefix=nombre_archivo_pdf).name
+            #pdfkit.from_file(temp_html_path, output_path, configuration=config)
+
+            #### PARA WEASYPRINT
+            # Generar PDF y enviar
+            html_content = render_to_string('reciboPagoPdf.html', context)
+
+            # Convertir directamente a PDF usando WeasyPrint
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+                HTML(string=html_content).write_pdf(output_pdf.name)
+                output_path = output_pdf.name
+
+            # Codificar la ruta
+            encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+                
 
             #enviar por correo el pdf
             destinatario = email  # O la dirección de correo electrónico a la que deseas enviar el correo
@@ -1447,7 +1502,7 @@ def generarPdf(request):
                 codigo_producto = prod['codigo']
                 cantidad_producto = prod['cantidad']
                 try:
-                    producto_stock = ColorStock.objects.get( codigo_articulo=codigo_producto)
+                    producto_stock = ColorStock.objects.get( id=codigo_producto)
                     nuevo_stock = int(producto_stock.stock) - int(cantidad_producto)
                     producto_stock.stock = nuevo_stock
                     producto_stock.save()
@@ -1836,23 +1891,37 @@ def agregarPago(request):
             'aux':'1'
         }
         
-        html_content = render_to_string('ventas_recibopagocredito.html', context)
+        ###         PARA WHTMLTOPDF
+        #html_content = render_to_string('ventas_recibopagocredito.html', context)
 
         # Guardar el contenido HTML en un archivo temporal
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
-            temp_html.write(html_content.encode('utf-8'))
-            temp_html_path = temp_html.name
+        #with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+        #    temp_html.write(html_content.encode('utf-8'))
+        #    temp_html_path = temp_html.name
 
         # Configuración de pdfkit
-        config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
+        #config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
         
         # Personalizar el nombre del archivo PDF
         # Personalizar el nombre del archivo PDF
-        nombre_archivo_pdf = 'ReciboPago_{}_{}_{}.pdf'
+        #nombre_archivo_pdf = 'ReciboPago_{}_{}_{}.pdf'
 
         # Convertir el archivo HTML temporal a PDF
-        output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', prefix=nombre_archivo_pdf).name
-        pdfkit.from_file(temp_html_path, output_path, configuration=config)
+        #output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', prefix=nombre_archivo_pdf).name
+        #pdfkit.from_file(temp_html_path, output_path, configuration=config)
+
+        #### PARA WEASYPRINT
+        # Generar PDF y enviar
+        html_content = render_to_string('ventas_recibopagocredito.html', context)
+
+        # Convertir directamente a PDF usando WeasyPrint
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+            HTML(string=html_content).write_pdf(output_pdf.name)
+            output_path = output_pdf.name
+
+        # Codificar la ruta
+        encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+                
 
         #enviar por correo el pdf
         destinatario = usuario.user.email  # O la dirección de correo electrónico a la que deseas enviar el correo
@@ -1986,23 +2055,38 @@ def agregarPago(request):
                 }
                 print(context)
                 
-                html_content = render_to_string('reciboPagoPdf.html', context)
+                ###         PARA WHTMLTOPDF
+                #html_content = render_to_string('reciboPagoPdf.html', context)
 
                 # Guardar el contenido HTML en un archivo temporal
-                with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
-                    temp_html.write(html_content.encode('utf-8'))
-                    temp_html_path = temp_html.name
+                #with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as temp_html:
+                #    temp_html.write(html_content.encode('utf-8'))
+                #    temp_html_path = temp_html.name
 
                 # Configuración de pdfkit
-                config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
+                #config = pdfkit.configuration(wkhtmltopdf=settings.WKHTMLTOPDF_PATH)
                 
                 # Personalizar el nombre del archivo PDF
                 # Personalizar el nombre del archivo PDF
-                nombre_archivo_pdf = 'ReciboPago_{}_{}_{}.pdf'
+                #nombre_archivo_pdf = 'ReciboPago_{}_{}_{}.pdf'
 
                 # Convertir el archivo HTML temporal a PDF
-                output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', prefix=nombre_archivo_pdf).name
-                pdfkit.from_file(temp_html_path, output_path, configuration=config)
+                #output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', prefix=nombre_archivo_pdf).name
+                #pdfkit.from_file(temp_html_path, output_path, configuration=config)
+
+                #### PARA WEASYPRINT
+                # Generar PDF y enviar
+                html_content = render_to_string('reciboPagoPdf.html', context)
+
+                # Convertir directamente a PDF usando WeasyPrint
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+                    HTML(string=html_content).write_pdf(output_pdf.name)
+                    output_path = output_pdf.name
+
+                # Codificar la ruta
+                encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+                
+                
 
                 #enviar por correo el pdf
                 destinatario = usuario.user.email  # O la dirección de correo electrónico a la que deseas enviar el correo

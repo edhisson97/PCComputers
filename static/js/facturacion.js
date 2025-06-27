@@ -23,125 +23,6 @@ btnMostrarModal.addEventListener("click", function() {
     modal.style.display = "block";
 });
 
-var selects = document.querySelectorAll('.select-color');
-        selects.forEach(function(select) {
-            // Llenar select-stock inicialmente basado en el valor predeterminado de select-color
-            updateStockSelect(select);
-
-            select.addEventListener('change', function() {
-                updateStockSelect(this);
-            });
-        });
-
-        function updateStockSelect(select) {
-            var selectedOption = select.options[select.selectedIndex];
-            var stock = parseInt(selectedOption.getAttribute('data-stock'));
-
-            var stockSelectId = 'select-stock-' + select.id.split('-')[2];
-            var stockSelect = document.getElementById(stockSelectId);
-            stockSelect.innerHTML = ''; // Limpiar opciones existentes
-
-            for (var i = 1; i <= stock; i++) {
-                var option = document.createElement('option');
-                option.text = i;
-                option.value = i;
-                stockSelect.appendChild(option);
-            }
-        }
-
-function buscarCliente() {
-    var cedula = document.getElementById("cedula").value;
-    var usuariosString = document.getElementById("cedula").getAttribute("data-usuarios");
-    var usuarios = JSON.parse(usuariosString);
-    
-    // Variable para almacenar el usuario encontrado
-    var usuarioEncontrado = null;
-    
-    // Iterar sobre la lista de usuarios y buscar la cédula
-    for (var i = 0; i < usuarios.length; i++) {
-        if (usuarios[i].cedula === cedula) {
-            usuarioEncontrado = usuarios[i];
-            break; // Terminar el bucle una vez que se encuentre el usuario
-        }
-    }
-    
-
-    var divUsuarioNoEncontrado = document.getElementById("mensajeUsuarioNoEncontrado");
-
-    if (usuarioEncontrado) {
-        console.log("Usuario encontrado:", usuarioEncontrado);
-        divUsuarioNoEncontrado.textContent = "Usuario registrado en la base de datos.";
-        divUsuarioNoEncontrado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
-        divUsuarioNoEncontrado.classList.remove("alert-danger"); // Remover la clase de alerta roja
-        divUsuarioNoEncontrado.classList.add("alert-success"); // Agregar la clase de alerta verde
-        llenarCampos(usuarioEncontrado);
-    } else {
-        divUsuarioNoEncontrado.textContent = "Usuario no encontrado en la base de datos... Ingresa los datos del usuario";
-        divUsuarioNoEncontrado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
-        divUsuarioNoEncontrado.classList.remove("alert-success"); // Remover la clase de alerta verde
-        divUsuarioNoEncontrado.classList.add("alert-danger"); // Agregar la clase de alerta roja
-        camposVacios();
-    }
-    
-    divUsuarioNoEncontrado.style.display = "block"; // Mostrar el mensaje de usuario no encontrado
-
-    
-}
-
-function llenarCampos(cliente) {
-    document.getElementById("nombre").value = cliente.nombre ? cliente.nombre : '';
-    document.getElementById("apellidos").value = cliente.apellidos ? cliente.apellidos : '';
-    document.getElementById("email").value = cliente.email ? cliente.email : '';
-    document.getElementById("celular").value = cliente.celular ? cliente.celular : '';
-    document.getElementById("ciudad").value = cliente.ciudad ? cliente.ciudad : '';
-    document.getElementById("direccion").value = cliente.direccion ? cliente.direccion : '';
-    document.getElementById("direccionEnvio").value = cliente.direccionEnvio ? cliente.direccionEnvio : cliente.direccion;
-}
-
-function camposVacios() {
-    document.getElementById("nombre").value = "";
-    document.getElementById("apellidos").value = "";
-    document.getElementById("email").value = "";
-    document.getElementById("celular").value = "";
-    document.getElementById("ciudad").value = "";
-    document.getElementById("direccion").value = "";
-    document.getElementById("direccionEnvio").value = "";
-    // Otros campos
-}
-
-
-document.addEventListener("keyup", e => {
-    if (e.target.matches("#buscador")) {
-        if (e.key === "Escape") e.target.value = "";
-
-        const articulos = document.querySelectorAll(".articulo");
-        const filtro = e.target.value.toLowerCase();
-        let productosEncontrados = false;
-
-        articulos.forEach(articulo => {
-            const contenido = articulo.textContent.toLowerCase();
-            if (contenido.includes(filtro)) {
-                articulo.classList.remove("filtro");
-                productosEncontrados = true;
-            } else {
-                articulo.classList.add("filtro");
-            }
-        });
-
-        // Mostrar u ocultar el mensaje de "No se encontraron productos"
-        const mensajeNoProductos = document.getElementById("mensajeNoProductos");
-        if (productosEncontrados) {
-            mensajeNoProductos.style.display = "none";
-        } else {
-            mensajeNoProductos.style.display = "block";
-        }
-    }
-});
-
-
-
-
-
 // Seleccionar todos los elementos con la clase "agregar-producto"
 var botonesAgregarProducto = document.querySelectorAll(".agregar-producto");
 
@@ -204,8 +85,129 @@ botonesAgregarProducto.forEach(function(boton) {
     });
 });
 
-function actualizarTabla(){
+
+document.addEventListener("keyup", e => {
+    console.log('buscandooo');
+    if (e.target.matches("#buscador")) {
+        if (e.key === "Escape") e.target.value = "";
+
+        const articulos = document.querySelectorAll(".articulo");
+        const filtro = e.target.value.toLowerCase();
+        let productosEncontrados = false;
+
+        articulos.forEach(articulo => {
+            const contenido = articulo.textContent.toLowerCase();
+            if (contenido.includes(filtro)) {
+                articulo.classList.remove("filtro");
+                productosEncontrados = true;
+            } else {
+                articulo.classList.add("filtro");
+            }
+        });
+
+        // Mostrar u ocultar el mensaje de "No se encontraron productos"
+        const mensajeNoProductos = document.getElementById("mensajeNoProductos");
+        if (productosEncontrados) {
+            mensajeNoProductos.style.display = "none";
+        } else {
+            mensajeNoProductos.style.display = "block";
+        }
+    }
+});
+
+
+
+var selects = document.querySelectorAll('.select-color');
+selects.forEach(function(select) {
+    // Llenar select-stock inicialmente basado en el valor predeterminado de select-color
+    updateStockSelect(select);
+
+    select.addEventListener('change', function() {
+        updateStockSelect(this);
+    });
+});
+
+function updateStockSelect(select) {
+    var selectedOption = select.options[select.selectedIndex];
+    var stock = parseInt(selectedOption.getAttribute('data-stock'));
+
+    var stockSelectId = 'select-stock-' + select.id.split('-')[2];
+    var stockSelect = document.getElementById(stockSelectId);
+    stockSelect.innerHTML = ''; // Limpiar opciones existentes
+
+    for (var i = 1; i <= stock; i++) {
+        var option = document.createElement('option');
+        option.text = i;
+        option.value = i;
+        stockSelect.appendChild(option);
+    }
+}
+
+
+
+function buscarCliente() {
+    var cedula = document.getElementById("cedula").value;
+    var usuariosString = document.getElementById("cedula").getAttribute("data-usuarios");
+    var usuarios = JSON.parse(usuariosString);
+    
+    // Variable para almacenar el usuario encontrado
+    var usuarioEncontrado = null;
+    
+    // Iterar sobre la lista de usuarios y buscar la cédula
+    for (var i = 0; i < usuarios.length; i++) {
+        if (usuarios[i].cedula === cedula) {
+            usuarioEncontrado = usuarios[i];
+            break; // Terminar el bucle una vez que se encuentre el usuario
+        }
+    }
+    
+
+    var divUsuarioNoEncontrado = document.getElementById("mensajeUsuarioNoEncontrado");
+
+    if (usuarioEncontrado) {
+        console.log("Usuario encontrado:", usuarioEncontrado);
+        divUsuarioNoEncontrado.textContent = "Usuario registrado en la base de datos.";
+        divUsuarioNoEncontrado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
+        divUsuarioNoEncontrado.classList.remove("alert-danger"); // Remover la clase de alerta roja
+        divUsuarioNoEncontrado.classList.add("alert-success"); // Agregar la clase de alerta verde
+        llenarCampos(usuarioEncontrado);
+    } else {
+        divUsuarioNoEncontrado.textContent = "Usuario no encontrado en la base de datos... Ingresa los datos del usuario";
+        divUsuarioNoEncontrado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
+        divUsuarioNoEncontrado.classList.remove("alert-success"); // Remover la clase de alerta verde
+        divUsuarioNoEncontrado.classList.add("alert-danger"); // Agregar la clase de alerta roja
+        camposVacios();
+    }
+    
+    divUsuarioNoEncontrado.style.display = "block"; // Mostrar el mensaje de usuario no encontrado
+
+    
+}
+
+function llenarCampos(cliente) {
+    document.getElementById("nombre").value = cliente.nombre ? cliente.nombre : '';
+    document.getElementById("apellidos").value = cliente.apellidos ? cliente.apellidos : '';
+    document.getElementById("email").value = cliente.email ? cliente.email : '';
+    document.getElementById("celular").value = cliente.celular ? cliente.celular : '';
+    document.getElementById("ciudad").value = cliente.ciudad ? cliente.ciudad : '';
+    document.getElementById("direccion").value = cliente.direccion ? cliente.direccion : '';
+    document.getElementById("direccionEnvio").value = cliente.direccionEnvio ? cliente.direccionEnvio : cliente.direccion;
+}
+
+function camposVacios() {
+    document.getElementById("nombre").value = "";
+    document.getElementById("apellidos").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("celular").value = "";
+    document.getElementById("ciudad").value = "";
+    document.getElementById("direccion").value = "";
+    document.getElementById("direccionEnvio").value = "";
+    // Otros campos
+}
+
+    function actualizarTabla(){
     // Obtener los datos del localStorage
+    console.log('dentro de actualizar');
     var productosGuardados = localStorage.getItem("productos_facturacion");
     var productosFacturacion = productosGuardados ? JSON.parse(productosGuardados) : [];
 
@@ -230,7 +232,8 @@ function actualizarTabla(){
     var csrftoken = getCookie('csrftoken');
     var descuento = document.getElementById("descuento").value;
 
-
+    console.log('Productos a enviar:', productosFacturacion);
+    console.log('Descuento a enviar:', descuento);
     $.ajax({
         url: '/ventas/producto',
         type: 'POST',
@@ -645,7 +648,8 @@ function enviarFormularioConLocalStorage() {
 }
 
 // Agregar un controlador de eventos al botón limpiar
-document.querySelector('.cancelar').addEventListener('click', function() {
+function limpiarlocalstorage() {
+    console.log('cancelar opcion');
     // Confirmar la acción antes de eliminar
     var confirmacion = confirm("¿Estás seguro de que deseas limpiar la actual pantalla?");
 
@@ -659,7 +663,7 @@ document.querySelector('.cancelar').addEventListener('click', function() {
     } else {
         console.log("Cancelado.");
     }
-});
+}
 
 
 function eliminarProducto(button) {
