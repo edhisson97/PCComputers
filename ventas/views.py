@@ -32,6 +32,8 @@ from django.views.decorators.http import require_http_methods
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.db.models import Q
 from weasyprint import HTML
+from io import BytesIO
+import base64
 
 
     
@@ -1429,9 +1431,8 @@ def generarPdf(request):
             html_content = render_to_string('ventas_recibopagocredito.html', context)
 
             # Convertir directamente a PDF usando WeasyPrint
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
-                HTML(string=html_content).write_pdf(output_pdf.name)
-                output_path = output_pdf.name
+            output_path = tempfile.mktemp(suffix='.pdf')
+            HTML(string=html_content).write_pdf(output_path)
 
             # Codificar la ruta
             encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
@@ -1447,7 +1448,7 @@ def generarPdf(request):
             # Adjuntar archivo PDF
             archivo_adjunto = open(archivo_adjunto, 'rb')
             mensaje.attach(archivo_adjunto.name, archivo_adjunto.read(), 'application/pdf')
-            
+            archivo_adjunto.close()
             
             
         else:
@@ -1472,12 +1473,12 @@ def generarPdf(request):
 
             #### PARA WEASYPRINT
             # Generar PDF y enviar
+            buffer = BytesIO()
             html_content = render_to_string('reciboPagoPdf.html', context)
 
             # Convertir directamente a PDF usando WeasyPrint
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
-                HTML(string=html_content).write_pdf(output_pdf.name)
-                output_path = output_pdf.name
+            output_path = tempfile.mktemp(suffix='.pdf')
+            HTML(string=html_content).write_pdf(output_path)
 
             # Codificar la ruta
             encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
@@ -1493,6 +1494,7 @@ def generarPdf(request):
             # Adjuntar archivo PDF
             archivo_adjunto = open(archivo_adjunto, 'rb')
             mensaje.attach(archivo_adjunto.name, archivo_adjunto.read(), 'application/pdf')
+            archivo_adjunto.close()
         # Enviar correo electrónico
         try:
             # Envía el correo electrónico
@@ -1675,6 +1677,23 @@ def generarPdf(request):
             # Imprime la excepción para conocer el tipo y los detalles del error
             print("Error al guardar deudas:", e)
         
+        #######REEMPLACE ESTE CODIGO PARA MEJORAR LA DESCARGA, SI EXISTE ERROR BORRAR##########
+       # Leer el PDF generado
+        with open(output_path, 'rb') as f:
+            pdf_bytes = f.read()  # ✅ contenido real del PDF
+
+        # Codificar a base64 directamente (sin usar BytesIO)
+        encoded_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
+
+        # (Opcional) eliminar archivo temporal
+        import os
+        os.remove(output_path)
+
+        # Renderizar el template
+        return render(request, 'descargar_pdf_facturacion.html', {
+            'encoded_pdf': encoded_pdf
+        })
+        ################### HASTA AQUI, LO QUE ESTA A CONTINUACION ES EL CODIGO ANTERIOR##########
         # Devolver el PDF como una respuesta HTTP
         with open(output_path, 'rb') as pdf_file:
             response = HttpResponse(pdf_file.read(), content_type='application/pdf')
