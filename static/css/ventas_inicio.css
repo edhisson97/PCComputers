@@ -142,6 +142,20 @@ body {
     /*justify-content: space-between;*/
     align-items: center; /* Alinea verticalmente */
     margin-bottom: 10px;
+    position: relative;
+}
+
+#listaCoincidencias {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 9999;
+    background: white;
+    border: 1px solid #ccc;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
 }
 
 .form-row label {

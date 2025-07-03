@@ -10,6 +10,9 @@
     <div class="seccion-datos">
         
         <h5>Datos del Proveedor</h5>
+
+        * Si el proveedor aún no ha sido registrado, sus datos se guardarán automáticamente al momento de generar la facturación. También puede agregar un proveedor manualmente desde el siguiente <a href="/operacion/proveedores" style="text-decoration: none; margin-bottom: 10px;">enlace (proveedores)</a>.
+
         <div id="mensajeUsuarioIngresado" class="alert alert-warning" role="alert">
             <i class="fa-solid fa-triangle-exclamation"></i> Los datos del proveedor aún no han sido agregados.
         </div>
@@ -26,6 +29,12 @@
             <div class="modal-contenido-cliente" id="modalContenidoCliente" style="display: none;">
                 <span class="cerrar-modal" onclick="closeModalProveedor()">&times;</span>
                         <h5>Datos del proveedor</h5>
+
+                        <div class="form-row">
+                            <label for="busqueda">Buscar proveedor </label>
+                            <input type="text" id="buscar" name="buscar" placeholder="🔍️ Buscar proveedor por nombres o número de identificación (RUC)" onkeyup="buscarProveedor()" data-proveedores="{{ proveedores }}">
+                            <div id="listaCoincidencias"></div>
+                        </div>
                         
                         <div id="mensajeUsuarioNoEncontrado" style="display: none;" class="alert alert-warning" role="alert">
                             No se encontró el proveedor...
@@ -38,7 +47,7 @@
                                 <option value="consumidor">Consumidor Final</option>
                             </select>-->
                             <label for="ruc">RUC</label>
-                            <input type="text" id="ruc" name="ruc" required onkeyup="buscarProveedor()" data-proveedores="{{ proveedores }}">
+                            <input type="text" id="ruc" name="ruc" required>
                             <label for="nombre">Nombre</label>
                             <input type="text" id="nombre" name="nombre" required>
                         </div>

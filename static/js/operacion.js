@@ -44,43 +44,57 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function buscarProveedor() {
-    var cedula = document.getElementById("ruc").value;
-    var proveedoresString = document.getElementById("ruc").getAttribute("data-proveedores");
-    var usuarios = JSON.parse(proveedoresString);
-    
-    // Variable para almacenar el usuario encontrado
-    var usuarioEncontrado = null;
-    
-    // Iterar sobre la lista de usuarios y buscar la cédula
-    for (var i = 0; i < usuarios.length; i++) {
-        if (usuarios[i].ruc === cedula) {
-            usuarioEncontrado = usuarios[i];
-            break; // Terminar el bucle una vez que se encuentre el usuario
-        }
-    }
-    
+    const inputBuscar = document.getElementById("buscar");
+    const query = inputBuscar.value.trim().toLowerCase();
+    const proveedoresString = inputBuscar.getAttribute("data-proveedores");
+    const proveedores = JSON.parse(proveedoresString);
+    const coincidenciasDiv = document.getElementById("listaCoincidencias");
+    const mensajeNoEncontrado = document.getElementById("mensajeUsuarioNoEncontrado");
 
-    var divUsuarioNoEncontrado = document.getElementById("mensajeUsuarioNoEncontrado");
+    coincidenciasDiv.innerHTML = '';
+    coincidenciasDiv.style.display = 'none';
 
-    if (usuarioEncontrado) {
-        console.log("Usuario encontrado:", usuarioEncontrado);
-        divUsuarioNoEncontrado.textContent = "Proveedor registrado en la base de datos.";
-        divUsuarioNoEncontrado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
-        divUsuarioNoEncontrado.classList.remove("alert-danger"); // Remover la clase de alerta roja
-        divUsuarioNoEncontrado.classList.add("alert-success"); // Agregar la clase de alerta verde
-        llenarCampos(usuarioEncontrado);
-    } else {
-        divUsuarioNoEncontrado.textContent = "Proveedor no encontrado en la base de datos... Ingresa los datos del proveedor";
-        divUsuarioNoEncontrado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
-        divUsuarioNoEncontrado.classList.remove("alert-success"); // Remover la clase de alerta verde
-        divUsuarioNoEncontrado.classList.add("alert-danger"); // Agregar la clase de alerta roja
+    if (query === '') {
         camposVacios();
+        mensajeNoEncontrado.style.display = "none";
+        return;
     }
-    
-    divUsuarioNoEncontrado.style.display = "block"; // Mostrar el mensaje de usuario no encontrado
 
-    
-}
+    const coincidencias = proveedores.filter(proveedor =>
+        proveedor.ruc.toLowerCase().includes(query) ||
+        proveedor.nombre.toLowerCase().includes(query)
+    ).slice(0, 3); // máximo 3 resultados
+
+    if (coincidencias.length > 0) {
+        coincidencias.forEach(proveedor => {
+            const opcion = document.createElement("div");
+            opcion.textContent = `${proveedor.nombre} - ${proveedor.ruc}`;
+            opcion.style.padding = "8px";
+            opcion.style.cursor = "pointer";
+            opcion.style.borderBottom = "1px solid #eee";
+
+            opcion.addEventListener("click", () => {
+                llenarCampos(proveedor);
+                coincidenciasDiv.style.display = "none";
+                mensajeNoEncontrado.textContent = "Proveedor registrado en la base de datos.";
+                mensajeNoEncontrado.classList.remove("alert-warning", "alert-danger");
+                mensajeNoEncontrado.classList.add("alert-success");
+                mensajeNoEncontrado.style.display = "block";
+                
+            });
+
+            coincidenciasDiv.appendChild(opcion);
+        });
+
+        coincidenciasDiv.style.display = "block";
+        } else {
+        camposVacios();
+        mensajeNoEncontrado.textContent = "Proveedor no encontrado en la base de datos... Ingresa los datos del proveedor";
+        mensajeNoEncontrado.classList.remove("alert-success", "alert-warning");
+        mensajeNoEncontrado.classList.add("alert-danger");
+        mensajeNoEncontrado.style.display = "block";
+    }
+} 
 
 function llenarCampos(proveedor) {
     document.getElementById("nombre").value = proveedor.nombre ? proveedor.nombre : '';
@@ -89,6 +103,7 @@ function llenarCampos(proveedor) {
     document.getElementById("contacto").value = proveedor.contacto ? proveedor.contacto : '';
     document.getElementById("email").value = proveedor.email ? proveedor.email : '';
     document.getElementById("celular").value = proveedor.telefono ? proveedor.telefono : '';
+    document.getElementById("ruc").value = proveedor.ruc ? proveedor.ruc : '';
 }
 
 function camposVacios() {
@@ -98,6 +113,7 @@ function camposVacios() {
     document.getElementById("contacto").value = "";
     document.getElementById("email").value = "";
     document.getElementById("celular").value = "";
+    document.getElementById("ruc").value = "";
     // Otros campos
 }
 

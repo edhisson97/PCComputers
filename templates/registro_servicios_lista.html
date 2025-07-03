@@ -5,6 +5,11 @@
 {% block content %}
 {% load static %}
 <style>
+    .titulo-registro{
+        text-align: center;
+        color: #666666;
+    }
+
     .search-bar-registros {
         display: flex;
         justify-content: center;
@@ -55,22 +60,17 @@
         color: #b6b6b8;
     }
 </style>
-<h3>Registro de servicios </h3>
+<h3 class="titulo-registro">Registro de servicios </h3>
 
-<div class="container">
-    
-    <div class="centered-modal">
-        <div class="centered">
-            <div class="search-bar-registros">
-                <input type="text" name="buscador" id="buscador" placeholder="Buscar servicio...">
-                <i class="fas fa-search" id="barra-busqueda"></i>
-            </div>
-        </div>
-    </div>
-    {% if busqueda %}
-        <h6><i class="fa-solid fa-magnifying-glass"></i> &nbsp; Los resultados para la búsqueda "{{busqueda}}" son los siguientes</h6>
-    {% endif %}
-    <div class="options-container">
+<div class="breadcrumb">
+    <a href="/ventas">Panel ventas</a>
+    <span>›</span>
+    <a href="/ventas/registro_servicios">Registrar servicios</a>
+    <span>›</span>
+    <a href="/ventas/servicio/todos_registros">Todos los servicios</a>
+</div>
+
+<div class="options-container">
       <p class="etiqueta-filtrar">Filtrar: </p>
 
       <a href="/ventas/servicio/todos_registros?option=todo" class="option-button" >TODO</a>
@@ -79,10 +79,26 @@
       <a href="/ventas/servicio/todos_registros?option=hoy" class="option-button" >Hoy</a>
       <a href="/ventas/servicio/todos_registros?option=semana" class="option-button" >Última semana</a>
       <a href="/ventas/servicio/todos_registros?option=mes" class="option-button" >Este mes</a>
+</div>
+
+<div class="centered-modal">
+    <div class="centered">
+        <div class="search-bar-registros">
+            <input type="text" name="buscador" id="buscador" placeholder="Buscar servicio...">
+            <i class="fas fa-search" id="barra-busqueda"></i>
+        </div>
     </div>
+</div>
+{% if busqueda %}
+    <h6><i class="fa-solid fa-magnifying-glass"></i> &nbsp; Los resultados para la búsqueda "{{busqueda}}" son los siguientes: </h6>
+{% endif %}
+
+<h4>Transacciones {% if option == None%} (todos los registros) {% elif option == 'hoy' %} (hoy) {% elif option == 'semana' %} (Última semana) {% elif option == 'mes' %} (Este mes) {% elif option == 'pendiente' %} (Pendientes) {% elif option == 'terminado' %} (Terminados) {% elif option == 'todo' %} (Todas las transacciones){%endif%}</h4>
+      
+
+<div class="container">
     
-    <div class="section table-container">
-      <h4>Transacciones {% if option == None%} (todos los registros) {% elif option == 'hoy' %} (hoy) {% elif option == 'semana' %} (Última semana) {% elif option == 'mes' %} (Este mes) {% elif option == 'pendiente' %} (Pendientes) {% elif option == 'terminado' %} (Terminados) {% elif option == 'todo' %} (Todas las transacciones){%endif%}</h4>
+    
       
         <table class="table table-striped" id="tabla-productos">
             <thead>
@@ -251,7 +267,7 @@
             </tbody>
         </table>
 
-    </div>
+    
   </div>
   <script>
     $(document).ready(function() {
@@ -369,6 +385,14 @@
             form.submit();
 
         });
+
+        $('#buscador').on('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Evita que se envíe un formulario si lo hay
+                $('#barra-busqueda').click(); // Simula el click en el botón de búsqueda
+            }
+        });
+
 
         $('.cancelar-servicio-btn').on('click', function() {
             if (confirm('¿Estás seguro de cancelar y dar por finalizado el servicio? ')) {

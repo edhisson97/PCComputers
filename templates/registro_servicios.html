@@ -11,6 +11,9 @@
     <div class="seccion-datos">
         
         <h5>Datos del cliente</h5>
+        * Si el cliente aún no ha sido registrado, sus datos se guardarán automáticamente al momento de generar la facturación. También puede agregar un cliente manualmente desde el siguiente <a href="/ventas/clientes" style="text-decoration: none; margin-bottom: 10px;">enlace (clientes)</a>.
+
+        
         <div id="mensajeUsuarioIngresado" class="alert alert-warning" role="alert">
             <i class="fa-solid fa-triangle-exclamation"></i> Los datos del cliente aún no han sido agregados.
         </div>
@@ -27,6 +30,12 @@
             <div class="modal-contenido-cliente" id="modalContenidoCliente" style="display: none;">
                 <span class="cerrar-modal" onclick="closeModalCliente()">&times;</span>
                         <h5>Datos del cliente </h5>
+
+                        <div class="form-row">
+                            <label for="busqueda">Buscar cliente </label>
+                            <input type="text" id="buscar" name="buscar" placeholder="🔍️ Buscar cliente por nombres, apellidos o número de cédula" onkeyup="buscarCliente()" data-usuarios="{{ usuarios }}">
+                            <div id="listaCoincidencias"></div>
+                        </div>
                         
                         <div id="mensajeUsuarioNoEncontrado" style="display: none;" class="alert alert-warning" role="alert">
                             No se encontró el usuario...
@@ -39,7 +48,7 @@
                                 <option value="consumidor">Consumidor Final</option>
                             </select>-->
                             <label for="cedula">Número de Cédula</label>
-                            <input type="text" id="cedula" name="cedula" required onkeyup="buscarCliente()" data-usuarios="{{ usuarios }}">
+                            <input type="text" id="cedula" name="cedula" required >
                             <label for="celular">Celular</label>
                             <input type="text" id="celular" name="celular" required>
                         </div>
