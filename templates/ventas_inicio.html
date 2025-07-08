@@ -113,6 +113,7 @@
                 <div id="listaArticulos">
                     {% if todosProductos %}
                         {% for prod in todosProductos %}
+                            {% if prod.colores %}
                                 <div class="articulo" data-id="{{ prod.id }}">
                                     <div class="codigo-articulo">
                                         <h6>Cód. Art.</h6>
@@ -163,7 +164,7 @@
                                     </div>
                                     <button class="agregar-producto" id="btnAgregarProducto" data-producto-id="{{ prod.id }}">+</button>
                                 </div>
-                                
+                            {% endif %} 
                         {% endfor %}
                     {% else %}
 

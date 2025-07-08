@@ -1,0 +1,179 @@
+{% extends "ventas.html" %}
+
+{% block title %}PC Computers - Descargar reportes {% endblock %}
+
+{% block content %}
+
+<style>
+    .clientes-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #1f2d3d;
+    }
+  
+    .clientes-input-buscar {
+      max-width: 300px;
+    }
+  
+    .clientes-btn-agregar {
+      white-space: nowrap;
+    }
+  
+    .clientes-tabla th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+  
+    .clientes-tabla td, .clientes-tabla th {
+      vertical-align: middle;
+    }
+  
+    .clientes-modal .modal-header {
+      background-color: #007bff;
+      color: white;
+    }
+  
+    .clientes-modal .modal-title {
+      font-weight: 600;
+    }
+
+    /* Contenedor principal */
+    .reporte-container {
+      padding: 3rem 1rem;
+      background-color: #f8f9fa;
+    }
+
+    .reporte-title {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: 600;
+      color: #343a40;
+    }
+
+    /* Tarjetas */
+    .reporte-card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #dee2e6;
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .reporte-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .reporte-icon {
+      font-size: 3.5rem;
+      color: #0d6efd;
+      margin-bottom: 1rem;
+    }
+
+    .reporte-leyenda {
+      font-size: 1rem;
+      color: #495057;
+    }
+
+    /* Modal */
+    .reporte-modal .modal-content {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .reporte-modal .modal-header {
+      background-color: #0d6efd;
+      color: white;
+    }
+
+    .reporte-modal .form-label {
+      font-weight: 500;
+    }
+
+    .reporte-modal .form-control {
+      border-radius: 6px;
+    }
+
+    .reporte-modal .btn {
+      min-width: 120px;
+    }
+  </style>
+
+{% load static %}
+
+<h5 class="reporte-title"> Reportes disponibles </h5>
+
+<div class="breadcrumb">
+    <a href="/operacion">Panel operaciones</a>
+    <span>›</span>
+    <a href="/operacion/descarga-reportes">Descarga Reportes</a>
+</div>
+
+    {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-secondary" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endfor %}
+      {% endif %}
+    
+<div class="container reporte-container">
+    <div class="row g-4 justify-content-center">
+
+      <!-- Tarjeta 1 -->
+      <div class="col-md-6">
+        <div class="reporte-card" data-bs-toggle="modal" data-bs-target="#reporteModal">
+          <h6>Productos</h6>
+          <i class="fa-solid fa-download reporte-icon"></i>
+          <p class="reporte-leyenda">El reporte de productos será generado en un archivo Excel <strong>.xlsx</strong></p>
+        </div>
+      </div>
+
+      <!-- Tarjeta 2 -->
+      <div class="col-md-6">
+        <!--<div class="reporte-card" data-bs-toggle="modal" data-bs-target="#reporteModal">
+          <i class="fas fa-chart-line reporte-icon"></i>
+          <p class="reporte-leyenda">El reporte de ventas será generado en un archivo Excel <strong>.xlsx</strong></p>
+        </div>-->
+      </div>
+
+      <!-- Tarjeta 3 -->
+      <div class="col-md-6">
+        <!--<div class="reporte-card" data-bs-toggle="modal" data-bs-target="#reporteModal">
+          <i class="fas fa-user-friends reporte-icon"></i>
+          <p class="reporte-leyenda">El reporte de clientes será generado en un archivo Excel <strong>.xlsx</strong></p>
+        </div>-->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade reporte-modal" id="reporteModal" tabindex="-1" aria-labelledby="reporteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reporteModalLabel">Confirmar descarga de Productos</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p class="reporte-leyenda">¿Desea descargar el archivo Excel?</p>
+          <div class="mb-3">
+            <label for="reportePassword" class="form-label">Ingrese la contraseña de {{user}} para continuar:</label>
+            <input type="password" id="reportePassword" class="form-control" placeholder="Contraseña">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary" onclick="reporteDescargar()">Descargar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+      
+
+{% endblock %} 

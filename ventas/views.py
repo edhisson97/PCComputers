@@ -173,8 +173,8 @@ def registro_servicios(request):
         try:
             equipo = Equipo.objects.all()
             descripcionEquipo = DescripcionEquipo.objects.all()
-            print(descripcionEquipo)
-            print(equipo)
+            #print(descripcionEquipo)
+            #print(equipo)
         except Equipo.DoesNotExist:
             equipo = ''
         except DescripcionEquipo.DoesNotExist:
@@ -377,9 +377,10 @@ def generar_recibo_servicios(request):
         html_content = render_to_string('registro_servicios_recibo.html', context)
 
         # Convertir directamente a PDF usando WeasyPrint
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
-            HTML(string=html_content).write_pdf(output_pdf.name)
-            output_path = output_pdf.name
+        #with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+        output_path = tempfile.mktemp(suffix='.pdf')    
+        HTML(string=html_content).write_pdf(output_path)
+            
 
         # Codificar la ruta
         encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
@@ -396,6 +397,7 @@ def generar_recibo_servicios(request):
         # Adjuntar archivo PDF
         archivo_adjunto = open(archivo_adjunto, 'rb')
         mensaje.attach(archivo_adjunto.name, archivo_adjunto.read(), 'application/pdf')
+        archivo_adjunto.close()
         # Enviar correo electrónico
     
         try:
@@ -590,9 +592,10 @@ def generarrecibo_nuevo_abono(request):
         html_content = render_to_string('registro_servicios_reciboabono.html', context)
 
         # Convertir directamente a PDF usando WeasyPrint
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
-            HTML(string=html_content).write_pdf(output_pdf.name)
-            output_path = output_pdf.name
+        #with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+        output_path = tempfile.mktemp(suffix='.pdf')   
+        HTML(string=html_content).write_pdf(output_path)
+            
 
         # Codificar la ruta
         #encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
@@ -608,6 +611,7 @@ def generarrecibo_nuevo_abono(request):
         # Adjuntar archivo PDF
         archivo_adjunto = open(archivo_adjunto, 'rb')
         mensaje.attach(archivo_adjunto.name, archivo_adjunto.read(), 'application/pdf')
+        archivo_adjunto.close()
         # Enviar correo electrónico
     
         try:
@@ -838,9 +842,10 @@ def finalizar_servicio(request):
         html_content = render_to_string('registro_servicios_recibo.html', context)
 
         # Convertir directamente a PDF usando WeasyPrint
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
-            HTML(string=html_content).write_pdf(output_pdf.name)
-            output_path = output_pdf.name
+        #with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+        output_path = tempfile.mktemp(suffix='.pdf')   
+        HTML(string=html_content).write_pdf(output_path)
+            
 
         # Codificar la ruta
         #encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
@@ -856,6 +861,7 @@ def finalizar_servicio(request):
         # Adjuntar archivo PDF
         archivo_adjunto = open(archivo_adjunto, 'rb')
         mensaje.attach(archivo_adjunto.name, archivo_adjunto.read(), 'application/pdf')
+        archivo_adjunto.close()
         # Enviar correo electrónico
     
         try:
@@ -1740,7 +1746,7 @@ def pago_pendiente(request):
                 }
                 usuarios_con_datos_adicionales.append(datos_adicionales)
         
-        print(usuarios_con_datos_adicionales)
+        #print(usuarios_con_datos_adicionales)
         clientes_json = json.dumps(usuarios_con_datos_adicionales)
         
         return render(request, 'ventas_pagopendiente.html', {"caja":caja,"clientes":clientes_json})
@@ -1934,9 +1940,10 @@ def agregarPago(request):
         html_content = render_to_string('ventas_recibopagocredito.html', context)
 
         # Convertir directamente a PDF usando WeasyPrint
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
-            HTML(string=html_content).write_pdf(output_pdf.name)
-            output_path = output_pdf.name
+        #with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+        output_path = tempfile.mktemp(suffix='.pdf')  
+        HTML(string=html_content).write_pdf(output_path)
+            
 
         # Codificar la ruta
         encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
@@ -1952,6 +1959,7 @@ def agregarPago(request):
         # Adjuntar archivo PDF
         archivo_adjunto = open(archivo_adjunto, 'rb')
         mensaje.attach(archivo_adjunto.name, archivo_adjunto.read(), 'application/pdf')
+        archivo_adjunto.close()
         # Enviar correo electrónico
         try:
             
@@ -2098,9 +2106,10 @@ def agregarPago(request):
                 html_content = render_to_string('reciboPagoPdf.html', context)
 
                 # Convertir directamente a PDF usando WeasyPrint
-                with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
-                    HTML(string=html_content).write_pdf(output_pdf.name)
-                    output_path = output_pdf.name
+                #with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+                output_path = tempfile.mktemp(suffix='.pdf')    
+                HTML(string=html_content).write_pdf(output_path)
+                    
 
                 # Codificar la ruta
                 encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
@@ -2117,6 +2126,7 @@ def agregarPago(request):
                 # Adjuntar archivo PDF
                 archivo_adjunto = open(archivo_adjunto, 'rb')
                 mensaje.attach(archivo_adjunto.name, archivo_adjunto.read(), 'application/pdf')
+                archivo_adjunto.close()
                 
             else:
                 # El código aquí se ejecutará si deudaSaldo es mayor que 0.

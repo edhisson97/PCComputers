@@ -223,17 +223,17 @@ def comprobar_operacion_caja(request):
         try:
             data = json.loads(request.body)
             efectivoContado = data.get('efectivo', None)
-            print(efectivoContado)
+            #print(efectivoContado)
             cajero_username = data.get('cajero', None)
             accion = data.get('accion', None)
-            print('--------------------------------')
-            print(cajero_username)
+            #print('--------------------------------')
+            #print(cajero_username)
             vendedor = User.objects.get(username=cajero_username)
-            print('-------------------')
-            print(vendedor)
+            #print('-------------------')
+            #print(vendedor)
             caja = Caja.objects.filter(cajero=vendedor).latest('fecha_hora_inicio')
-            print('----------------------------------------------------')
-            print(caja)
+            #print('----------------------------------------------------')
+            #print(caja)
             # Aquí puedes procesar los datos como necesites
             #caja = Caja.objects.latest('fecha_hora_inicio')
             
@@ -477,8 +477,8 @@ def comprobar_operacion_caja(request):
         
         except Exception as e:
             import traceback
-            print("❌ ERROR FUERA de cerrar:")
-            print(traceback.format_exc())
+            #print("❌ ERROR FUERA de cerrar:")
+            #print(traceback.format_exc())
             return JsonResponse({'error': str(e)}, status=500)
         
         # Devuelve una respuesta JSON
@@ -557,9 +557,9 @@ def comprobar_operacion_caja(request):
                 html_content = render_to_string('cierre_caja_recibo.html', context)
 
                 # Convertir directamente a PDF usando WeasyPrint
-                with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
-                    HTML(string=html_content).write_pdf(output_pdf.name)
-                    output_path = output_pdf.name
+                #with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as output_pdf:
+                output_path = tempfile.mktemp(suffix='.pdf')
+                HTML(string=html_content).write_pdf(output_path)
 
                 # Codificar la ruta
                 encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
@@ -1338,3 +1338,8 @@ def operador_proveedores(request):
     proveedores = Proveedor.objects.all()
     
     return render(request, 'operacion_proveedores.html',{"proveedores":proveedores})
+
+@operador_required
+def descargar_reportes(request):
+    
+    return render(request, 'operacion_descargarreportes.html',)
