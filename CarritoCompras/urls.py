@@ -136,7 +136,7 @@ urlpatterns = [
     path("operacion/todosequipos", todos_equipos),
     path('operacion/todosequipos/idequipo=<int:id>/', detalles_equipo),
     path('operacion/proveedores', operador_proveedores, name='vistaproveedores'),
-    path('operacion/descarga-reportes', descargar_reportes),
+    path('operacion/descarga-reportes', descargar_reportes, name='descargareportes'),
     
     #path('ventas/recibo', reciboPago,name='h'),
     #path('imprimir', reciboImpreso),

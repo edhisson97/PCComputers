@@ -75,7 +75,11 @@ def inicio_ventas(request):
         usuarios_json = json.dumps(usuarios_con_datos_adicionales)
         
         try:
-            todosProductos = Producto.objects.prefetch_related('colores').exclude(desactivado="si")
+            todosProductos = Producto.objects \
+            .filter(colores__isnull=False) \
+            .exclude(desactivado="si") \
+            .prefetch_related('colores') \
+            .distinct()
         except Producto.DoesNotExist:
             return render(request, "ventas_inicio.html",)
         
@@ -1778,8 +1782,7 @@ def devolver_abono(request):
     
     return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})
 
-def buscar_deuda(request):
-    
+def buscar_deuda(request): 
     cedula = request.GET.get('cedula')
     usuario = get_object_or_404(adicionalUsuario, cedula=cedula)
     usuario_completo = usuario.user

@@ -264,7 +264,7 @@
                 {% endif %}
             </div>
             <div class="modal-footer">
-                <form id="desactivarForm" method="POST">
+                <form id="desactivarForm" method="GET">
                     {% csrf_token %}
                     <input type="hidden" id="desactivar_producto_id" name="producto_id">
                     {%if existe_stock%}
@@ -297,7 +297,7 @@
                 ¿Estás seguro de que deseas continuar?
             </div>
             <div class="modal-footer">
-                <form id="activarForm" method="POST">
+                <form id="activarForm" method="GET">
                     {% csrf_token %}
                     <input type="hidden" id="activar_producto_id" name="producto_id">
                     <button type="submit" class="btn btn-primary">

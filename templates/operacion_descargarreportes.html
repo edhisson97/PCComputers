@@ -152,28 +152,31 @@
   </div>
 
   <!-- Modal -->
-  <div class="modal fade reporte-modal" id="reporteModal" tabindex="-1" aria-labelledby="reporteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content shadow">
-        <div class="modal-header">
-          <h5 class="modal-title" id="reporteModalLabel">Confirmar descarga de Productos</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <p class="reporte-leyenda">¿Desea descargar el archivo Excel?</p>
-          <div class="mb-3">
-            <label for="reportePassword" class="form-label">Ingrese la contraseña de {{user}} para continuar:</label>
-            <input type="password" id="reportePassword" class="form-control" placeholder="Contraseña">
+  <form method="POST" action="{% url 'descargareportes' %}">
+  {% csrf_token %}
+    <div class="modal fade reporte-modal" id="reporteModal" tabindex="-1" aria-labelledby="reporteModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+          <div class="modal-header">
+            <h5 class="modal-title" id="reporteModalLabel">Confirmar descarga de Productos</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary" onclick="reporteDescargar()">Descargar</button>
+          <div class="modal-body">
+            <p class="reporte-leyenda">¿Desea descargar el archivo Excel?</p>
+            <div class="mb-3">
+              <input type="hidden" name="tipo_reporte" value="productos">
+              <label for="reportePassword" class="form-label">Ingrese la contraseña de {{user}} para continuar:</label>
+              <input type="password" name="contraseña" id="contraseña" class="form-control" placeholder="Contraseña" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button class="btn btn-primary" onclick="reporteDescargar()">Descargar</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
+  </form>
       
 
 {% endblock %} 

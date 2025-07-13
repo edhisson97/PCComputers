@@ -28,6 +28,7 @@
                 {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ producto.marca.nombre }} {{ producto.modelo }}</h5>
+                    <p class="card-text">{{producto.detalle}}</p>
                     <p class="card-text"><strong>Código:</strong> {{producto.id}}</p>
                     {% if producto.desactivado == "si"%}
                         <p class="desactivado">DESACTIVADO</P>
@@ -46,28 +47,37 @@
 
 <!-- JavaScript para la búsqueda en tiempo real -->
 <script>
-    document.getElementById("buscarProducto").addEventListener("input", function () {
-        let filtro = this.value.toLowerCase();
-        let productos = document.querySelectorAll(".producto-card");
-    
-        productos.forEach(producto => {
-            let nombre = producto.querySelector(".card-title").textContent.toLowerCase();
-            let codigo = producto.querySelector(".card-text strong").nextSibling.textContent.trim().toLowerCase(); // Obtiene el código
+document.getElementById("buscarProducto").addEventListener("input", function () {
+    let filtro = this.value.toLowerCase();
+    let productos = document.querySelectorAll(".producto-card");
 
-            if (nombre.includes(filtro)|| codigo.includes(filtro)) {
-                producto.style.order = "-1"; // Se muestra primero
-                producto.style.opacity = "1"; // Se mantiene visible
-                producto.style.maxHeight = "500px"; // Evita que colapse
-            } else {
-                producto.style.order = "1"; // Se mueve al final
-                producto.style.opacity = "0"; // Se desvanece
-                producto.style.maxHeight = "0"; // Oculta sin distorsionar
-                producto.style.overflow = "hidden"; // Evita que el contenido se vea
-                producto.style.transition = "opacity 0.3s, max-height 0.3s"; // Animación suave
-            }
-        });
+    productos.forEach(producto => {
+        let nombre = producto.querySelector(".card-title").textContent.toLowerCase();
+        let detalle = producto.querySelector(".card-text").textContent.toLowerCase();
+        
+        // Busca el código como antes (a partir de <strong>Código:</strong>)
+        let codigoElement = Array.from(producto.querySelectorAll(".card-text"))
+            .find(p => p.textContent.includes("Código:"));
+        let codigo = codigoElement ? codigoElement.textContent.toLowerCase() : "";
+
+        if (
+            nombre.includes(filtro) || 
+            detalle.includes(filtro) ||
+            codigo.includes(filtro)
+        ) {
+            producto.style.order = "-1";
+            producto.style.opacity = "1";
+            producto.style.maxHeight = "500px";
+        } else {
+            producto.style.order = "1";
+            producto.style.opacity = "0";
+            producto.style.maxHeight = "0";
+            producto.style.overflow = "hidden";
+            producto.style.transition = "opacity 0.3s, max-height 0.3s";
+        }
     });
-      
+});
 </script>
+
 
 {% endblock %} 

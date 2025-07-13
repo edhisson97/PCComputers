@@ -688,6 +688,7 @@ def nuevo_producto(request):
                 peso=peso,
                 oferta=oferta,
                 precio_oferta=precio_oferta,
+                desactivado = 'si'
             )
             nuevo_producto.save()
 
@@ -727,6 +728,12 @@ def nuevo_producto(request):
 @operador_required
 def detalle_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
+    tiene_color_valido = ColorStock.objects.filter(
+            producto=producto,
+            color__isnull=False,
+            color__gt="",
+            stock__gt=0
+            ).exists()
     if request.method == "POST":
         try:
             # Capturar los datos del formulario
@@ -746,7 +753,9 @@ def detalle_producto(request, producto_id):
             nuevoColorStock.producto = producto
             nuevoColorStock.save()
             
-            
+            if not tiene_color_valido:
+                producto.desactivado = ''
+                producto.save()
             
         except Producto.DoesNotExist:
             messages.error(request, "El producto no existe.")
@@ -942,26 +951,37 @@ def gestionar_imagenes(request, producto_id):
 def desactivar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     
-    if request.method == "POST":
+    if request.method == "GET":
         producto.desactivado = "si"
         producto.save()
         messages.success(request, f"El producto '{producto.modelo}' ha sido desactivado correctamente.")
     
     # Redirigir a la vista de detalles del producto (ajusta según tu proyecto)
     colores = ColorStock.objects.filter(producto=producto)
+    redirect(f'/operacion/stock/nuevoproducto/detalle/idproducto={producto.id}/')
     return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
 
 @operador_required
 def activar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
-    
-    if request.method == "POST":
-        producto.desactivado = ""
-        producto.save()
-        messages.success(request, f"El producto '{producto.modelo}' ha sido activado correctamente.")
-    
-    # Redirigir a la vista de detalles del producto (ajusta según tu proyecto)
+    if request.method == "GET":    
+        # Buscar si existe al menos un color válido
+        
+        tiene_color_valido = ColorStock.objects.filter(
+            producto=producto,
+            color__isnull=False,
+            color__gt="",
+            stock__gt=0
+            ).exists()
+        
+        if tiene_color_valido:
+            producto.desactivado = ""
+            producto.save()
+            messages.success(request, f"El producto '{producto.modelo}' ha sido activado correctamente.")
+        else:
+            messages.success(request, f"El producto '{producto.modelo}' no puede ser activao porque no tiene colores disponible, por favor agregue un color para activar el producto.")
     colores = ColorStock.objects.filter(producto=producto)
+    return redirect(f'/operacion/stock/nuevoproducto/detalle/idproducto={producto.id}/')
     return render(request, "operacion_detalleproducto.html", {"producto": producto,"colores": colores})
 
 
@@ -1341,5 +1361,18 @@ def operador_proveedores(request):
 
 @operador_required
 def descargar_reportes(request):
-    
+    if request.method == "POST":
+        tipo_reporte = request.POST.get('tipo_reporte')
+        contraseña = request.POST.get('contraseña')
+        
+        if request.user.check_password(contraseña):
+            # ✅ Contraseña correcta: continuar con la lógica
+            # Aquí puedes generar el reporte según el tipo
+            # return generar_excel(tipo_reporte)
+            print('reporte impreso')
+
+        else:
+            # ❌ Contraseña incorrecta
+            messages.error(request, "Contraseña incorrecta. Intenta de nuevo.")
+
     return render(request, 'operacion_descargarreportes.html',)
