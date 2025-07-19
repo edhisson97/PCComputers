@@ -23,6 +23,7 @@ from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404
 import cloudinary.uploader
 from weasyprint import HTML
+import openpyxl
 
 # Create your views here.
 def cerrar_caja(request):
@@ -1366,11 +1367,58 @@ def descargar_reportes(request):
         contraseña = request.POST.get('contraseña')
         
         if request.user.check_password(contraseña):
-            # ✅ Contraseña correcta: continuar con la lógica
-            # Aquí puedes generar el reporte según el tipo
-            # return generar_excel(tipo_reporte)
-            print('reporte impreso')
+            
+            if tipo_reporte == 'productos':
+                messages.error(request, "Reporte descargado correctamente.")
+                wb = openpyxl.Workbook()
+                ws = wb.active
+                ws.title = "Productos"
 
+                # Encabezados
+                encabezados = [
+                    'idProducto', 'Modelo', 'Categoría', 'Subcategoría', 'Marca', 'Calidad',
+                    'Precio', 'Detalle', 'Descripción', 'Peso',
+                    'idColorStock', 'Código Referencial', 'Color', 'Código Color', 'Stock'
+                ]
+                ws.append(encabezados)
+
+                # Agregar los datos
+                productos = Producto.objects.select_related(
+                    'categoria', 'subcategoria', 'marca'
+                ).prefetch_related('colores')
+
+                for producto in productos:
+                    for color in producto.colores.all():
+                        if color.color.strip() == "" and color.stock == 0:
+                            continue  # Salta esta fila
+                        fila = [
+                            producto.id,
+                            producto.modelo,
+                            producto.categoria.nombre if producto.categoria else '',
+                            producto.subcategoria.nombre if producto.subcategoria else '',
+                            producto.marca.nombre if producto.marca else '',
+                            producto.get_calidad_display(),
+                            float(producto.precio),
+                            producto.detalle,
+                            producto.descripcion,
+                            float(producto.peso),
+                            color.id,
+                            color.codigo_referencial,
+                            color.color,
+                            color.codigo_color,
+                            color.stock
+                        ]
+                        ws.append(fila)
+
+                # Preparar la respuesta HTTP
+                response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                fecha_actual = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                response['Content-Disposition'] = f'attachment; filename=productos_{fecha_actual}.xlsx'
+                wb.save(response)
+                return response
+
+            else:
+               messages.error(request, "Reporte no encontrado.") 
         else:
             # ❌ Contraseña incorrecta
             messages.error(request, "Contraseña incorrecta. Intenta de nuevo.")

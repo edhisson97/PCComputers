@@ -152,7 +152,7 @@
   </div>
 
   <!-- Modal -->
-  <form method="POST" action="{% url 'descargareportes' %}">
+  <form method="POST" action="{% url 'descargareportes' %}" >
   {% csrf_token %}
     <div class="modal fade reporte-modal" id="reporteModal" tabindex="-1" aria-labelledby="reporteModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -171,12 +171,22 @@
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button class="btn btn-primary" onclick="reporteDescargar()">Descargar</button>
+            <button type="submit" class="btn btn-primary" onclick="esperarAlerta()">Descargar</button>
           </div>
         </div>
       </div>
     </div>
   </form>
       
+<script>
+function esperarAlerta() {
+    // Espera 2.5 segundos para dar tiempo a que inicie la descarga
+    setTimeout(function() {
+        alert("¡El archivo ha sido descargado correctamente!");
+        location.reload();  // Recarga la página
+    }, 4000);  // Puedes ajustar el tiempo (milisegundos)
+}
+</script>
+
 
 {% endblock %} 
