@@ -106,9 +106,10 @@
       
     }
 </style>
+<h3 class="titulo_abono"><i class="fa-solid fa-plus"></i> Nuevo abono de Servicio</h3>
 <div class="container">
   {% if servicio%}
-    <h3 class="titulo_abono"><i class="fa-solid fa-plus"></i> Nuevo abono de Servicio</h3>
+    
     <div class="service-details">
       <h3>Servicio #{{ servicio.id }} - {{ servicio.equipo }} {{ servicio.marca }} {{ servicio.modelo }} Serie ({%if servicio.serie%}{{ servicio.serie }}{%else%}NA{%endif%})</h3>
       <div class="service-info">

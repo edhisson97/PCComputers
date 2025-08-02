@@ -146,4 +146,5 @@ class Equipo(models.Model):
 class DescripcionEquipo(models.Model):
     equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE)
     problema = models.CharField(max_length=200, blank=True, null=True)
+    solucion = models.CharField(max_length=200, blank=True, null=True)
     costo = models.DecimalField(max_digits=10, decimal_places=2)

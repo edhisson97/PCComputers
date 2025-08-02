@@ -1262,10 +1262,12 @@ def detalles_equipo(request, id):
         
         elif tipo == "crearProblema":
             problema = request.POST.get("problema")
+            solucion = request.POST.get("solucion")
             costo = request.POST.get("costo")
             nuevoProblema = DescripcionEquipo()
             nuevoProblema.equipo = equipo
             nuevoProblema.problema = problema
+            nuevoProblema.solucion = solucion
             nuevoProblema.costo = int(costo)      
             nuevoProblema.save()    
             messages.success(request, "✅ El problema a sido creado correctamente.")
@@ -1273,9 +1275,11 @@ def detalles_equipo(request, id):
         elif tipo == "editarProblema":
             id = request.POST.get("edit-id")
             problema = request.POST.get("edit-problema")
+            solucion = request.POST.get("edit-solucion")
             costo = request.POST.get("edit-costo")
             desProblema = DescripcionEquipo.objects.get(id=id)
             desProblema.problema = problema
+            desProblema.solucion = solucion
             desProblema.costo = int(costo)      
             desProblema.save()    
             messages.success(request, "✅ El problema a sido editado correctamente.")

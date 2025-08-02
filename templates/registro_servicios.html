@@ -50,7 +50,7 @@
                             <label for="cedula">Número de Cédula</label>
                             <input type="text" id="cedula" name="cedula" required >
                             <label for="celular">Celular</label>
-                            <input type="text" id="celular" name="celular" required>
+                            <input type="text" id="celular" name="celular">
                         </div>
                         <div class="form-row">
                             <label for="nombres">Nombres</label>
@@ -68,7 +68,7 @@
                             <label for="direccion">Dirección</label>
                             <input type="text" id="direccion" name="direccion" required>
                             <label for="direccion">Dirección de envío</label>
-                            <input type="text" id="direccionEnvio" name="direccionEnvio" required>
+                            <input type="text" id="direccionEnvio" name="direccionEnvio">
                         </div>
                         <div class="form-row">
                             
@@ -127,7 +127,7 @@
                     <script>
                         const descripcionEquipos = [
                             {% for descripcion in descripcionEquipo %}
-                                { "equipo": "{{ descripcion.equipo }}", "problema": "{{ descripcion.problema }}", "costo":"{{ descripcion.costo}}"},
+                                { "equipo": "{{ descripcion.equipo }}", "problema": "{{ descripcion.problema }}", "costo":"{{ descripcion.costo}}", "solucion":"{{ descripcion.solucion}}"},
                             {% endfor %}
                         ];
                     </script>
@@ -881,15 +881,18 @@
     document.getElementById('tipo_equipo').addEventListener('change', function() {
         var seleccionado = this.value;
         var problemasSelect = document.getElementById('problemas_resolver');
+        console.log(problemasSelect);
         if (seleccionado === 'Otro') {
             document.getElementById('otro_equipo').style.display = 'block';
             document.getElementById('descripcion_otro').style.display = 'block';
             document.getElementById('costo').value = 0,00;
+            document.getElementById('solucion').value = '';
             //document.getElementById('otro_equipo_texto').setAttribute('required', 'required');
         } else {
             document.getElementById('otro_equipo').style.display = 'none';
             document.getElementById('descripcion_otro').style.display = 'none';
             document.getElementById('costo').value = 0,00;
+            document.getElementById('solucion').value = "";
             //document.getElementById('otro_equipo_texto').removeAttribute('required');
             const Data = document.getElementById('descripcionEquipo-data').value;
             
@@ -906,6 +909,7 @@
                     option.value = item.problema;
                     option.textContent = item.problema;
                     option.dataset.costo = item.costo;
+                    option.dataset.solucion = item.solucion;
                     problemasSelect.appendChild(option);
                 }
             });
@@ -924,13 +928,16 @@
 
         // Obtener el data-costo
         var costo = parseFloat(selectedOption.dataset.costo) || 0;
-        console.log(costo);
+        var solucion = selectedOption.dataset.solucion || "";
+        console.log(costo, solucion);
 
         if (seleccionado === 'Otro') {
             document.getElementById('descripcion_otro').style.display = 'block';
+            document.getElementById('solucion').value = ''; 
         } else {
             document.getElementById('descripcion_otro').style.display = 'none';
             document.getElementById('costo').value = costo.toFixed(2); 
+            document.getElementById('solucion').value = solucion; 
         }
     
     });

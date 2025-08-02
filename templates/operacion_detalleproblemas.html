@@ -52,9 +52,9 @@
     </a>
   </div>
 
-  <!-- 📌 Agregar colores y stock -->
+  
   <div class="right">
-        <!-- 📌 Lista de colores -->
+        
       <h2 class="title-detalle">Lista de Problemas</h2>
       {% if not problemas%}
         
@@ -68,6 +68,7 @@
                     data-bs-toggle="modal" data-bs-target="#editModal"
                     data-id="{{ problema.id }}"
                     data-problema="{{ problema.problema }}"
+                    data-solucion="{{ problema.solucion }}"
                     data-costo="{{ problema.costo }}" title="Editar problema">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
@@ -76,7 +77,7 @@
                     data-id="{{ problema.id }}" title="Eliminar problema">
                     <i class="fa-solid fa-trash"></i>
                 </button>
-                <p><b>{{ problema.problema }}</b></p>
+                <p>{{ problema.problema }} <br>Sol.:{% if problema.solucion%} {{ problema.solucion }} {%else%} NA {%endif%}</p>
                 <p>Costo: ${{ problema.costo }}</p>
             </div>
         
@@ -102,6 +103,10 @@
                             <div class="mb-3">
                                 <label class="form-label">Probelma</label>
                                 <input type="text" name="problema" class="form-control" placeholder="Ej. Cambio de bisagras" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Solución</label>
+                                <input type="text" name="solucion" class="form-control" placeholder="Ej. Reemplazo de bisagras" >
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Costo $</label>
@@ -134,6 +139,11 @@
                     <div class="mb-3">
                         <label for="edit-problema" class="form-label">Problema</label>
                         <input type="text" class="form-control" id="edit-problema" name="edit-problema" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit-solucion" class="form-label">Solución</label>
+                        <input type="text" class="form-control" id="edit-solucion" name="edit-solucion">
                     </div>
 
                     <div class="mb-3">
@@ -236,11 +246,13 @@
             boton.addEventListener("click", function () {
                 const id = this.getAttribute("data-id");
                 const problema = this.getAttribute("data-problema");
+                const solucion = this.getAttribute("data-solucion");
                 const costo = this.getAttribute("data-costo");
     
                 // Asignar los valores a los inputs del modal
                 document.getElementById("edit-id").value = id;
                 document.getElementById("edit-problema").value = problema;
+                document.getElementById("edit-solucion").value = solucion;
                 document.getElementById("edit-costo").value = parseFloat(costo) || 0;
 
             });

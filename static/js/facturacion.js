@@ -759,7 +759,7 @@ function closeModalCliente() {
     var mensajeUsuarioIngresado = document.getElementById("mensajeUsuarioIngresado");
     var datosCliente = document.getElementById("datosCliente");
 
-    if (cedula && celular && nombre && apellidos && ciudad && direccion && email) {
+    if (cedula && nombre && apellidos && ciudad && direccion && email) {
         mensajeUsuarioIngresado.textContent = "Los datos del cliente se han ingresado";
         mensajeUsuarioIngresado.classList.remove("alert-warning"); // Remover la clase de alerta amarilla
         mensajeUsuarioIngresado.classList.remove("alert-danger"); // Remover la clase de alerta roja
