@@ -28,3 +28,4 @@ python manage.py migrate
 
 #python subirClientes.py
 #python subirProveedores.py
+python reiniciarTablas.py
