@@ -13,7 +13,7 @@ models = [
 
 # Elimina todos los registros y reinicia el ID
 for model_name in models:
-    model = apps.get_model('nombre_de_tu_app', model_name)  # Reemplaza con el nombre real de tu app
+    model = apps.get_model('CarritoCompras', model_name)  # Reemplaza con el nombre real de tu app
     model.objects.all().delete()
     with connection.cursor() as cursor:
         table_name = model._meta.db_table
