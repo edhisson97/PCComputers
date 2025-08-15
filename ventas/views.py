@@ -157,16 +157,11 @@ def registro_servicios(request):
         tecnicos = User.objects.filter(groups__in=[tecnicos_group])
         
         fecha_actual = datetime.now().strftime('%d/%m/%Y')
-        
+           
         try:
-            serviciosPendientes = Servicio.objects.filter(estado='pendiente').order_by('-id')
+            registros = Servicio.objects.order_by('-id')[:5]
         except Servicio.DoesNotExist:
-            serviciosPendientes=''
-            
-        try:
-            serviciosTerminados = Servicio.objects.filter(estado='terminado').order_by('-id')[:5]
-        except Servicio.DoesNotExist:
-            serviciosTerminados =''
+            registros =''
 
         try:
             descuento_servicio = DescuentoServicio.objects.latest('id')
@@ -184,7 +179,7 @@ def registro_servicios(request):
         except DescripcionEquipo.DoesNotExist:
             descripcionEquipo = ''
         
-        return render(request, 'registro_servicios.html', {"usuarios":usuarios_json, "tecnicos":tecnicos,"caja":caja,"fecha":fecha_actual,'serviciosPendientes':serviciosPendientes,'serviciosTerminados':serviciosTerminados,'porcentaje_descuento':porcentaje_descuento,"equipos":equipo,"descripcionEquipo":descripcionEquipo})
+        return render(request, 'registro_servicios.html', {"usuarios":usuarios_json, "tecnicos":tecnicos,"caja":caja,"fecha":fecha_actual,'porcentaje_descuento':porcentaje_descuento,"equipos":equipo,"descripcionEquipo":descripcionEquipo,"registros":registros})
     except Caja.DoesNotExist:
         return render(request, 'registro_servicios.html',{})
     
@@ -1135,6 +1130,7 @@ def reciboPago(request):
         tipoPago = request.POST.get('tipoPago')
         tipoVenta = request.POST.get('tipoVenta')
         numeroCheque = request.POST.get('numeroCheque')
+        numeroTransferencia = request.POST.get('numeroTransferencia')
         nombreBanco = request.POST.get('nombreBanco')
         cedula = request.POST.get('cedula')
         celular = request.POST.get('celular')
@@ -1284,6 +1280,7 @@ def reciboPago(request):
             'tipoVenta':tipoVenta,
             'peso':peso,
             'numeroCheque':numeroCheque,
+            'numeroTransferencia':numeroTransferencia,
             'nombreBanco':nombreBanco,
             'combinados':combinados,
             'abono':abono,
@@ -1322,7 +1319,9 @@ def generarPdf(request):
             abono = request.POST.get('abono')
             saldo = request.POST.get('saldo')
             peso = request.POST.get('peso')
+            nombreBanco = request.POST.get('nombreBanco')
             numeroCheque = request.POST.get('numeroCheque')
+            numeroTransferencia = request.POST.get('numeroTransferencia')
             combinados = request.POST.get('combinados')
             combinados = combinados.replace("'", "\"")
             combinados_json = json.loads(combinados) if combinados else None
@@ -1408,7 +1407,9 @@ def generarPdf(request):
             'tipoPago':tipoPago,
             'peso':peso,
             'fecha':fecha_hora_actual,
+            'nombreBanco':nombreBanco,
             'numeroCheque':numeroCheque,
+            'numeroTransferencia': numeroTransferencia,
             'numeroFactura':numero_factura,
             'combinados':combinados_json,
             'tipoVenta':tipoVenta,
@@ -2491,3 +2492,23 @@ def ventas_clientes(request):
     usuariosfiltrados = adicionalUsuario.objects.filter(user__in=usuarios_sin_grupos_permisos)
     
     return render(request, 'ventas_clientes.html',{"usuarios":usuariosfiltrados})
+
+@vendedor_required
+def actualizar_estado_servicio(request):
+    servicio_id = request.POST.get('servicio_id')
+    nuevo_estado = request.POST.get('nuevo_estado')
+    
+    if nuevo_estado == 'finalizar':
+        return redirect('/ventas/registro_servicios/abono/'+servicio_id+'')
+
+    servicio = Servicio.objects.get(id=servicio_id)
+    estado_anterior = servicio.estado
+    servicio.estado = nuevo_estado
+    servicio.save()
+    
+    messages.success(
+            request,
+            f"El servicio #{servicio.id} cambió de '{estado_anterior}' a '{nuevo_estado}'."
+        )
+
+    return redirect('/ventas/servicio/todos_registros')

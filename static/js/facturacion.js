@@ -391,7 +391,7 @@ function enviarFormularioConLocalStorage() {
         for (var i = 0; i < camposFormulario.length; i++) {
             var campo = camposFormulario[i];
             // Verificar si el campo tiene un valor (excluyendo campos ocultos y botones)
-            if (campo.type !== 'hidden' && campo.type !== 'button' && campo.value === '') {
+            if (campo.type !== 'hidden' && campo.type !== 'button' && campo.value === '' && !['direccionEnvio', 'celular'].includes(campo.name)) {
                 formularioLleno = false;
                 break;
             }
@@ -467,7 +467,86 @@ function enviarFormularioConLocalStorage() {
                         nombreBanco.value = bancoSeleccionado;
                         formulario.appendChild(nombreBanco);
                     }
-                } if (tipoPagoSeleccionado === 'Combinado' && tipoVentaSeleccionado === 'Contado'){
+                } if (tipoPagoSeleccionado === 'Transferencia') {
+                    var numeroTransferenciaInput = document.getElementById('numeroTransferenciaInput');
+                    // Crear un campo oculto para tipo pago
+                    var numeroTransferencia = document.createElement('input');
+                    numeroTransferencia.type = 'hidden';
+                    numeroTransferencia.name = 'numeroTransferencia';
+                    numeroTransferencia.value = numeroTransferenciaInput.value;
+                    formulario.appendChild(numeroTransferencia);
+
+                    //para el nombre del banco
+                    var bancoSelect = document.getElementById('bancoT');
+
+                    // Obtener el valor seleccionado
+                    var bancoSeleccionado = bancoSelect.value;
+
+                    if (bancoSeleccionado === 'Otro') {
+                        var otroBanco = document.getElementById('otroBancoT');
+
+                        var nombreBanco = document.createElement('input');
+                        nombreBanco.type = 'hidden';
+                        nombreBanco.name = 'nombreBanco';
+                        nombreBanco.value = otroBanco.value;
+                        formulario.appendChild(nombreBanco);
+                    }else{
+                        // Crear un campo oculto para tipo pago
+                        var nombreBanco = document.createElement('input');
+                        nombreBanco.type = 'hidden';
+                        nombreBanco.name = 'nombreBanco';
+                        nombreBanco.value = bancoSeleccionado;
+                        formulario.appendChild(nombreBanco);
+                    }
+                }if (tipoPagoSeleccionado === 'Tarjeta de Crédito') {
+                    
+                    //para el nombre del banco
+                    var bancoSelect = document.getElementById('bancoTc');
+
+                    // Obtener el valor seleccionado
+                    var bancoSeleccionado = bancoSelect.value;
+
+                    if (bancoSeleccionado === 'Otro') {
+                        var otroBanco = document.getElementById('otroBancoTc');
+
+                        var nombreBanco = document.createElement('input');
+                        nombreBanco.type = 'hidden';
+                        nombreBanco.name = 'nombreBanco';
+                        nombreBanco.value = otroBanco.value;
+                        formulario.appendChild(nombreBanco);
+                    }else{
+                        // Crear un campo oculto para tipo pago
+                        var nombreBanco = document.createElement('input');
+                        nombreBanco.type = 'hidden';
+                        nombreBanco.name = 'nombreBanco';
+                        nombreBanco.value = bancoSeleccionado;
+                        formulario.appendChild(nombreBanco);
+                    }
+                }if (tipoPagoSeleccionado === 'Tarjeta de Débito') {
+                    
+                    //para el nombre del banco
+                    var bancoSelect = document.getElementById('bancoTd');
+
+                    // Obtener el valor seleccionado
+                    var bancoSeleccionado = bancoSelect.value;
+
+                    if (bancoSeleccionado === 'Otro') {
+                        var otroBanco = document.getElementById('otroBancoTd');
+
+                        var nombreBanco = document.createElement('input');
+                        nombreBanco.type = 'hidden';
+                        nombreBanco.name = 'nombreBanco';
+                        nombreBanco.value = otroBanco.value;
+                        formulario.appendChild(nombreBanco);
+                    }else{
+                        // Crear un campo oculto para tipo pago
+                        var nombreBanco = document.createElement('input');
+                        nombreBanco.type = 'hidden';
+                        nombreBanco.name = 'nombreBanco';
+                        nombreBanco.value = bancoSeleccionado;
+                        formulario.appendChild(nombreBanco);
+                    }
+                }if (tipoPagoSeleccionado === 'Combinado' && tipoVentaSeleccionado === 'Contado'){
                     var totalCombinado = 0;
                     // Obtener todos los inputs dentro del contenedor de 'combinado'
                     // Obtener todos los checkboxes y sus inputs correspondientes
@@ -849,12 +928,30 @@ function mostrarNumeroCheque() {
     var combinadoDiv = document.getElementById("combinado");
     var creditoDiv = document.getElementById("credito");
     var PagoCredito = document.getElementById("pagoCredito");
+    var transferenciaDiv = document.getElementById("transferenciaDiv");
+    var tdebitoDiv = document.getElementById("tdebitoDiv");
+    var tcreditoDiv = document.getElementById("tcreditoDiv");
 
     // Si se selecciona "Cheque", muestra el campo para el número de cheque, de lo contrario, ocúltalo
     if (tipoPago === "Cheque") {
         numeroChequeDiv.style.display = "block";
     } else {
         numeroChequeDiv.style.display = "none";
+    }
+    if (tipoPago === "Transferencia"){
+        transferenciaDiv.style.display = "block";
+    } else{
+        transferenciaDiv.style.display = "none";
+    }
+    if (tipoPago === "Tarjeta de Débito"){
+        tdebitoDiv.style.display = "block";
+    } else{
+        tdebitoDiv.style.display = "none";
+    }
+    if (tipoPago === "Tarjeta de Crédito"){
+        tcreditoDiv.style.display = "block";
+    } else{
+        tcreditoDiv.style.display = "none";
     }
     if (tipoPago === "Combinado") {
         combinadoDiv.style.display = "block";

@@ -107,7 +107,16 @@
     }
 </style>
 <h3 class="titulo_abono"><i class="fa-solid fa-plus"></i> Nuevo abono de Servicio</h3>
-<div class="container">
+
+<div class="breadcrumb">
+    <a href="/ventas">Panel ventas</a>
+    <span>›</span>
+    <a href="/ventas/registro_servicios">Registrar servicios</a>
+    <span>›</span>
+    <a href="/ventas/servicio/todos_registros">Todos los servicios</a>
+</div>
+
+
   {% if servicio%}
     
     <div class="service-details">
@@ -118,18 +127,13 @@
           <div class="info-item"><strong>Tipo de Servicio:</strong> {{ servicio.tipo_servicio }} <strong> &nbsp; Problema:</strong> {{ servicio.descripcion_problema }} &nbsp; <!--Solución:</strong> {%if servicio.solucion %}{{ servicio.solucion }}{%else%}sn{%endif%}--></div>
           <div class="info-item">
             <strong>Solución </strong>(este campo se guarda unicamente al finalizar el servicio):
-            <textarea id="solucion" name="solucion" class="form-control"  rows="1"  required>{%if serviciP.solucion%}{{servicioP.solucion}}{%endif%}</textarea>
+            <textarea id="solucion" name="solucion" class="form-control"  rows="1"  required>{%if servicio.solucion%}{{servicio.solucion}}{%endif%}</textarea>
           </div>
           <div class="info-item">Técnico Asignado: {{ servicio.tecnico_asignado }} &nbsp; Usuario Receptor del equipo: {{ servicio.usuario_recepta }}</div>
           <div class="info-item">Costo del servicio: $ <strong>{{ servicio.costo }}</strong> &nbsp; Saldo pendiente: $ <strong>{{ servicio.saldo }}</strong></div>
       </div>
-      <div class="centar_botones_abono">
-        <a href="/ventas/registro_servicios" class="boton_regresar"><i class="fa-solid fa-rotate-left"></i> &nbsp; Regresar al Módulo de Servicios</a> &nbsp;
-        <a href="/ventas/servicio/todos_registros" class="boton_regresar"><i class="fa-solid fa-bars"></i> &nbsp; Todos los registos</a> &nbsp;
-        <a href="/ventas/" class="boton_regresar"><i class="fa-solid fa-square-plus"></i> &nbsp; Panel de Ventas</a> &nbsp;
-        
-      </div>
-    </div>
+    
+    
     {% if servicio.saldo == 0 %}
     <div class="centar_botones_abono">
       <button type="button" class="finalizar-servicio-btn" data-id="{{ servicio.id }}" data-costo="{{ servicio.costo }}" data-problema="{{ servicio.descripcion_problema }}" data-abono="{{ servicio.saldo }}">Finalizar servicio</button>
@@ -214,8 +218,9 @@
     <button class="agregarProducto" id="agregarpago"><i class="fa-solid fa-plus"></i> Agregar nuevo abono</i></button>
     </form>
     {% endif %}
-
   </div>
+
+</div>
   {% if pagoServicio %}
     <h4>Registro de abonos </h4>
 

@@ -5,6 +5,14 @@
 {% block content %}
 {% load static %}
 
+<div class="breadcrumb">
+    <a href="/ventas">Panel ventas</a>
+    <span>›</span>
+    <a href="/ventas/registro_servicios">Registrar servicios</a>
+    <span>›</span>
+    <a href="/ventas/servicio/todos_registros">Todos los servicios</a>
+</div>
+
 <div class="container-inicio">
     <h3 class="title">Módulo de Servicios</h3>
     {%if caja.estado == 'abierta' %}
@@ -87,9 +95,9 @@
     </div>
     <a href="/ventas/servicio/politica" style="text-decoration: none; float: right;">Política de servicios/Costos</a>
     <div class="seccion-productos">
-        <h4>Servicios Registrados </h4>
-
         <button class="agregarProducto" id="mostrarModal"><i class="fa-solid fa-plus"></i> Nuevo Servicio </button>
+
+        <h4>Ultimos servicios registrados </h4>
 
         <div id="modalFondoBusqueda" style="display: none;"></div>
         <div id="miModalBusqueda" class="modal">
@@ -293,155 +301,48 @@
     </form>
         
 
-        <table class="table table-striped" id="tabla-productos">
+    <table class="table table-striped" id="tabla-productos">
             <thead>
-              <tr>
-                
+            <tr>
                 <th scope="col">Estado</th>
-                <th scope="col">ID</th>
+                <th scope="col">ID </th>
                 <th scope="col">Cliente</th>
                 <th scope="col">Fecha</th>
                 <th scope="col">Descripcion</th>
                 <th scope="col">Problema</th>
                 <th scope="col">Saldo Pendiente</th>
                 
-              </tr>
+            </tr>
             </thead>
             <tbody id="productos-tbody">
-              {% for servicioP in serviciosPendientes%}
+            
+
+            {% for servicioT in registros%}
                 <tr>
-                    <!--{% if servicioP.estado == 'pendiente'%}-->
+                    {% if servicioT.estado == 'pendiente'%}
                         <td style="background-color: orange; color: black;">Pendiente</td>
-                    <!--{% else %}
-                        <td style="background-color: green;">Terminado</td>
-                    {% endif %}-->
-                    <td scope="col">{{servicioP.id}} </td>
-                    <td scope="col">{{servicioP.usuario.first_name}} {{servicioP.usuario.last_name}}</td>
-                    <td scope="col">{{servicioP.fecha_ingreso}}</td>
-                    <td scope="col">{{servicioP.equipo}} - {{servicioP.marca}} {{servicioP.modelo}} {{servicioP.serie}}</td>
-                    <td scope="col">{{servicioP.descripcion_problema}}</td>
-                    <td scope="col">${{servicioP.saldo}}</td>
-                    
-                    <td scope="col"><button type="button" class="btn btn-primary abrir-modal" data-toggle="modal" data-target="#miModalBusqueda{{ servicioP.id }}"><i class="fa-solid fa-eye"></i></button></td>
-
-                    <!-- Modal específico para este registro -->
-                    <div id="miModalBusqueda{{ servicioP.id }}" class="modal fade" tabindex="-1" role="dialog">
-                        <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                            <h5 class="modal-title">Servicio pendiente</h5>
-                            </div>
-                            <div class="modal-body">
-                            <!-- Aquí se llenarán los detalles del servicio específico -->
-                                <div class="form-group">
-                                    <label for="fecha_ingreso">Fecha de Ingreso:</label>
-                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioP.fecha_ingreso}}" disabled>
-                                    <label for="fecha_ingreso">Fecha de Entrega:</label>
-                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{fecha}}" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fecha_ingreso">Datos del cliente:</label>
-                                    <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioP.usuario.first_name}} {{servicioP.usuario.last_name}} - {{servicioP.usuario.email}}" disabled>
-                                </div>
-                                <!-- Fila 2: Tipo de servicio y equipo a revisar -->
-                                <div class="form-group">
-                                    <label for="tipo_servicio">Tipo de Servicio:</label>
-                                    <input type="text" id="tipo_servicio" name="tipo_servicio" class="form-control" value="{{servicioP.tipo_servicio}}" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="equipo">Equipo a Revisar:</label>
-                                    <input type="text" id="equipo" name="equipo"  class="form-control" value="{{servicioP.equipo}}" disabled>
-                                </div>
-                
-                                <!-- Fila 3: Marca, modelo, serie -->
-                                <div class="form-group">
-                                    <label for="marca">Marca:</label>
-                                    <input type="text" id="marca"  name="marca" class="form-control" value="{{servicioP.marca}}" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="modelo">Modelo:</label>
-                                    <input type="text" id="modelo" name="modelo"  class="form-control" value="{{servicioP.modelo}}" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="serie">Serie:</label>
-                                    <input type="text" id="serie" name="serie"  class="form-control" value="{{servicioP.serie}}" disabled>
-                                </div>
-                
-                                <!-- Fila 4: Descripción del problema -->
-                                <div class="form-group">
-                                    <label for="descripcion_problema">Descripción del Problema:</label>
-                                    <textarea id="descripcion_problema_finalizado_{{ servicioP.id }}" name="descripcion_problema_finalizado"  class="form-control" rows="2" required>{{servicioP.descripcion_problema}}</textarea>
-                                </div>
-                
-                                <!-- Fila 5: Solución -->
-                                <div class="form-group">
-                                    <label for="solucion">Solución:</label>
-                                    <textarea id="solucion_finalizado_{{ servicioP.id }}" name="solucion_finalizado" class="form-control"  rows="2"  required>{%if servicioP.solucion%}{{servicioP.solucion}}{%endif%}</textarea>
-                                </div>
-                
-                                <!-- Fila 6: Técnico asignado y usuario que recibe -->
-                                <div class="form-group">
-                                    <label for="tecnico_asignado">Técnico Asignado:</label>
-                                    <input type="text" id="tecnico_asignado" name="tecnico_asignado" class="form-control" value="{{servicioP.tecnico_asignado}}" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="usuario_recepta">Usuario receptor del equipo:</label>
-                                    <input type="text" id="usuario_recepta" name="usuario_recepta" class="form-control" value="{{servicioP.usuario_recepta}}" disabled>
-                                </div>
-                
-                                <!-- Fila 7: Costo y abono -->
-                                <div class="form-group">
-                                    <label for="costo">Costo real:</label>
-                                    <p>Costo inicial sin descuento $ {{servicioP.costo_sin_descuento}}</p>
-                                    <input type="number" id="costo_finalizado_{{ servicioP.id }}" name="costo_finalizado" class="form-control" value="{{servicioP.costo|stringformat:".2f"}}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="abono">Saldo pendiente:</label>
-                                    <input type="number" id="abono_finalizado_{{ servicioP.id }}" name="abono_finalizado" class="form-control" value="{{servicioP.saldo|stringformat:".2f"}}" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="abono">Descuento:</label>
-                                    <p>* Por cada 3 servicios realizados por el cliente se aplica una tasa de descuento.</p>
-                                    {% if servicioP.numero_reparacion == 3%}
-                                        <input type="text" name="abono_finalizado" class="form-control" value="SERVICIO # {{servicioP.numero_reparacion}} - APLICA A UNA TASA DEL {{porcentaje_descuento}}% DE DESCUENTO"style="background-color:green; color: white;" disabled>
-                                    {% else %}
-                                        <input type="text" name="abono_finalizado" class="form-control" value="SERVICIO # {{servicioP.numero_reparacion}} - NO APLICA DESCUENTO" disabled>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                {% if servicio.saldo == 0 %}
-                                <button type="button" class="btn btn-success finalizar-servicio-btn" data-id="{{ servicioP.id }}">Finalizar servicio</button>
-                                {% endif %}
-                                <button type="button" class="btn btn-primary abonar-servicio-btn" data-id="{{ servicioP.id }}" onclick="redirectToView(this)">Abonos</button>
-                                <button type="button" class="btn btn-secondary actualizar-servicio-btn" data-id="{{ servicioP.id }}">Actualizar cambios</button>
-                                <!--<button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>-->
-                                <button type="button" class="btn btn-danger cancelar-servicio-btn" data-id="{{ servicioP.id }}">Anular servicio</button>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-
-                </tr>
-
-                
-                
-
-              {%endfor%}
-
-              {% for servicioT in serviciosTerminados%}
-                <tr>
-                    <!--{% if servicioP.estado == 'pendiente'%}
-                        <td style="background-color: orange; color: black;">Pendiente</td>
-                    {% else %}-->
+                    {% elif servicioT.estado == 'revision' %}
+                        <td style="background-color: blue; color: white;">En revisión</td>
+                    {% elif servicioT.estado == 'reparando' %}
+                        <td style="background-color: yellow; color: black;">Reparando</td>
+                    {% elif servicioT.estado == 'solucionado' %}
+                        <td style="background-color: #C6F863; color: black;">Solucionado</td>
+                    {% elif servicioT.estado == 'terminado' %}
                         <td style="background-color: green; color: white;">Terminado</td>
-                    <!--{% endif %}-->
-                    <td scope="col">{{servicioT.id}} </td>
+                    {% else %}
+                        <td style="background-color: red; color: white;">Anulado</td>
+                    {% endif %}
+                    <td scope="col">{{servicioT.id}}</td>
                     <td scope="col">{{servicioT.usuario.first_name}} {{servicioT.usuario.last_name}}</td>
                     <td scope="col">{{servicioT.fecha_ingreso}}</td>
                     <td scope="col">{{servicioT.equipo}} - {{servicioT.marca}} {{servicioT.modelo}} {{servicioT.serie}}</td>
                     <td scope="col">{{servicioT.descripcion_problema}}</td>
-                    <td scope="col"> </td>
+                    {% if servicioT.estado == 'pendiente' or  servicioT.estado == 'revision' or  servicioT.estado == 'reparando' or  servicioT.estado == 'solucionado'%}
+                        <td scope="col">${{servicioT.saldo}}</td>
+                    {% else %}
+                        <td scope="col"></td>
+                    {% endif %}
+
                     <td scope="col"><button type="button" class="btn btn-primary abrir-modal" data-toggle="modal" data-target="#miModalBusqueda{{ servicioT.id }}"><i class="fa-solid fa-eye"></i></button></td>
 
                     <!-- Modal específico para este registro -->
@@ -463,7 +364,6 @@
                                     <label for="fecha_ingreso">Datos del cliente:</label>
                                     <input type="text" id="fecha_ingreso" name="fecha_ingreso" class="form-control" value="{{servicioT.usuario.first_name}} {{servicioT.usuario.last_name}} - {{servicioT.usuario.email}}" disabled>
                                 </div>
-                
                                 <!-- Fila 2: Tipo de servicio y equipo a revisar -->
                                 <div class="form-group">
                                     <label for="tipo_servicio">Tipo de Servicio:</label>
@@ -487,18 +387,31 @@
                                     <label for="serie">Serie:</label>
                                     <input type="text" id="serie" name="serie"  class="form-control" value="{{servicioT.serie}}" disabled>
                                 </div>
-                
-                                <!-- Fila 4: Descripción del problema -->
-                                <div class="form-group">
-                                    <label for="descripcion_problema">Descripción del Problema:</label>
-                                    <textarea id="descripcion_problema_finalizado" name="descripcion_problema_finalizado"  class="form-control" rows="2" disabled>{{servicioT.descripcion_problema}}</textarea>
-                                </div>
-                
-                                <!-- Fila 5: Solución -->
-                                <div class="form-group">
-                                    <label for="solucion">Solución:</label>
-                                    <textarea id="solucion_finalizado" name="solucion_finalizado" class="form-control"  rows="2"  disabled>{{servicioT.solucion}}</textarea>
-                                </div>
+                                {% if servicioT.estado == 'pendiente' or  servicioT.estado == 'revision' or  servicioT.estado == 'reparando' or  servicioT.estado == 'solucionado'%}
+                                    <!-- Fila 4: Descripción del problema -->
+                                    <div class="form-group">
+                                        <label for="descripcion_problema">Descripción del Problema:</label>
+                                        <textarea id="descripcion_problema_finalizado_{{ servicioT.id }}" name="descripcion_problema_finalizado"  class="form-control" rows="2" required>{{servicioT.descripcion_problema}}</textarea>
+                                    </div>
+                    
+                                    <!-- Fila 5: Solución -->
+                                    <div class="form-group">
+                                        <label for="solucion">Solución:</label>
+                                        <textarea id="solucion_finalizado_{{ servicioT.id }}" name="solucion_finalizado" class="form-control"  rows="2"  required>{%if servicioT.solucion%}{{servicioT.solucion}}{%endif%}</textarea>
+                                    </div>
+                                {% else %}
+                                    <!-- Fila 4: Descripción del problema -->
+                                    <div class="form-group">
+                                        <label for="descripcion_problema">Descripción del Problema:</label>
+                                        <textarea id="descripcion_problema_finalizado" name="descripcion_problema_finalizado"  class="form-control" rows="2" disabled>{{servicioT.descripcion_problema}}</textarea>
+                                    </div>
+                    
+                                    <!-- Fila 5: Solución -->
+                                    <div class="form-group">
+                                        <label for="solucion">Solución:</label>
+                                        <textarea id="solucion_finalizado" name="solucion_finalizado" class="form-control"  rows="2"  disabled>{{servicioT.solucion}}</textarea>
+                                    </div>
+                                {% endif %}
                 
                                 <!-- Fila 6: Técnico asignado y usuario que recibe -->
                                 <div class="form-group">
@@ -509,25 +422,46 @@
                                     <label for="usuario_recepta">Usuario receptor del equipo:</label>
                                     <input type="text" id="usuario_recepta" name="usuario_recepta" class="form-control" value="{{servicioT.usuario_recepta}}" disabled>
                                 </div>
-                
-                                <!-- Fila 7: Costo y abono -->
-                                <div class="form-group">
-                                    <label for="costo">Costo:</label>
-                                    <input type="text" id="costo_finalizado" name="costo_finalizado" class="form-control" step="0.01" value="{{servicioT.costo}}" disabled>
-                                </div>
-                                <!--
-                                <div class="form-group">
-                                    <label for="abono">Valor cancelado:</label>
-                                    <input type="text" id="abono_finalizado" name="abono_finalizado" class="form-control" step="0.01" value="{{servicioT.abono}}" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="abono">Saldo:</label>
-                                    <input type="text" id="abono_finalizado" name="abono_finalizado" class="form-control" step="0.01" value="{{servicioT.saldo}}" disabled>
-                                </div>-->
+                                {% if servicioT.estado == 'pendiente' or  servicioT.estado == 'revision' or  servicioT.estado == 'reparando' or  servicioT.estado == 'solucionado'%}
+                                    <div class="form-group">
+                                        <label for="costo">Costo real:</label>
+                                        <p>Costo inicial sin descuento $ {{servicioT.costo_sin_descuento}}</p>
+                                        <input type="number" id="costo_finalizado_{{ servicioT.id }}" name="costo_finalizado" class="form-control" value="{{servicioT.costo|stringformat:".2f"}}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="abono">Saldo pendiente:</label>
+                                        <input type="number" id="abono_finalizado_{{ servicioT.id }}" name="abono_finalizado" class="form-control" value="{{servicioT.saldo|stringformat:".2f"}}" disabled>
+                                    </div>
+                                {% else %}
+                                    <!-- Fila 7: Costo y abono -->
+                                    <div class="form-group">
+                                        <label for="costo">Costo:</label>
+                                        <input type="text" id="costo_finalizado" name="costo_finalizado" class="form-control" step="0.01" value="{{servicioT.costo}}" disabled>
+                                    </div>
+                                {% endif %}
                                 
+                                <div class="form-group">
+                                    <label for="abono">Descuento:</label>
+                                    <p>* Por cada 3 servicios realizados por el cliente se aplica una tasa de descuento.</p>
+                                    {% if servicioT.numero_reparacion == 3%}
+                                        <input type="text" name="abono_finalizado" class="form-control" value="SERVICIO # {{servicioT.numero_reparacion}} - APLICA A UNA TASA DEL {{porcentaje_descuento}}% DE DESCUENTO"style="background-color:green; color: white;" disabled>
+                                    {% else %}
+                                        <input type="text" name="abono_finalizado" class="form-control" value="SERVICIO # {{servicioT.numero_reparacion}} - NO APLICA DESCUENTO" disabled>
+                                    {% endif %}
+                                </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                {% if servicioT.estado == 'pendiente' or  servicioT.estado == 'revision' or  servicioT.estado == 'reparando' or  servicioT.estado == 'solucionado'%}
+                                    {% if  servicio.saldo == 0 %}
+                                        <button type="button" class="btn btn-success finalizar-servicio-btnc" data-id="{{ servicioT.id }}">Finalizar servicio</button>
+                                    {% endif %}
+                                    <button type="button" class="btn btn-primary abonar-servicio-btn" data-id="{{ servicioT.id }}" onclick="redirectToView(this)">Abonos</button>
+                                    <button type="button" class="btn btn-info abonar-servicio-btn" data-toggle="modal" data-target="#modalEstado{{ servicioT.id }}">Estado</button>
+                                    <button type="button" class="btn btn-secondary actualizar-servicio-btn" data-id="{{ servicioT.id }}">Guardar cambios</button>
+                                    <button type="button" class="btn btn-danger cancelar-servicio-btn" data-id="{{ servicioT.id }}">Anular servicio</button>
+                                {% else %}
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                {% endif %}
                             </div>
                         </div>
                         </div>
@@ -536,11 +470,93 @@
                 </tr>
 
                 
-                
+                <div class="modal fade" id="modalEstado{{ servicioT.id }}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Actualizar Estado</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h5>El servicio #{{servicioT.id}} - "{{servicioT.equipo}} {{servicioT.marca}} {{servicioT.modelo}}" actualmente esta en estado <b>{{servicioT.estado}}</b>.</h5>
+                        </div>
+                        <div class="modal-footer">
+                            {%if servicioT.estado == 'pendiente'%}
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="revision">
+                                    <button type="submit" class="btn btn-primary">
+                                        En revisión <i class="fa-solid fa-angle-right"></i>
+                                    </button>
+                                </form>
+                            {%elif servicioT.estado == 'revision'%}
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="pendiente">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-angle-left"></i> Pendiente
+                                    </button>
+                                </form>
 
-              {%endfor%}
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="reparando">
+                                    <button type="submit" class="btn btn-warning">
+                                        Reparando <i class="fa-solid fa-angle-right"></i>
+                                    </button>
+                                </form>
+                            {%elif servicioT.estado == 'reparando'%}
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="revision">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-angle-left"></i> En revisión
+                                    </button>
+                                </form>
+
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="solucionado">
+                                    <button type="submit" class="btn btn-success">
+                                        Solucionado <i class="fa-solid fa-angle-right"></i>
+                                    </button>
+                                </form>
+                            {%elif servicioT.estado == 'solucionado'%}
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="reparando">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-angle-left"></i> Reparando
+                                    </button>
+                                </form>
+
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="finalizar">
+                                    <button type="submit" class="btn btn-primary">
+                                        Finalizar servicio <i class="fa-solid fa-angle-right"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+            {%endfor%}
             </tbody>
         </table>
+    
+
         <!--<button class="limpiar"> Limpiar <i class="fa-solid fa-trash"></i></button>-->
         <div class="seccion-button">
             <!--<button class="descuento" onclick="actualizarTabla()">Actualizar <i class="fa-solid fa-rotate"></i></button>-->

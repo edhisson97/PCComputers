@@ -243,6 +243,55 @@
             <label for="numeroCheque"># de Cheque</label>
             <input type="text" id="numeroChequeInput" name="numeroCheque">
         </div>
+        <div id="transferenciaDiv" style="display: none;">
+            <label for="banco">Entidad Bancaria: </label>
+            <select name="BancoT" id="bancoT">
+                <option value="Banco de Machala">Banco de Machala</option>
+                <option value="Banco de Pichincha">Banco de Pichincha</option>
+                <option value="BanEcuador">BanEcuador</option>
+                <option value="Banco de Guayaquil">Banco de Guayaquil</option>
+                <option value="Banco del Pacifico">Banco del Pacífico</option>
+                <option value="Banco Internacional">Banco Internacional</option>
+                <option value="Banco Produbanco">Produbanco</option>
+                <option value="Banco Bolivariano">Banco Bolivariano</option>
+                <option value="Banco del Austro">Banco del Austro</option>
+                <option value="Otro">Otro (Especificar)</option>
+            </select><br>
+            <label for="otroBancoT" style="display: none;">Nombre del Banco</label>
+            <input type="text" id="otroBancoT" name="otroBancoT" style="display: none;">
+            <label for="numeroCheque"># de Transferencia</label>
+            <input type="text" id="numeroTransferenciaInput" name="numeroTransferencia">
+        </div>
+        <div id="tdebitoDiv" style="display: none;">
+            <label for="banco">Entidad Bancaria: </label>
+            <select name="BancoTd" id="bancoTd">
+                <option value="Banco de Machala">Banco de Machala</option>
+                <option value="Banco de Pichincha">Banco de Pichincha</option>
+                <option value="BanEcuador">BanEcuador</option>
+                <option value="Banco de Guayaquil">Banco de Guayaquil</option>
+                <option value="Banco del Pacifico">Banco del Pacífico</option>
+                <option value="Banco Internacional">Banco Internacional</option>
+                <option value="Banco Produbanco">Produbanco</option>
+                <option value="Banco Bolivariano">Banco Bolivariano</option>
+                <option value="Banco del Austro">Banco del Austro</option>
+                <option value="Otro">Otro (Especificar)</option>
+            </select><br>
+            <label for="otroBancoTd" style="display: none;">Nombre del Banco</label>
+            <input type="text" id="otroBancoTd" name="otroBancoTd" style="display: none;">
+        </div>
+        <div id="tcreditoDiv" style="display: none;">
+            <label for="banco">Entidad Bancaria: </label>
+            <select name="BancoTc" id="bancoTc">
+                <option value="Visa">Visa</option>
+                <option value="Mastercard">Mastercard</option>
+                <option value="Diners Club">Diners Club</option>
+                <option value="American Express">American Express</option>
+                <option value="Discover">Discover</option>
+                <option value="Otro">Otro (Especificar)</option>
+            </select><br>
+            <label for="otroBancoTc" style="display: none;">Nombre de la Tarjeta</label>
+            <input type="text" id="otroBancoTc" name="otroBancoTc" style="display: none;">
+        </div>
         <div id="combinado" style="display: none;">
             <div>
                 <label for="Efectivo">Efectivo</label>
@@ -283,6 +332,41 @@
             document.getElementById('banco').addEventListener('change', function() {
                 var otroBancoInput = document.getElementById('otroBanco');
                 var otroBancoLabel = document.querySelector('label[for="otroBanco"]');
+                if (this.value === 'Otro') {
+                    otroBancoInput.style.display = 'inline';
+                    otroBancoLabel.style.display = 'inline';
+                } else {
+                    otroBancoInput.style.display = 'none';
+                    otroBancoLabel.style.display = 'none';
+                }
+            });
+            document.getElementById('bancoT').addEventListener('change', function() {
+                var otroBancoInput = document.getElementById('otroBancoT');
+                var otroBancoLabel = document.querySelector('label[for="otroBancoT"]');
+                if (this.value === 'Otro') {
+                    otroBancoInput.style.display = 'inline';
+                    otroBancoLabel.style.display = 'inline';
+                } else {
+                    otroBancoInput.style.display = 'none';
+                    otroBancoLabel.style.display = 'none';
+                }
+            });
+
+            document.getElementById('bancoTd').addEventListener('change', function() {
+                var otroBancoInput = document.getElementById('otroBancoTd');
+                var otroBancoLabel = document.querySelector('label[for="otroBancoTd"]');
+                if (this.value === 'Otro') {
+                    otroBancoInput.style.display = 'inline';
+                    otroBancoLabel.style.display = 'inline';
+                } else {
+                    otroBancoInput.style.display = 'none';
+                    otroBancoLabel.style.display = 'none';
+                }
+            });
+
+            document.getElementById('bancoTc').addEventListener('change', function() {
+                var otroBancoInput = document.getElementById('otroBancoTc');
+                var otroBancoLabel = document.querySelector('label[for="otroBancoTc"]');
                 if (this.value === 'Otro') {
                     otroBancoInput.style.display = 'inline';
                     otroBancoLabel.style.display = 'inline';

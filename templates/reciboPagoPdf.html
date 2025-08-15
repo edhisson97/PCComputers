@@ -112,7 +112,13 @@
                 {%if tipoVenta == 'Crédito'%}
                 <b>Crédito</b> &nbsp; Abono: <b>{{abono}}</b> &nbsp; Saldo: <b>{{saldo}}</b>
                 {%else%}
-                    <b>{{tipoPago}}</b> &nbsp; {%if tipoPago == 'Cheque'%}Banco: <b>{{nombreBanco}}</b> Número de Cheque: <b>{{numeroCheque}}{%endif%} {%if tipoPago == 'Combinado'%} {%for c in combinados%} {{c.tipo}}: ${{c.valor}} {%endfor%} {%endif%}</b>
+                    <b>{{tipoPago}}</b> &nbsp; 
+                        {%if tipoPago == 'Cheque'%}Banco: <b>{{nombreBanco}}</b> Número de Cheque: <b>{{numeroCheque}}{%endif%} 
+                        {%if tipoPago == 'Transferencia'%}Banco: <b>{{nombreBanco}}</b> Transferencia #: <b>{{numeroTransferencia}}{%endif%}
+                        {%if tipoPago == 'Tarjeta de Débito'%}Banco: <b>{{nombreBanco}}</b>{%endif%}
+                        {%if tipoPago == 'Tarjeta de Crédito'%}Entidad bancaria: <b>{{nombreBanco}}</b>{%endif%}
+                        {%if tipoPago == 'Combinado'%} {%for c in combinados%} {{c.tipo}}: ${{c.valor}} {%endfor%} {%endif%}
+                    </b>
                 {%endif%}
             </p>
             <p>Emisión: <b>{{fecha}}</b> &nbsp; Usuario vendedor: {{usuarioVendedor}}</p>

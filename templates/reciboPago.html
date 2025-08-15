@@ -44,6 +44,7 @@
             <input type="hidden" name="tipoPago" value="{{ tipoPago }}">
             <input type="hidden" name="peso" value="{{ peso }}">
             <input type="hidden" name="numeroCheque" value="{{ numeroCheque }}">
+            <input type="hidden" name="numeroTransferencia" value="{{ numeroTransferencia }}">
             <input type="hidden" name="nombreBanco" value="{{ nombreBanco }}">
             <input type="hidden" name="combinados" value="{{ combinados }}">
             <input type="hidden" name="tipoVenta" value="{{ tipoVenta }}">
@@ -123,7 +124,13 @@
                     {%endif%}
                     &nbsp; Abono: <b>{{abono}}</b> &nbsp; Saldo: <b>{{saldo}}</b>
                 {%else%}
-                    <b>{{tipoPago}}</b> &nbsp; {%if tipoPago == 'Cheque'%}Banco: <b>{{nombreBanco}}</b> Número de Cheque: <b>{{numeroCheque}}{%endif%} {%if tipoPago == 'Combinado'%} {%for c in combinados%} {{c.tipo}}: ${{c.valor}} {%endfor%} {%endif%}</b>
+                    <b>{{tipoPago}}</b> &nbsp; 
+                            {%if tipoPago == 'Cheque'%}Banco: <b>{{nombreBanco}}</b> Número de Cheque: <b>{{numeroCheque}}{%endif%}
+                            {%if tipoPago == 'Transferencia'%}Banco: <b>{{nombreBanco}}</b> Número de Transferencia: <b>{{numeroTransferencia}}{%endif%}
+                            {%if tipoPago == 'Tarjeta de Débito'%}Banco: <b>{{nombreBanco}}</b>{%endif%}
+                            {%if tipoPago == 'Tarjeta de Crédito'%}Entidad bancaria: <b>{{nombreBanco}}</b>{%endif%} 
+                            {%if tipoPago == 'Combinado'%} {%for c in combinados%} {{c.tipo}}: ${{c.valor}} {%endfor%} {%endif%}
+                    </b>
                 {%endif%}
             </p>
         </div>

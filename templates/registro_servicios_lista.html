@@ -93,13 +93,69 @@
     <h6><i class="fa-solid fa-magnifying-glass"></i> &nbsp; Los resultados para la búsqueda "{{busqueda}}" son los siguientes: </h6>
 {% endif %}
 
-<h4>Transacciones {% if option == None%} (todos los registros) {% elif option == 'hoy' %} (hoy) {% elif option == 'semana' %} (Última semana) {% elif option == 'mes' %} (Este mes) {% elif option == 'pendiente' %} (Pendientes) {% elif option == 'terminado' %} (Terminados) {% elif option == 'todo' %} (Todas las transacciones){%endif%}</h4>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-secondary" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h4>Transacciones {% if option == None%} (todos los registros) {% elif option == 'hoy' %} (hoy) {% elif option == 'semana' %} (Última semana) {% elif option == 'mes' %} (Este mes) {% elif option == 'pendiente' %} (Pendientes) {% elif option == 'terminado' %} (Terminados) {% elif option == 'todo' %} (Todas las transacciones){%endif%}
+    <button type="button" class="btn btn-link p-0 m-0 align-baseline text-muted" 
+            data-bs-toggle="modal" data-bs-target="#modalEstados"
+            style="font-size: 0.9rem;" title="Ver leyenda de estados">
+        <i class="fa fa-info-circle"></i> Info
+    </button>
+</h4> 
+
       
+
+
+<!-- Modal con la leyenda -->
+<div class="modal fade" id="modalEstados" tabindex="-1" aria-labelledby="modalEstadosLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEstadosLabel">Leyenda de Estados</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+        <div class="modal-body">
+            <ul class="list-unstyled" style="padding:0; margin:0;">
+                <li style="display:flex; align-items:center; margin-bottom:8px;">
+                    <span style="width:15px; height:15px; background-color:orange; border-radius:3px; margin-right:8px;"></span>
+                    <strong>Pendiente:</strong> <span style="margin-left:5px; color:#555;">El cliente entrega el equipo</span>
+                </li>
+                <li style="display:flex; align-items:center; margin-bottom:8px;">
+                    <span style="width:15px; height:15px; background-color:blue; border-radius:3px; margin-right:8px;"></span>
+                    <strong>En revisión:</strong> <span style="margin-left:5px; color:#555;">El técnico verifica el equipo</span>
+                </li>
+                <li style="display:flex; align-items:center; margin-bottom:8px;">
+                    <span style="width:15px; height:15px; background-color:yellow; border-radius:3px; margin-right:8px; border: 1px solid #ccc;"></span>
+                    <strong>Reparando:</strong> <span style="margin-left:5px; color:#555;">El problema se está solucionando</span>
+                </li>
+                <li style="display:flex; align-items:center; margin-bottom:8px;">
+                    <span style="width:15px; height:15px; background-color:#C6F863; border-radius:3px; margin-right:8px;"></span>
+                    <strong>Solucionado:</strong> <span style="margin-left:5px; color:#555;">El equipo está listo para entregarse</span>
+                </li>
+                <li style="display:flex; align-items:center; margin-bottom:8px;">
+                    <span style="width:15px; height:15px; background-color:green; border-radius:3px; margin-right:8px;"></span>
+                    <strong>Entregado:</strong> <span style="margin-left:5px; color:#555;">El equipo ha sido entregado al cliente</span>
+                </li>
+                <li style="display:flex; align-items:center;">
+                    <span style="width:15px; height:15px; background-color:red; border-radius:3px; margin-right:8px;"></span>
+                    <strong>Anulado:</strong> <span style="margin-left:5px; color:#555;">No se procedió a reparar el equipo</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+  </div>
+</div>
+
 
 <div class="container">
     
-    
-      
         <table class="table table-striped" id="tabla-productos">
             <thead>
             <tr>
@@ -120,6 +176,12 @@
                 <tr>
                     {% if servicioT.estado == 'pendiente'%}
                         <td style="background-color: orange; color: black;">Pendiente</td>
+                    {% elif servicioT.estado == 'revision' %}
+                        <td style="background-color: blue; color: white;">En revisión</td>
+                    {% elif servicioT.estado == 'reparando' %}
+                        <td style="background-color: yellow; color: black;">Reparando</td>
+                    {% elif servicioT.estado == 'solucionado' %}
+                        <td style="background-color: #C6F863; color: black;">Solucionado</td>
                     {% elif servicioT.estado == 'terminado' %}
                         <td style="background-color: green; color: white;">Terminado</td>
                     {% else %}
@@ -130,11 +192,12 @@
                     <td scope="col">{{servicioT.fecha_ingreso}}</td>
                     <td scope="col">{{servicioT.equipo}} - {{servicioT.marca}} {{servicioT.modelo}} {{servicioT.serie}}</td>
                     <td scope="col">{{servicioT.descripcion_problema}}</td>
-                    {% if servicioT.estado == 'pendiente' %}
+                    {% if servicioT.estado == 'pendiente' or  servicioT.estado == 'revision' or  servicioT.estado == 'reparando' or  servicioT.estado == 'solucionado'%}
                         <td scope="col">${{servicioT.saldo}}</td>
                     {% else %}
                         <td scope="col"></td>
                     {% endif %}
+
                     <td scope="col"><button type="button" class="btn btn-primary abrir-modal" data-toggle="modal" data-target="#miModalBusqueda{{ servicioT.id }}"><i class="fa-solid fa-eye"></i></button></td>
 
                     <!-- Modal específico para este registro -->
@@ -179,7 +242,7 @@
                                     <label for="serie">Serie:</label>
                                     <input type="text" id="serie" name="serie"  class="form-control" value="{{servicioT.serie}}" disabled>
                                 </div>
-                                {% if servicioT.estado == 'pendiente'%}
+                                {% if servicioT.estado == 'pendiente' or  servicioT.estado == 'revision' or  servicioT.estado == 'reparando' or  servicioT.estado == 'solucionado'%}
                                     <!-- Fila 4: Descripción del problema -->
                                     <div class="form-group">
                                         <label for="descripcion_problema">Descripción del Problema:</label>
@@ -214,7 +277,7 @@
                                     <label for="usuario_recepta">Usuario receptor del equipo:</label>
                                     <input type="text" id="usuario_recepta" name="usuario_recepta" class="form-control" value="{{servicioT.usuario_recepta}}" disabled>
                                 </div>
-                                {% if servicioT.estado == 'pendiente'%}
+                                {% if servicioT.estado == 'pendiente' or  servicioT.estado == 'revision' or  servicioT.estado == 'reparando' or  servicioT.estado == 'solucionado'%}
                                     <div class="form-group">
                                         <label for="costo">Costo real:</label>
                                         <p>Costo inicial sin descuento $ {{servicioT.costo_sin_descuento}}</p>
@@ -243,11 +306,12 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                {% if servicioT.estado == 'pendiente'%}
-                                    {% if servicio.saldo == 0 %}
+                                {% if servicioT.estado == 'pendiente' or  servicioT.estado == 'revision' or  servicioT.estado == 'reparando' or  servicioT.estado == 'solucionado'%}
+                                    {% if  servicio.saldo == 0 %}
                                         <button type="button" class="btn btn-success finalizar-servicio-btnc" data-id="{{ servicioT.id }}">Finalizar servicio</button>
                                     {% endif %}
                                     <button type="button" class="btn btn-primary abonar-servicio-btn" data-id="{{ servicioT.id }}" onclick="redirectToView(this)">Abonos</button>
+                                    <button type="button" class="btn btn-info abonar-servicio-btn" data-toggle="modal" data-target="#modalEstado{{ servicioT.id }}">Estado</button>
                                     <button type="button" class="btn btn-secondary actualizar-servicio-btn" data-id="{{ servicioT.id }}">Guardar cambios</button>
                                     <button type="button" class="btn btn-danger cancelar-servicio-btn" data-id="{{ servicioT.id }}">Anular servicio</button>
                                 {% else %}
@@ -261,7 +325,87 @@
                 </tr>
 
                 
-                
+                <div class="modal fade" id="modalEstado{{ servicioT.id }}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Actualizar Estado</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h5>El servicio #{{servicioT.id}} - "{{servicioT.equipo}} {{servicioT.marca}} {{servicioT.modelo}}" actualmente esta en estado <b>{{servicioT.estado}}</b>.</h5>
+                        </div>
+                        <div class="modal-footer">
+                            {%if servicioT.estado == 'pendiente'%}
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="revision">
+                                    <button type="submit" class="btn btn-primary">
+                                        En revisión <i class="fa-solid fa-angle-right"></i>
+                                    </button>
+                                </form>
+                            {%elif servicioT.estado == 'revision'%}
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="pendiente">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-angle-left"></i> Pendiente
+                                    </button>
+                                </form>
+
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="reparando">
+                                    <button type="submit" class="btn btn-warning">
+                                        Reparando <i class="fa-solid fa-angle-right"></i>
+                                    </button>
+                                </form>
+                            {%elif servicioT.estado == 'reparando'%}
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="revision">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-angle-left"></i> En revisión
+                                    </button>
+                                </form>
+
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="solucionado">
+                                    <button type="submit" class="btn btn-success">
+                                        Solucionado <i class="fa-solid fa-angle-right"></i>
+                                    </button>
+                                </form>
+                            {%elif servicioT.estado == 'solucionado'%}
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="reparando">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-solid fa-angle-left"></i> Reparando
+                                    </button>
+                                </form>
+
+                                <form method="post" action="{% url 'actualizar_estado_servicio' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="servicio_id" value="{{ servicioT.id }}">
+                                    <input type="hidden" name="nuevo_estado" value="finalizar">
+                                    <button type="submit" class="btn btn-primary">
+                                        Finalizar servicio <i class="fa-solid fa-angle-right"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        </div>
+                    </div>
+                </div>
 
             {%endfor%}
             </tbody>
