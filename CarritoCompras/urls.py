@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from inicio.views import pagina_inicio, pagina_ofertas, obtener_carrito, carrito, registro, ingresar, perfil, verificar_correo, cerrar_sesion, ventas_sesion, operacion_sesion
 from productos.views import pagina_productos, articulo
 from informacion.views import contactanos, servicios, desarrollo_web, mantenimiento, quienes_somos
-from ventas.views import inicio_ventas, transacciones_ventas, productos_facturar, reciboPago, generarPdf, pago_pendiente, ventas_caja, buscar_deuda, agregarPago, registro_servicios, generar_recibo_servicios,home_ventas, gastos_ventas, comprobar_ventas_caja, finalizar_servicio, servicios_registros, descargar_pdf_servicios, generardescarga_pdf_servicios, politica_servicios, nuevo_abono, generarrecibo_nuevo_abono, cancelar_servicio, devolver_abono, ventas_clientes, actualizar_estado_servicio
+from ventas.views import inicio_ventas, transacciones_ventas, productos_facturar, reciboPago, generarPdf, pago_pendiente, ventas_caja, buscar_deuda, agregarPago, registro_servicios, generar_recibo_servicios,home_ventas, gastos_ventas, comprobar_ventas_caja, finalizar_servicio, servicios_registros, descargar_pdf_servicios, generardescarga_pdf_servicios, politica_servicios, nuevo_abono, generarrecibo_nuevo_abono, cancelar_servicio, devolver_abono, ventas_clientes, actualizar_estado_servicio, editar_gasto, eliminar_gasto, editar_ingreso, eliminar_ingreso
 from operacion.views import stock_operacion, inicio_operacion, caja_operacion, caja_apertura_operacion, comprobar_operacion_caja, gastos_operacion, caja_panel, cerrar_caja,generardescarga_pdf_operaciones, descargar_pdf_operaciones, nuevo_producto, detalle_producto, todos_productos, editar_color, editar_producto, eliminar_color, actualizar_producto, gestionar_imagenes, desactivar_producto, activar_producto, productos_actualizarStock, guardar_stock, actualizar_precios, guardar_nuevoprecio, ofertas, agregar_oferta, quitar_oferta, todos_equipos, detalles_equipo, operador_proveedores, descargar_reportes
 from django.contrib.auth import views as auth_views
 from django.conf.urls import handler404, handler500
@@ -99,6 +99,11 @@ urlpatterns = [
     path('ventas/devolverabono', devolver_abono),
     path('ventas/clientes', ventas_clientes, name='vistaclientes'),
     path('ventas/servicio/actualizar-estado', actualizar_estado_servicio, name='actualizar_estado_servicio'),
+    path("ventas/gastos/editar/", editar_gasto, name="editar_gasto"),
+    path("ventas/gastos/eliminar/", eliminar_gasto, name="eliminar_gasto"),
+    path('ventas/ingreso/editar', editar_ingreso, name='editar_ingreso'),
+    path('ventas/ingreso/eliminar', eliminar_ingreso, name='eliminar_ingreso'),
+
     #esta url sirve para generar la ventana de descarga desde ajax
     path('ventas/servicio/generardescarga_pdf/<str:encoded_path>/', generardescarga_pdf_servicios, name='generardescarga_pdf'),
     path('ventas/gastos', gastos_ventas),

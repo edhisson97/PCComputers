@@ -176,6 +176,7 @@ MEDIA_URL = '/media-files/'
 
 # Configuración para usar el servidor SMTP de Gmail
 # settings.py (modo prueba, no envia nada) email desabilitado
+#para suspender el envio de mails
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 # si envia mails
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -197,8 +198,37 @@ LOGIN_REDIRECT_URL = '/'  # o la URL a la que deseas redirigir después del inic
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = '/'
 
+#            SRI CONEXION
+#  SRI – datos del emisor
+SRI_RUC = "0703074211001"  # tu RUC
+SRI_RAZON_SOCIAL = "AVILA GALLEGOS CECILIA ELIZABETH"
+SRI_NOMBRE_COMERCIAL = "PCCOMPUTERS"
+SRI_DIR_MATRIZ = "EL ORO / MACHALA / MACHALA / PAEZ SN Y ENTRE BOYACA Y GUABO"
+SRI_DIR_ESTABLECIMIENTO = "EL ORO / MACHALA / MACHALA / PAEZ SN Y ENTRE BOYACA Y GUABO"
 
+# Serie del punto de emisión
+SRI_ESTAB = "001"      # 3 dígitos
+SRI_PTO_EMI = "001"    # 3 dígitos
 
+# Ambiente SRI: '1' = pruebas, '2' = producción
+SRI_AMBIENTE = "1"
+
+# Tipo de emisión: '1' normal
+SRI_TIPO_EMISION = "1"
+
+# Certificado de firma electrónica
+SRI_P12_PATH = os.path.join(BASE_DIR, "files", "firma", "firma.p12")
+SRI_P12_PASS = "Pccomp*2030."
+
+# --- WSDL (Offline) por ambiente ---
+if SRI_AMBIENTE == "1":  # PRUEBAS
+    SRI_WSDL_RECEPCION = "https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl"
+    SRI_WSDL_AUTORIZA  = "https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl"
+else:                    # PRODUCCIÓN
+    SRI_WSDL_RECEPCION = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl"
+    SRI_WSDL_AUTORIZA  = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl"
+
+##   TERMINA CONEXION SRI
 
 
 # Default primary key field type

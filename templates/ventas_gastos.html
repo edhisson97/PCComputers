@@ -60,6 +60,26 @@
                 <td>{{gasto.descripcion}}</td>
                 <td>{{gasto.fecha_hora}}</td>
                 <td>{{gasto.usuario}}</td>
+                <td><button 
+                    type="button" 
+                    class="btn btn-outline-primary btnEditarGasto"
+                    data-toggle="modal"
+                    data-target="#modalEditarGasto"
+                    data-id="{{ gasto.id }}"
+                    data-valor="{{ gasto.valor|floatformat:2 }}"
+                    data-descripcion="{{ gasto.descripcion }}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button></td>
+                <td><td>
+                <button 
+                    type="button" 
+                    class="btn btn-outline-danger btnEliminarGasto"
+                    data-toggle="modal"
+                    data-target="#modalEliminarGasto"
+                    data-id="{{ gasto.id }}">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td></td>
             </tr>
           {% endfor %}
           <!-- Puedes usar un bucle de Django para mostrar los gastos dinámicamente -->
@@ -88,35 +108,30 @@
                 <td>{{ingreso.descripcion}}</td>
                 <td>{{ingreso.fecha_hora}}</td>
                 <td>{{ingreso.usuario}}</td>
+                <td><button 
+                    type="button" 
+                    class="btn btn-outline-primary btnEditarIngreso"
+                    data-toggle="modal"
+                    data-target="#modalEditarIngreso"
+                    data-id="{{ ingreso.id }}"
+                    data-valor="{{ ingreso.valor|floatformat:2 }}"
+                    data-descripcion="{{ ingreso.descripcion }}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button></td>
+                <td><td>
+                <button 
+                    type="button" 
+                    class="btn btn-outline-danger btnEliminarIngreso"
+                    data-toggle="modal"
+                    data-target="#modalEliminarIngreso"
+                    data-id="{{ ingreso.id }}">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td></td>
             </tr>
           {% endfor %}
       </tbody>
   </table>
-
-  <!--<h4>Lista de Ingresos</h4>
-  
-  <table class="table">
-      <thead>
-          <tr>
-              <th>#</th>
-              <th>Valor</th>
-              <th>Descripción</th>
-              <th>Fecha/Hora</th>
-              <th>Usuario</th>
-          </tr>
-      </thead>
-      <tbody>
-           {% for ingreso in ingresos%}
-            <tr>
-                <td>{{ingreso.id}}</td>
-                <td>{{ingreso.valor}}</td>
-                <td>{{ingreso.descripcion}}</td>
-                <td>{{ingreso.fecha_hora}}</td>
-                <td>{{ingreso.usuario}}</td>
-            </tr>
-          {% endfor %}
-      </tbody>
-  </table>-->
 </div>
 
 <!-- Modal para Nuevo Gasto -->
@@ -183,9 +198,175 @@
     </div>
   </div>
 
+<div class="modal fade" id="modalEditarGasto" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <form method="POST" action="/ventas/gastos/editar/">
+              {% csrf_token %}
+              <div class="modal-header">
+                  <h5 class="modal-title">Editar Gasto</h5>
+              </div>
+
+              <div class="modal-body">
+                  <input type="hidden" id="edit_id" name="id">
+
+                  <div class="form-group">
+                      <label>Valor:</label>
+                      <input type="number" class="form-control" id="edit_valor" name="valor" step="0.01" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Descripción:</label>
+                      <input type="text" class="form-control" id="edit_descripcion" name="descripcion" required>
+                  </div>
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                  <button class="btn btn-primary" type="submit">Actualizar</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEliminarGasto" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <form method="POST" action="/ventas/gastos/eliminar/">
+              {% csrf_token %}
+              <div class="modal-header">
+                  <h5 class="modal-title">Eliminar Gasto</h5>
+              </div>
+
+              <div class="modal-body">
+                  ¿Seguro que deseas eliminar este gasto?
+                  <input type="hidden" id="delete_id" name="id">
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                  <button class="btn btn-danger" type="submit">Eliminar</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+<!-- Modal EDITAR INGRESO -->
+<div class="modal fade" id="modalEditarIngreso" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <form action="/ventas/ingreso/editar" method="POST">
+              {% csrf_token %}
+              <div class="modal-header">
+                  <h5 class="modal-title">Editar Ingreso</h5>
+              </div>
+
+              <div class="modal-body">
+                  
+                  <input type="hidden" id="editIngreso_id" name="id">
+
+                  <div class="form-group">
+                      <label for="editIngreso_valor">Valor:</label>
+                      <input type="number" class="form-control" id="editIngreso_valor" name="valor" step="0.01" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label for="editIngreso_descripcion">Descripción:</label>
+                      <input type="text" class="form-control" id="editIngreso_descripcion" name="descripcion" required>
+                  </div>
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              </div>
+
+          </form>
+      </div>
+  </div>
+</div>
+
+
+<!-- Modal ELIMINAR INGRESO -->
+<div class="modal fade" id="modalEliminarIngreso" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <form action="/ventas/ingreso/eliminar" method="POST">
+              {% csrf_token %}
+
+              <div class="modal-header">
+                  <h5 class="modal-title">Eliminar Ingreso</h5>
+              </div>
+
+              <div class="modal-body">
+                  ¿Seguro que deseas eliminar este ingreso?
+                  <input type="hidden" id="deleteIngreso_id" name="id">
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-danger">Eliminar</button>
+              </div>
+
+          </form>
+      </div>
+  </div>
+</div>
+
+
+
 <!-- Bootstrap JS (jQuery debe estar incluido antes) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Llenar modal de EDITAR
+    document.querySelectorAll('.btnEditarGasto').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const valorRaw = btn.getAttribute('data-valor');
+
+            // Convertir COMAS → PUNTOS
+            const valorConvertido = valorRaw.replace(',', '.');
+
+            document.getElementById('edit_id').value = btn.getAttribute('data-id');
+            document.getElementById('edit_valor').value = valorConvertido;
+            document.getElementById('edit_descripcion').value = btn.getAttribute('data-descripcion');
+        });
+    });
+
+    // Llenar modal de ELIMINAR
+    document.querySelectorAll('.btnEliminarGasto').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('delete_id').value = btn.getAttribute('data-id');
+        });
+    });
+
+
+    // Modal EDITAR INGRESO
+    document.querySelectorAll('.btnEditarIngreso').forEach(btn => {
+        btn.addEventListener('click', () => {
+
+            const valorRaw = btn.getAttribute('data-valor');
+
+            // Convertir coma → punto
+            const valorConvertido = valorRaw.replace(',', '.');
+
+            document.getElementById('editIngreso_id').value = btn.getAttribute('data-id');
+            document.getElementById('editIngreso_valor').value = valorConvertido;
+            document.getElementById('editIngreso_descripcion').value = btn.getAttribute('data-descripcion');
+        });
+    });
+
+    // Modal ELIMINAR INGRESO
+    document.querySelectorAll('.btnEliminarIngreso').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('deleteIngreso_id').value = btn.getAttribute('data-id');
+        });
+    });
+</script>
+
 
 {% endblock %} 

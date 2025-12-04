@@ -48,41 +48,55 @@
     </div>
 
      <script>
-    window.onload = function () {
-        var encodedPDF = "{{ encoded_pdf|safe }}";
+  window.onload = function () {
+    console.log("Descarga: onload disparado");
+    try {
+      // ⬅️ importante: usar escapejs para no romper la cadena base64 en JS
+      var encodedPDF = "{{ encoded_pdf|escapejs }}";
+      var fileName = "{{ download_filename|default:'recibo_pago.pdf'|escapejs }}";
+      var redirectUrl = "{{ redirect_url|default:'/ventas/'|escapejs }}";
 
-        if (encodedPDF) {
-            var byteCharacters = atob(encodedPDF);
-            var byteNumbers = new Array(byteCharacters.length);
-            for (var i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            var byteArray = new Uint8Array(byteNumbers);
-            var blob = new Blob([byteArray], { type: 'application/pdf' });
-
-            var link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'recibo_pago.pdf';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+      if (encodedPDF && encodedPDF.length > 0) {
+        var byteCharacters = atob(encodedPDF);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray], { type: 'application/pdf' });
 
-        // Borrar localStorage
-        localStorage.removeItem("productos_facturacion");
+        var link = document.createElement('a');
+        var url = window.URL.createObjectURL(blob);
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-        // Redirección
-        var countdownElement = document.querySelector('.countdown');
-        var countdown = 5;
-        var interval = setInterval(function () {
-            countdown--;
-            countdownElement.textContent = countdown;
-            if (countdown === 0) {
-                clearInterval(interval);
-                window.location.href = '/ventas/facturacion';
-            }
-        }, 1000);
-    };
-    </script>
+        // liberar URL en memoria
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+      } else {
+        console.warn("encoded_pdf vacío: no se descargará el archivo.");
+      }
+    } catch (e) {
+      console.error("Error al preparar/descargar el PDF:", e);
+    }
+
+    // Borrar localStorage (si aplica en tu flujo)
+    try { localStorage.removeItem("productos_facturacion"); } catch(e) {}
+
+    // Redirección con cuenta regresiva
+    var countdownElement = document.querySelector('.countdown');
+    var countdown = 5;
+    var interval = setInterval(function () {
+      countdown--;
+      if (countdownElement) countdownElement.textContent = countdown;
+      if (countdown === 0) {
+        clearInterval(interval);
+        window.location.href = redirectUrl;
+      }
+    }, 1000);
+  };
+  </script>
 </body>
 </html>

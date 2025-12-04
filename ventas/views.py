@@ -10,7 +10,7 @@ from operacion.models import Caja
 from .models import Registro, Factura, Deudas, Pago, FacturaCredito, Servicio, PagoServicio, PagoServicioCombinado, PagoRegistroCombinado, PagoPendienteCombinado, Equipo, DescripcionEquipo
 import json
 from django.http import JsonResponse, FileResponse
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from django.http import HttpResponse
 from django.utils import timezone
 from django.db import transaction
@@ -18,24 +18,30 @@ from datetime import date, datetime, timedelta
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
 import base64
+import os
 from django.contrib import messages
+from django.http import Http404
 
 
 
-import pdfkit
+
 import tempfile
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.exceptions import ValidationError
-from django.views.decorators.http import require_http_methods
+
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.db.models import Q
 from weasyprint import HTML
 from io import BytesIO
-import base64
-
-
+#SRI
+from ventas.utils.sri import generar_clave_acceso, construir_factura_xml, firmar_xml_xades, enviar_a_sri_y_autorizar, debug_verificar_referencias, verificar_firma_local, extraer_ruc_xml, derivar_ruc_desde_cert
+import os, random, io
+from barcode import Code128
+from barcode.writer import ImageWriter
+import logging
+from zoneinfo import ZoneInfo
     
 @vendedor_required
 def inicio_ventas(request):
@@ -1124,6 +1130,56 @@ def productos_facturar(request):
         # Si la solicitud no es de tipo POST, devuelve un error
         return JsonResponse({'error': 'Método no permitido 2'}, status=405)
 
+# --- Diagnóstico básico de P12 vs RUC, validez y cadena ---
+from cryptography.hazmat.primitives.serialization import pkcs12
+from cryptography import x509
+from datetime import datetime, timezone
+import re
+
+def diagnostico_certificado_p12(p12_path: str, p12_pass: str, ruc_esperado: str) -> dict:
+    """
+    Abre el .p12 y devuelve info útil:
+      - sujeto, issuer, rango de validez, número de serie
+      - RUC extraído de subject (serialNumber o 2.5.4.5)
+      - match con RUC esperado
+    """
+    with open(p12_path, "rb") as f:
+        p12_data = f.read()
+    key, cert, chain = pkcs12.load_key_and_certificates(
+        p12_data, p12_pass.encode("utf-8")
+    )
+
+    if cert is None:
+        return {"ok": False, "error": "El P12 no contiene certificado"}
+
+    info = {}
+    info["subject"] = cert.subject.rfc4514_string()
+    info["issuer"] = cert.issuer.rfc4514_string()
+    info["not_before"] = cert.not_valid_before
+    info["not_after"] = cert.not_valid_after
+    info["serial_number"] = hex(cert.serial_number)
+
+    # Intenta extraer RUC del subject: suele ir en serialNumber o OID 2.5.4.5
+    ruc_en_cert = None
+    for attr in cert.subject:
+        oid = attr.oid.dotted_string
+        name = attr.oid._name if hasattr(attr.oid, "_name") else oid
+        val = attr.value.strip()
+        if name in ("serialNumber",) or oid == "2.5.4.5":
+            # suele venir solo dígitos; si viniera con prefijo, filtramos
+            m = re.search(r"(\d{13})", val)
+            if m:
+                ruc_en_cert = m.group(1)
+                break
+    info["ruc_en_cert"] = ruc_en_cert
+    info["ruc_coincide"] = (ruc_en_cert == str(ruc_esperado))
+
+    # Validez temporal
+    ahora = datetime.now(timezone.utc)
+    info["vigente"] = (cert.not_valid_before <= ahora.replace(tzinfo=None) <= cert.not_valid_after)
+
+    return {"ok": True, **info}
+
 def reciboPago(request):
     if request.method == 'POST':
         # Obtener los datos del formulario
@@ -1294,10 +1350,141 @@ def reciboPago(request):
         # Si no es una solicitud POST, retornar una respuesta de error
         return HttpResponse("Error: Esta vista solo acepta solicitudes POST.")  
     
+def D(x):
+    try:
+        return Decimal(str(x))
+    except:
+        return Decimal("0.00")
+
+def _codigo_numerico():
+    """8 dígitos aleatorios para la clave de acceso (puedes usar tu propia lógica)."""
+    return f"{random.randint(0,99999999):08d}"
+
+# imports arriba del archivo (una sola vez)
+import datetime as dt
+from zoneinfo import ZoneInfo
+from cryptography.hazmat.primitives.serialization import pkcs12
+from cryptography import x509
+
+def _extraer_ids_sujeto(cert: x509.Certificate) -> dict:
+    """
+    Devuelve un dict con lo que logremos encontrar en el Subject del certificado:
+    - cedula: OID 2.5.4.5 (serialNumber) – en sus logs sale '2.5.4.5=0703074211'
+    - ruc: si existe explícito en algún atributo (raro en CN de Ecuador); si no hay, None
+    - cn: Common Name
+    Retorna {'cedula': str|None, 'ruc': str|None, 'cn': str|None}
+    """
+    cedula = None
+    ruc = None
+    cn = None
+
+    for attr in cert.subject:
+        oid = attr.oid.dotted_string
+        val = str(attr.value).strip()
+        # CN
+        if oid == x509.oid.NameOID.COMMON_NAME.dotted_string:
+            cn = val
+        # serialNumber (en muchos certificados ecuatorianos contiene Cédula)
+        elif oid == "2.5.4.5":
+            # si tiene solo dígitos de 10 caracteres, asúmala como cédula
+            if val.isdigit() and len(val) in (10, 13):  # a veces 13 si está como RUC PN
+                # si es 13 podría ser RUC de Persona Natural (cédula+001)
+                if len(val) == 10:
+                    cedula = val
+                elif len(val) == 13:
+                    # podría ser RUC PN; guárdelo como ruc y también cédula candidata
+                    ruc = val
+                    cedula = val[:10]
+            else:
+                cedula = val  # de todas formas guárdela
+        # algunos emiten RUC en OID organizacionales; no es estándar
+        elif oid in ("2.5.4.10", "2.5.4.11", "2.5.4.15"):
+            # intente extraer 13 dígitos seguidos
+            import re
+            m = re.search(r"\b(\d{13})\b", val)
+            if m:
+                ruc = m.group(1)
+
+    return {"cedula": cedula, "ruc": ruc, "cn": cn}
+
+
+def precheck_ruc_cert_xml(p12_bytes: bytes, p12_pass: bytes, xml_bytes: bytes, ruc_config: str) -> dict:
+    """
+    - No asume que el RUC está en el P12 (en Ecuador muchas veces no está).
+    - Compara: RUC settings vs RUC del XML emisor (obligatorio).
+    - Extrae cédula/RUC del certificado si es posible (sin romper si no aparece).
+    Retorna dict con flags y sin hacer .get() sobre None.
+    """
+    out = {"ok": True, "mensajes": []}
+
+    # 1) Cargue P12
+    try:
+        private_key, cert, _chain = pkcs12.load_key_and_certificates(p12_bytes, p12_pass)
+        if cert is None:
+            out["ok"] = False
+            out["mensajes"].append("El .p12 no contiene certificado principal.")
+            return out
+    except Exception as e:
+        out["ok"] = False
+        out["mensajes"].append(f"No se pudo abrir el .p12: {e}")
+        return out
+
+    # 2) Fechas (evite naive datetimes)
+    try:
+        not_before = getattr(cert, "not_valid_before_utc", None) or cert.not_valid_before.replace(tzinfo=dt.timezone.utc)
+        not_after  = getattr(cert, "not_valid_after_utc",  None) or cert.not_valid_after.replace(tzinfo=dt.timezone.utc)
+        ahora_utc  = dt.datetime.now(dt.timezone.utc)
+        if not (not_before <= ahora_utc <= not_after):
+            out["ok"] = False
+            out["mensajes"].append("Certificado fuera de vigencia.")
+    except Exception as e:
+        out["ok"] = False
+        out["mensajes"].append(f"No se pudieron leer fechas del certificado: {e}")
+
+    # 3) Extraiga identificadores del sujeto
+    ids = _extraer_ids_sujeto(cert)
+    out["cert_subject"] = ids  # {'cedula':..., 'ruc':..., 'cn':...}
+
+    # 4) RUC del XML (obligatorio)
+    import lxml.etree as LET
+    try:
+        root = LET.fromstring(xml_bytes)
+        ruc_xml = root.findtext(".//ruc")
+        if not ruc_xml:
+            out["ok"] = False
+            out["mensajes"].append("No se encontró <ruc> del emisor en el XML.")
+        out["ruc_xml"] = ruc_xml
+    except Exception as e:
+        out["ok"] = False
+        out["mensajes"].append(f"No se pudo leer el XML para extraer <ruc>: {e}")
+        out["ruc_xml"] = None
+
+    # 5) Compare RUC settings vs RUC del XML (esto sí debe coincidir)
+    if out.get("ruc_xml") and ruc_config:
+        if ruc_config != out["ruc_xml"]:
+            out["ok"] = False
+            out["mensajes"].append(f"El RUC de settings ({ruc_config}) difiere del RUC del XML ({out['ruc_xml']}).")
+    else:
+        out["ok"] = False
+        out["mensajes"].append("RUC de settings o del XML ausente.")
+
+    # 6) (Informativo) ¿el certificado trae un RUC?
+    # No es obligatorio que coincida con el RUC del emisor; a menudo el cert está a nombre de la persona (cédula).
+    ruc_cert = ids.get("ruc")  # puede ser None
+    if ruc_cert and out.get("ruc_xml"):
+        out["ruc_cert_coincide_con_xml"] = (ruc_cert == out["ruc_xml"])
+    else:
+        out["ruc_cert_coincide_con_xml"] = None  # desconocido/no aplica
+
+    return out
     
 def generarPdf(request):
     if request.method == 'POST':
         if 'confirmar_venta' in request.POST:
+            now_ec = datetime.now().astimezone(ZoneInfo("America/Guayaquil"))  # una sola vez
+            fecha_emision_str = now_ec.strftime("%d/%m/%Y")     
+            
+            
             nombre = request.POST.get('nombre')
             apellidos = request.POST.get('apellidos')
             cedula = request.POST.get('cedula')
@@ -1378,7 +1565,7 @@ def generarPdf(request):
                     'preciot':preciot
                     # Agrega otros campos que necesites
                 })
-        fecha_hora_actual = timezone.now()
+        fecha_hora_actual = datetime.now()
         # Generar número de factura
         with transaction.atomic():  # Inicia una transacción atómica
         # Generar número de factura
@@ -1387,36 +1574,71 @@ def generarPdf(request):
 
             # Guardar la nueva factura en la base de datos
             nueva_factura = Factura.objects.create(id=numero_factura)
+
+        # --- AHORA sí construimos context (una sola vez) ---
         context = {
-            'nombre':nombre,
-            'apellidos':apellidos,
-            'cedula':cedula,
-            'email':email,
-            'celular':celular,
-            'ciudad':ciudad,
-            'direccion':direccion,
-            'direccionEnvio':direccionEnvio,
+            'nombre': nombre,
+            'apellidos': apellidos,
+            'cedula': cedula,
+            'email': email,
+            'celular': celular,
+            'ciudad': ciudad,
+            'direccion': direccion,
+            'direccionEnvio': direccionEnvio,
             'productos': productos_fac,
-            'subtotal':subtotal,
-            'porcentaje':porcentaje,
-            'descuento':descuento,
-            'subtotalD':subtotalD,
-            'porcentajeDescuento':porcentajeDescuento,
-            'iva':iva,
-            'total':total,
-            'tipoPago':tipoPago,
-            'peso':peso,
-            'fecha':fecha_hora_actual,
-            'nombreBanco':nombreBanco,
-            'numeroCheque':numeroCheque,
+            'subtotal': subtotal,
+            'porcentaje': porcentaje,
+            'descuento': descuento,
+            'subtotalD': subtotalD,
+            'porcentajeDescuento': porcentajeDescuento,
+            'iva': iva,
+            'total': total,
+            'tipoPago': tipoPago,
+            'peso': peso,
+            'fecha': fecha_emision_str,
+            'nombreBanco': nombreBanco,
+            'numeroCheque': numeroCheque,
             'numeroTransferencia': numeroTransferencia,
-            'numeroFactura':numero_factura,
-            'combinados':combinados_json,
-            'tipoVenta':tipoVenta,
-            'abono':abono,
-            'saldo':saldo,
-            'usuarioVendedor':usuarioVendedor
+            'numeroFactura': numero_factura,
+            'combinados': combinados_json,
+            'tipoVenta': tipoVenta,
+            'abono': abono,
+            'saldo': saldo,
+            'usuarioVendedor': usuarioVendedor,
         }
+        
+        # === Verificación/Recalculo de valores ===
+        # Si algún valor viene vacío o en cero, lo recalculamos para que el PDF y XML no salgan mal
+        if not context.get("subtotal") or D(context["subtotal"]) == 0:
+            subtotal_calc = sum(D(p['cantidad']) * D(p['precio']) for p in productos_fac)
+            context["subtotal"] = float(subtotal_calc)
+
+        if not context.get("subtotalD") or D(context["subtotalD"]) == 0:
+            desc = D(context.get("descuento", 0))
+            context["subtotalD"] = float(D(context["subtotal"]) - desc)
+
+        if not context.get("iva") or D(context["iva"]) == 0:
+            porc_iva = D(context.get("porcentaje", 12))  # % de IVA por defecto 12 si no viene
+            base = D(context["subtotalD"])
+            context["iva"] = float((base * porc_iva / 100).quantize(Decimal("0.01")))
+
+        if not context.get("total") or D(context["total"]) == 0:
+            context["total"] = float(D(context["subtotalD"]) + D(context["iva"]))
+
+        
+        # === Generar PDF (WeasyPrint) para el cliente (independiente del SRI) ===
+        if (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
+            html_content = render_to_string('ventas_recibopagocredito.html', context)
+        else:
+            html_content = render_to_string('reciboPagoPdf.html', context)
+
+        pdf_path = tempfile.mktemp(suffix='.pdf')
+        HTML(string=html_content).write_pdf(pdf_path)
+
+        # === SRI: Solo intentamos emitir factura electrónica cuando NO es crédito/apartado ===
+        xml_aut_path = None
+        xml_firmado_path = None
+        resultado_sri = None
         
         if (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
             ###         PARA WHTMLTOPDF
@@ -1482,6 +1704,32 @@ def generarPdf(request):
             #output_path = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', prefix=nombre_archivo_pdf).name
             #pdfkit.from_file(temp_html_path, output_path, configuration=config)
 
+            # ---- Helpers para comparar fecha de clave vs fecha del XML ----
+            import re
+
+            def _dia_clave(clave: str) -> str:
+                """Devuelve ddMMyyyy (8 chars) desde la clave acceso (str)."""
+                return str(clave)[:8]
+
+            def _dia_xml(xmlb: bytes) -> str:
+                """
+                Extrae ddMMyyyy desde <fechaEmision> del XML (xmlb en bytes).
+                Si no encuentra, devuelve cadena vacía.
+                """
+                if isinstance(xmlb, str):
+                    xmlb = xmlb.encode("utf-8")  # asegúrate que sea bytes
+
+                m = re.search(
+                    rb"<fechaEmision>\s*(\d{2})/(\d{2})/(\d{4})\s*</fechaEmision>",
+                    xmlb,
+                    flags=re.IGNORECASE,
+                )
+                if not m:
+                    return ""
+                d, mth, y = (g.decode("utf-8") for g in m.groups())
+                return f"{d}{mth}{y}"  # str, no mezclamos bytes
+
+
             #### PARA WEASYPRINT
             # Generar PDF y enviar
             buffer = BytesIO()
@@ -1493,20 +1741,166 @@ def generarPdf(request):
 
             # Codificar la ruta
             encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
-                
+            
+            
+            # === EMPIEZA SRI: Generar clave de acceso ===
+            # 1) CLAVE DE ACCESO (codDoc '01' = Factura)
+            clave_acceso = generar_clave_acceso(
+                fecha_emision=fecha_emision_str,
+                codDoc="01",
+                ruc=settings.SRI_RUC,
+                ambiente=settings.SRI_AMBIENTE,     # "1" pruebas, "2" producción
+                estab=settings.SRI_ESTAB,           # "001"
+                ptoemi=settings.SRI_PTO_EMI,        # "001"
+                secuencial=numero_factura,          # <- ahora tolera str o int
+                codigo_numerico=_codigo_numerico(), # 8 dígitos
+                tipo_emision=settings.SRI_TIPO_EMISION,  # "1" normal
+            )
+            
+            #########3 borrar
+            diag = diagnostico_certificado_p12(settings.SRI_P12_PATH, settings.SRI_P12_PASS, settings.SRI_RUC)
+            print("DIAG CERT:", diag)
+            if not diag.get("ok"):
+                print("Cert ERROR:", diag.get("error"))
+            if not diag.get("ruc_coincide"):
+                print("ATENCIÓN: RUC del P12 no coincide con settings.SRI_RUC")
+            if not diag.get("vigente"):
+                print("ATENCIÓN: Certificado NO vigente (fechas fuera de rango)")
 
-            #enviar por correo el pdf
-            destinatario = email  # O la dirección de correo electrónico a la que deseas enviar el correo
-            asunto = 'Facturacion emitida por PC Computers'
-            cuerpo = 'Adjunto encontrarás la factura emitida por PC Computers.'
-            archivo_adjunto = output_path
-            # Crear mensaje de correo electrónico
-            mensaje = EmailMultiAlternatives(asunto, cuerpo, 'noreply@example.com', [destinatario])
-            # Adjuntar archivo PDF
-            archivo_adjunto = open(archivo_adjunto, 'rb')
-            mensaje.attach(archivo_adjunto.name, archivo_adjunto.read(), 'application/pdf')
-            archivo_adjunto.close()
-        # Enviar correo electrónico
+            ############## asta aqui
+
+            # 2) Construir XML (usa tus reglas de negocio/impuestos). Debe ser versión 1.1.0 e id="comprobante".
+            xml_bytes = construir_factura_xml(context, clave_acceso, numero_factura)
+            
+            # pre check ruc
+            # 1) Leer el P12 a bytes
+            with open(settings.SRI_P12_PATH, "rb") as fp:
+                p12_bytes = fp.read()
+            pre = precheck_ruc_cert_xml(p12_bytes, settings.SRI_P12_PASS.encode("utf-8"), xml_bytes, settings.SRI_RUC)
+            print("PRECHECK:", pre)
+            if not pre.get("ok"):
+                # Aquí puede registrar y decidir si continúa o devuelve 400
+                # Ejemplo: solo advertir y seguir firmando
+                print("PRECHECK advertencias:", pre.get("mensajes"))
+
+            #final pre check 
+            
+            ###################  verificacion borrarrr
+            dia_cl = _dia_clave(clave_acceso)
+            dia_xml = _dia_xml(xml_bytes)
+            print("FECHA CLAVE:", dia_cl, " | FECHA XML:", dia_xml)
+            assert dia_cl == dia_xml, "La fecha de la clave no coincide con <fechaEmision>"
+            ###################  finaliza verificacion
+
+            
+            # 3) Firmar
+            xml_firmado = firmar_xml_xades(xml_bytes)
+            xml_firmado_path = tempfile.mktemp(suffix=".xml", prefix=f"FAC_{numero_factura}_")
+            with open(xml_firmado_path, "wb") as f:
+                f.write(xml_firmado)
+
+            chk = debug_verificar_referencias(xml_firmado)
+            print("DEBUG DIGESTS:", chk)
+            diag = verificar_firma_local(xml_firmado)
+            print("VERIF_FIRMA_LOCAL:", diag)
+
+
+            # 4) Enviar a SRI (Recepción + Autorización)
+            xml_aut_path = None                  # ruta en disco del XML autorizado (si lo guarda)
+            xml_autorizado_str = None
+            
+            resultado_sri = enviar_a_sri_y_autorizar(xml_firmado, clave_acceso)
+
+            if not resultado_sri.get("ok"):
+                # LOG & opcional: notificación interna
+                print("SRI NO OK:", resultado_sri)
+                # Puedes retornar HTTP 400 con detalle si deseas:
+                # return JsonResponse({"ok": False, "sri": resultado_sri}, status=400)
+            else:
+                # AUTORIZADO: añade datos al context (para tu PDF si quieres reemitir)
+                context["claveAcceso"] = clave_acceso
+                context["numeroAutorizacion"] = resultado_sri.get("numero_autorizacion", "")
+                context["fechaAutorizacion"] = resultado_sri.get("fecha_autorizacion", "")
+
+                # Guarda XML autorizado a disco para adjuntar
+                xml_aut_path = tempfile.mktemp(suffix=".xml", prefix=f"FAC_AUT_{numero_factura}_")
+                with open(xml_aut_path, "wb") as f:
+                    f.write(resultado_sri["xml_autorizado"].encode("utf-8"))
+
+                # Opcional: genera barcode de la claveAcceso para incrustarlo en el PDF HTML
+                try:
+                    buf = io.BytesIO()
+                    Code128(clave_acceso, writer=ImageWriter()).write(buf)
+                    context["claveAccesoBarcodeBase64"] = f"data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}"
+                except Exception:
+                    pass
+            
+                # (Opcional) si quieres regenerar el PDF con los datos de autorización y código de barras:
+                # html_content = render_to_string('reciboPagoPdf.html', context)
+                # HTML(string=html_content).write_pdf(pdf_path)
+            #========FINALIZA SRI============#
+            
+
+            # === ENVÍO DE CORREO ===
+            destinatario = email  # la dirección del cliente
+            asunto = f'Factura electrónica #{numero_factura} – PC Computers'
+            cuerpo = (
+                'Estimado/a,\n\n'
+                'Adjuntamos su factura electrónica:\n'
+                ' - Factura.pdf: representación impresa.\n'
+                ' - Factura.xml: documento oficial firmado digitalmente.\n'
+                ' - (Si aplica) Factura_AUT.xml: XML autorizado por el SRI.\n\n'
+                'Saludos cordiales,\nPC Computers'
+            )
+
+            mensaje = EmailMultiAlternatives(
+                subject=asunto,
+                body=cuerpo,
+                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com"),
+                to=[destinatario],
+            )
+
+            # Adjuntar PDF (verifique que exista)
+            if output_path and os.path.exists(output_path):
+                with open(output_path, 'rb') as f_pdf:
+                    mensaje.attach(
+                        filename=f"Factura_{numero_factura}.pdf",
+                        content=f_pdf.read(),
+                        mimetype='application/pdf'
+                    )
+            else:
+                print("WARN: output_path no existe o es None; no se adjunta PDF:", output_path)
+
+            # Adjuntar XML firmado (siempre que exista)
+            if xml_firmado_path and os.path.exists(xml_firmado_path):
+                with open(xml_firmado_path, "rb") as f_xml:
+                    mensaje.attach(
+                        filename=f"Factura_{numero_factura}.xml",
+                        content=f_xml.read(),
+                        mimetype='application/xml'
+                    )
+            else:
+                print("WARN: xml_firmado_path no existe o es None:", xml_firmado_path)
+
+            # Adjuntar XML autorizado:
+            # 1) Prioridad: si lo tengo en memoria, lo adjunto directo
+            if xml_autorizado_str:
+                mensaje.attach(
+                    filename=f"Factura_AUT_{numero_factura}.xml",
+                    content=xml_autorizado_str.encode("utf-8"),
+                    mimetype='application/xml'
+                )
+            # 2) Alternativa: si lo guardé a disco y la ruta es válida
+            elif xml_aut_path and os.path.exists(xml_aut_path):
+                with open(xml_aut_path, "rb") as f_xml_aut:
+                    mensaje.attach(
+                        filename=f"Factura_AUT_{numero_factura}.xml",
+                        content=f_xml_aut.read(),
+                        mimetype='application/xml'
+                    )
+            else:
+                print("INFO: No hay XML autorizado para adjuntar (aún).")
+
         try:
             # Envía el correo electrónico
             mensaje.send()
@@ -1689,20 +2083,38 @@ def generarPdf(request):
             print("Error al guardar deudas:", e)
         
         #######REEMPLACE ESTE CODIGO PARA MEJORAR LA DESCARGA, SI EXISTE ERROR BORRAR##########
+        # Seguridad: verificar que el archivo exista y tenga contenido
+        if not os.path.exists(output_path):
+            raise Http404("No se encontró el PDF generado.")
+
        # Leer el PDF generado
         with open(output_path, 'rb') as f:
             pdf_bytes = f.read()  # ✅ contenido real del PDF
+            
+        if not pdf_bytes:
+            raise Http404("El PDF está vacío.")
 
         # Codificar a base64 directamente (sin usar BytesIO)
         encoded_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
 
         # (Opcional) eliminar archivo temporal
-        import os
-        os.remove(output_path)
+        
+        try:
+            os.remove(output_path)
+        except OSError:
+            pass  # no bloquear por esto
+
+        log = logging.getLogger(__name__)
+
+        # ...
+        log.warning("RENDER_DESCARGA -> num_factura=%s", numero_factura)
 
         # Renderizar el template
-        return render(request, 'descargar_pdf_facturacion.html', {
-            'encoded_pdf': encoded_pdf
+        # Renderizar la página que dispara la descarga y luego redirige
+        return render(request, "descargar_pdf_facturacion.html", {
+            "encoded_pdf": encoded_pdf,                 # en el template usa |escapejs
+            "download_filename": f"Factura_{numero_factura}.pdf",
+            "redirect_url": "/ventas/",      # cambia si quieres
         })
         ################### HASTA AQUI, LO QUE ESTA A CONTINUACION ES EL CODIGO ANTERIOR##########
         # Devolver el PDF como una respuesta HTTP
@@ -2512,3 +2924,41 @@ def actualizar_estado_servicio(request):
         )
 
     return redirect('/ventas/servicio/todos_registros')
+
+@vendedor_required
+def editar_gasto(request):
+    if request.method == "POST":
+        gasto = Gasto.objects.get(id=request.POST["id"])
+        gasto.valor = request.POST["valor"]
+        gasto.descripcion = request.POST["descripcion"]
+        gasto.save()
+    return redirect("/ventas/gastos")
+
+@vendedor_required
+def eliminar_gasto(request):
+    if request.method == "POST":
+        Gasto.objects.filter(id=request.POST["id"]).delete()
+    return redirect("/ventas/gastos")
+
+@vendedor_required
+def editar_ingreso(request):
+    if request.method == "POST":
+        ingreso_id = request.POST.get("id")
+        valor = request.POST.get("valor")
+        descripcion = request.POST.get("descripcion")
+
+        ingreso = get_object_or_404(Ingreso, id=ingreso_id)
+        ingreso.valor = valor
+        ingreso.descripcion = descripcion
+        ingreso.save()
+
+    return redirect("/ventas/gastos")  # o tu ruta principal
+
+@vendedor_required
+def eliminar_ingreso(request):
+    if request.method == "POST":
+        ingreso_id = request.POST.get("id")
+        ingreso = get_object_or_404(Ingreso, id=ingreso_id)
+        ingreso.delete()
+
+    return redirect("/ventas/gastos") 
