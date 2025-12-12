@@ -19,6 +19,17 @@ import cloudinary.uploader
 import cloudinary.api
 import platform
 
+#xades
+import sys
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+LIBS_DIR = BASE_DIR / "libs"
+if LIBS_DIR.exists():
+    sys.path.append(str(LIBS_DIR))
+
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dqphy48oi',
     'API_KEY': '528441226936991',
