@@ -7,7 +7,18 @@
 
 <div class="container-inicio">
     <h3 class="title">Módulo de Facturación</h3>
+    
     {%if caja.estado == 'abierta' %}
+
+    {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-secondary" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endfor %}
+      {% endif %}
+      
     <div class="seccion-datos">
         
         <h5>Datos del cliente</h5>
@@ -45,7 +56,7 @@
                                 <option value="cliente">Cliente</option>
                                 <option value="consumidor">Consumidor Final</option>
                             </select>
-                            <label for="cedula">Número de Cédula</label>
+                            <label for="cedula">Cédula/Ruc</label>
                             <input type="text" id="cedula" name="cedula" required>
                         </div>
                         <div class="form-row">

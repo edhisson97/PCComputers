@@ -23,8 +23,6 @@ from django.contrib import messages
 from django.http import Http404
 
 
-
-
 import tempfile
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -42,6 +40,8 @@ from barcode import Code128
 from barcode.writer import ImageWriter
 import logging
 from zoneinfo import ZoneInfo
+import threading
+
     
 @vendedor_required
 def inicio_ventas(request):
@@ -1199,7 +1199,12 @@ def reciboPago(request):
         descuento = request.POST.get('descuento')
         usuarioVendedor = request.POST.get('usuarioVendedor')
         
-        
+        # 🔍 Validación de identificación (cédula o RUC)
+        es_valida, tipo_ident = es_identificacion_valida_cedula_o_ruc(cedula)
+
+        if not es_valida:
+            messages.success(request, "Cédula/RUC incorrectos, intente nuevamente por favor.")
+            return redirect("/ventas/facturacion")
         
         if (tipoPago == "Combinado"):
             combinados = request.POST.get('combinado')
@@ -1477,6 +1482,18 @@ def precheck_ruc_cert_xml(p12_bytes: bytes, p12_pass: bytes, xml_bytes: bytes, r
         out["ruc_cert_coincide_con_xml"] = None  # desconocido/no aplica
 
     return out
+
+logger = logging.getLogger(__name__)
+
+def enviar_correo_async(mensaje, destinatario):
+    """
+    Envía el correo electrónico en un hilo separado para no bloquear la respuesta HTTP.
+    """
+    try:
+        mensaje.send()
+        logger.info("Correo electrónico enviado correctamente a: %s", destinatario)
+    except Exception as e:
+        logger.error("Error al enviar el correo electrónico a %s: %s", destinatario, e)
     
 def generarPdf(request):
     if request.method == 'POST':
@@ -1783,15 +1800,7 @@ def generarPdf(request):
                 # Ejemplo: solo advertir y seguir firmando
                 print("PRECHECK advertencias:", pre.get("mensajes"))
 
-            #final pre check 
-            
-            ###################  verificacion borrarrr
-            dia_cl = _dia_clave(clave_acceso)
-            dia_xml = _dia_xml(xml_bytes)
-            print("FECHA CLAVE:", dia_cl, " | FECHA XML:", dia_xml)
-            assert dia_cl == dia_xml, "La fecha de la clave no coincide con <fechaEmision>"
-            ###################  finaliza verificacion
-
+        #final pre check 
             
             # 3) Firmar
             xml_firmado = firmar_xml_xades(xml_bytes)
@@ -1817,10 +1826,13 @@ def generarPdf(request):
                 # Puedes retornar HTTP 400 con detalle si deseas:
                 # return JsonResponse({"ok": False, "sri": resultado_sri}, status=400)
             else:
+                #print("SRI AUTORIZADO:", resultado_sri)  # 👈 solo para ver estado, número y XML
                 # AUTORIZADO: añade datos al context (para tu PDF si quieres reemitir)
                 context["claveAcceso"] = clave_acceso
                 context["numeroAutorizacion"] = resultado_sri.get("numero_autorizacion", "")
                 context["fechaAutorizacion"] = resultado_sri.get("fecha_autorizacion", "")
+                
+                xml_autorizado_str = resultado_sri.get("xml_autorizado", "")
 
                 # Guarda XML autorizado a disco para adjuntar
                 xml_aut_path = tempfile.mktemp(suffix=".xml", prefix=f"FAC_AUT_{numero_factura}_")
@@ -1901,26 +1913,32 @@ def generarPdf(request):
             else:
                 print("INFO: No hay XML autorizado para adjuntar (aún).")
 
+        # 1) Lanzar el envío de correo en segundo plano
         try:
-            # Envía el correo electrónico
-            mensaje.send()
-            #para bajar el stock
+            threading.Thread(
+                target=enviar_correo_async,
+                args=(mensaje, destinatario),
+                daemon=True,  # el hilo no bloquea el cierre del proceso
+            ).start()
+        except Exception as e:
+            print("Error al lanzar el hilo de envío de correo:", e)
+
+        # 2) Bajar el stock SIEMPRE (independiente de que el correo se envíe o no)
+        try:
             for prod in productos_a_facturar:
                 codigo_producto = prod['codigo']
                 cantidad_producto = prod['cantidad']
                 try:
-                    producto_stock = ColorStock.objects.get( id=codigo_producto)
+                    producto_stock = ColorStock.objects.get(id=codigo_producto)
                     nuevo_stock = int(producto_stock.stock) - int(cantidad_producto)
                     producto_stock.stock = nuevo_stock
                     producto_stock.save()
                 except ColorStock.DoesNotExist:
                     print('debo bajar el stock mediante id y color')
-            
-            print("Correo electrónico enviado correctamente a:", destinatario)
-        except ValidationError as e:
-            print("Error de validación al enviar el correo electrónico:", e)
+
+            print("Proceso de stock ejecutado. Correo lanzado en segundo plano a:", destinatario)
         except Exception as e:
-            print("Error al enviar el correo electrónico:", e)
+            print("Error al actualizar el stock:", e)
         
         
         
@@ -2851,11 +2869,16 @@ def ventas_clientes(request):
         if not apellidos:
             errores.append("El campo 'Apellidos' es obligatorio.")
         if not id:
-            if len(cedula) != 10 or not cedula.isdigit():
-                errores.append("La cédula debe tener 10 dígitos.")
+            # Validación de formato de identificación
+            # Validación de formato + lógica completa (cédula / RUC)
+            ok, msg = es_identificacion_valida_cedula_o_ruc(cedula)
+
+            if not ok:
+                # Mensaje técnico proveniente de la función, o uno genérico
+                errores.append("La identificación ingresada no es válida.")
             # Validación de unicidad
             if adicionalUsuario.objects.filter(cedula=cedula).exists():
-                errores.append("Ya existe un cliente con esa cédula.")
+                errores.append("Ya existe un cliente con esa cédula/Ruc.")
             if User.objects.filter(email=correo).exists():
                 errores.append("Ya existe un cliente con ese correo.")
         if not ciudad:
@@ -2962,3 +2985,68 @@ def eliminar_ingreso(request):
         ingreso.delete()
 
     return redirect("/ventas/gastos") 
+
+
+def es_cedula_ec_valida(ident: str) -> bool:
+    """
+    Valida cédula ecuatoriana de persona natural (10 dígitos).
+    Regla estándar: coeficientes 2,1,2,1,2,1,2,1,2 sobre los primeros 9 dígitos.
+    """
+    if len(ident) != 10 or not ident.isdigit():
+        return False
+
+    provincia = int(ident[0:2])
+    tercer = int(ident[2])
+
+    # Provincia válida (01–24) y 3er dígito < 6 para persona natural
+    if not (1 <= provincia <= 24) or tercer >= 6:
+        return False
+
+    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]
+    total = 0
+
+    for i in range(9):
+        valor = int(ident[i]) * coeficientes[i]
+        if valor >= 10:
+            valor -= 9
+        total += valor
+
+    verificador_calculado = (10 - (total % 10)) % 10
+    verificador_real = int(ident[9])
+
+    return verificador_calculado == verificador_real
+
+
+def es_ruc_persona_natural_valido(ident: str) -> bool:
+    """
+    Valida RUC de persona natural: 13 dígitos donde
+    los primeros 10 forman una cédula válida y los últimos 3 son > 000.
+    (Validación básica suficiente para su caso).
+    """
+    if len(ident) != 13 or not ident.isdigit():
+        return False
+
+    # primeros 10 como cédula:
+    if not es_cedula_ec_valida(ident[:10]):
+        return False
+
+    # últimos 3 no sean "000"
+    if ident[10:] == "000":
+        return False
+
+    return True
+
+
+def es_identificacion_valida_cedula_o_ruc(ident: str) -> tuple[bool, str]:
+    """
+    Devuelve (es_valida, tipo) donde tipo es 'CEDULA', 'RUC' o ''.
+    """
+    if not ident or not ident.isdigit():
+        return False, ""
+
+    if len(ident) == 10:
+        return es_cedula_ec_valida(ident), "CEDULA"
+    elif len(ident) == 13:
+        return es_ruc_persona_natural_valido(ident), "RUC"
+    else:
+        return False, ""
