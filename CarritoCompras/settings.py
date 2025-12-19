@@ -174,9 +174,9 @@ MEDIA_URL = '/media-files/'
 # Configuración para usar el servidor SMTP de Gmail
 # settings.py (modo prueba, no envia nada) email desabilitado
 #para suspender el envio de mails
-#EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 # si envia mails
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
