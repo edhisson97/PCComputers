@@ -2175,7 +2175,6 @@ def generarPdf(request):
         return render(request, "descargar_pdf_facturacion.html", {
             "encoded_pdf": encoded_pdf,                 # en el template usa |escapejs
             "download_filename": f"Factura_{numero_factura}.pdf",
-            "redirect_url": "/ventas/",      # cambia si quieres
         })
         ################### HASTA AQUI, LO QUE ESTA A CONTINUACION ES EL CODIGO ANTERIOR##########
         # Devolver el PDF como una respuesta HTTP
