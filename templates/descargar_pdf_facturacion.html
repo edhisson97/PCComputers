@@ -39,12 +39,110 @@
 </head>
 <body>
 
+    <style>
+      .venta-ok-container {
+        text-align: center;
+        margin-top: 30px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .venta-ok-icon {
+        font-size: 60px;
+        color: #22c55e; /* verde */
+      }
+
+      .venta-ok-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin: 10px 0 5px 0;
+        color: #1f2933;
+      }
+
+      .venta-ok-subtitle {
+        font-size: 14px;
+        color: #4b5563;
+        margin-bottom: 20px;
+      }
+
+      .download-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #2563eb;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
+      }
+
+      .download-btn:hover {
+        background-color: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 25px rgba(37, 99, 235, 0.32);
+      }
+
+      .download-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      }
+
+      .redirect-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #6d7471ff;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 15px;
+        box-shadow: 0 8px 20px rgba(52, 211, 153, 0.25);
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
+      }
+
+      .redirect-btn:hover {
+        background-color: #4e5855ff;
+        transform: translateY(-1px);
+        box-shadow: 0 12px 25px rgba(52, 211, 153, 0.32);
+      }
+
+      .redirect-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba(52, 211, 153, 0.25);
+      }
+    </style>
+
     <div class="message">El registro se generó con éxito y se envió al correo del cliente. <br>La página se redireccionará en <span class="countdown">5</span> segundos...</div>
 
+    <div class="venta-ok-container">
+      <div class="venta-ok-icon">✅️</div>
+      <div class="venta-ok-title">Venta realizada correctamente</div>
+      <div class="venta-ok-subtitle">
+        Si la descarga no inicia automáticamente,<br>
+        puede descargarla manualmente a continuación:
+      </div>
+
+      <a id="fallback-download"
+        class="download-btn"
+        href="data:application/pdf;base64,{{ encoded_pdf }}"
+        download="{{ download_filename|default:'recibo_pago.pdf' }}">
+        Descargar factura en PDF
+      </a>
+    </div>
+
+    <br><br>
+
+    <!-- Enlace para ir al panel de ventas si el usuario no quiere esperar -->
+    <a href="/ventas/" class="redirect-btn">
+      <i class="fa-solid fa-house"></i> Ir al panel de ventas
+    </a>
+
     <div class="footer">
+      {% load static %}
         <p>El equipo de PcComputers</p>
-        {% load static %}
-        <img src="{% static 'img/logo.png' %}" alt="Logo de Mi Sitio">
+
     </div>
 
      <script>
@@ -87,7 +185,7 @@
 
     // Redirección con cuenta regresiva
     var countdownElement = document.querySelector('.countdown');
-    var countdown = 5;
+    var countdown = 12;
     var interval = setInterval(function () {
       countdown--;
       if (countdownElement) countdownElement.textContent = countdown;

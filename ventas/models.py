@@ -148,3 +148,28 @@ class DescripcionEquipo(models.Model):
     problema = models.CharField(max_length=200, blank=True, null=True)
     solucion = models.CharField(max_length=200, blank=True, null=True)
     costo = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+# Modelo para almacenar los detalles de la factura
+class FacturaCompleta(models.Model):
+    numero_factura = models.CharField(max_length=50, unique=True)
+    cliente = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    descuento = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    fecha_emision = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=50, default='Pendiente')
+
+    def __str__(self):
+        return f"Factura {self.numero_factura} - {self.cliente.username}"
+
+# Modelo para almacenar el XML de la factura
+class FacturaXML(models.Model):
+    factura = models.OneToOneField(FacturaCompleta, on_delete=models.CASCADE, related_name='xml')
+    xml_content = models.TextField()  # El XML completo
+    xml_firmado = models.TextField()  # El XML firmado
+    estado_autorizacion = models.CharField(max_length=50, default='Pendiente')  # Estado de autorización
+    numero_autorizacion = models.CharField(max_length=100, null=True, blank=True)  # Número de autorización del SRI
+    fecha_autorizacion = models.DateTimeField(null=True, blank=True)  # Fecha de autorización
+
+    def __str__(self):
+        return f"XML de Factura {self.factura.numero_factura}"

@@ -7,12 +7,11 @@ from inicio.models import adicionalUsuario, Iva, DescuentoServicio
 from operacion.models import Gasto, Ingreso
 from productos.models import Producto, ColorStock
 from operacion.models import Caja
-from .models import Registro, Factura, Deudas, Pago, FacturaCredito, Servicio, PagoServicio, PagoServicioCombinado, PagoRegistroCombinado, PagoPendienteCombinado, Equipo, DescripcionEquipo
+from .models import Registro, Factura, FacturaCompleta, FacturaXML, Deudas, Pago, FacturaCredito, Servicio, PagoServicio, PagoServicioCombinado, PagoRegistroCombinado, PagoPendienteCombinado, Equipo, DescripcionEquipo
 import json
 from django.http import JsonResponse, FileResponse
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from django.http import HttpResponse
-from django.utils import timezone
 from django.db import transaction
 from datetime import date, datetime, timedelta
 from django.shortcuts import get_object_or_404
@@ -21,7 +20,7 @@ import base64
 import os
 from django.contrib import messages
 from django.http import Http404
-
+from django.utils import timezone as dj_timezone
 
 import tempfile
 from django.template.loader import render_to_string
@@ -251,7 +250,8 @@ def generar_recibo_servicios(request):
             otroProblema = request.POST.get('descripcion_otro')
             descripcion_problema = descripcion_problema+' - '+otroProblema
         
-        fecha_hora_actual = timezone.now()
+        #fecha_hora_actual = timezone.now()
+        fecha_hora_actual = dj_timezone.now()
         
                 
         
@@ -524,7 +524,7 @@ def generarrecibo_nuevo_abono(request):
             pagosServicio = PagoServicio.objects.filter(servicio=servicio)
         except PagoServicio.DoesNotExist:
             pagosServicio = ''
-        fecha_hora_actual = timezone.now()
+        fecha_hora_actual =  dj_timezone.now()
         
         #para el cajero
         vendedor = User.objects.get(username=request.user)
@@ -775,7 +775,7 @@ def finalizar_servicio(request):
 
         servicio = get_object_or_404(Servicio, pk=servicio_id)
 
-        fecha_hora_actual = timezone.now()
+        fecha_hora_actual = dj_timezone.now()
         # Actualizar los campos del servicio
         servicio.costo = costo
         servicio.abono = abono
@@ -1133,7 +1133,7 @@ def productos_facturar(request):
 # --- Diagnóstico básico de P12 vs RUC, validez y cadena ---
 from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography import x509
-from datetime import datetime, timezone
+from datetime import datetime
 import re
 
 def diagnostico_certificado_p12(p12_path: str, p12_pass: str, ruc_esperado: str) -> dict:
@@ -1174,11 +1174,15 @@ def diagnostico_certificado_p12(p12_path: str, p12_pass: str, ruc_esperado: str)
     info["ruc_en_cert"] = ruc_en_cert
     info["ruc_coincide"] = (ruc_en_cert == str(ruc_esperado))
 
-    # Validez temporal
-    ahora = datetime.now(timezone.utc)
-    info["vigente"] = (cert.not_valid_before <= ahora.replace(tzinfo=None) <= cert.not_valid_after)
+    # Validez temporal (UTC)
+    ahora = dj_timezone.now().astimezone(ZoneInfo("UTC")).replace(tzinfo=None)
+
+    info["vigente"] = (
+        cert.not_valid_before <= ahora <= cert.not_valid_after
+    )
 
     return {"ok": True, **info}
+
 
 def reciboPago(request):
     if request.method == 'POST':
@@ -1436,15 +1440,26 @@ def precheck_ruc_cert_xml(p12_bytes: bytes, p12_pass: bytes, xml_bytes: bytes, r
 
     # 2) Fechas (evite naive datetimes)
     try:
-        not_before = getattr(cert, "not_valid_before_utc", None) or cert.not_valid_before.replace(tzinfo=dt.timezone.utc)
-        not_after  = getattr(cert, "not_valid_after_utc",  None) or cert.not_valid_after.replace(tzinfo=dt.timezone.utc)
-        ahora_utc  = dt.datetime.now(dt.timezone.utc)
+        # Certificados nuevos (cryptography moderno) ya traen UTC
+        not_before = getattr(cert, "not_valid_before_utc", None)
+        not_after  = getattr(cert, "not_valid_after_utc",  None)
+
+        # Compatibilidad con certificados antiguos (fechas naive)
+        if not_before is None:
+            not_before = cert.not_valid_before.replace(tzinfo=ZoneInfo("UTC"))
+        if not_after is None:
+            not_after = cert.not_valid_after.replace(tzinfo=ZoneInfo("UTC"))
+
+        # Ahora en UTC usando Django
+        ahora_utc = dj_timezone.now().astimezone(ZoneInfo("UTC"))
+
         if not (not_before <= ahora_utc <= not_after):
             out["ok"] = False
             out["mensajes"].append("Certificado fuera de vigencia.")
     except Exception as e:
         out["ok"] = False
         out["mensajes"].append(f"No se pudieron leer fechas del certificado: {e}")
+
 
     # 3) Extraiga identificadores del sujeto
     ids = _extraer_ids_sujeto(cert)
@@ -1498,8 +1513,8 @@ def enviar_correo_async(mensaje, destinatario):
 def generarPdf(request):
     if request.method == 'POST':
         if 'confirmar_venta' in request.POST:
-            now_ec = datetime.now().astimezone(ZoneInfo("America/Guayaquil"))  # una sola vez
-            fecha_emision_str = now_ec.strftime("%d/%m/%Y")     
+            now_ec = dj_timezone.now().astimezone(ZoneInfo("America/Guayaquil"))
+            fecha_emision_str = now_ec.strftime("%d/%m/%Y")    
             
             
             nombre = request.POST.get('nombre')
@@ -2117,6 +2132,34 @@ def generarPdf(request):
 
         # (Opcional) eliminar archivo temporal
         
+        # Guardar los detalles de la factura
+        factura = FacturaCompleta.objects.create(
+            numero_factura=numero_factura,
+            cliente=usuario_adicional.user,
+            total=total,
+            descuento=descuento,
+            estado='Pendiente'  # Estado inicial de la factura
+        )
+
+        # Guardar el XML de la factura
+        factura_xml = FacturaXML.objects.create(
+            factura=factura,
+            xml_content=xml_firmado_path,  # El contenido del XML generado
+            xml_firmado=xml_firmado,  # El XML firmado
+            estado_autorizacion='Pendiente',  # O el estado que corresponda
+        )
+
+        if resultado_sri.get("ok"):
+            # Actualizar el estado del XML autorizado
+            factura_xml.estado_autorizacion = 'AUTORIZADO'
+            factura_xml.numero_autorizacion = resultado_sri.get("numero_autorizacion", "")
+            factura_xml.fecha_autorizacion = resultado_sri.get("fecha_autorizacion", "")
+            factura_xml.save()
+
+            factura.estado = 'Pagada'  # Cambiar el estado de la factura si corresponde
+            factura.save()
+
+        
         try:
             os.remove(output_path)
         except OSError:
@@ -2287,7 +2330,7 @@ def agregarPago(request):
         t = request.POST.get('total')
         tipoPago = request.POST.get('tipoPago')
         # Realizar acciones con los datos recibidos, como almacenarlos en una base de datos, procesarlos, etc.
-        fecha_hora_actual = timezone.now()
+        fecha_hora_actual = dj_timezone.now()
         
         if (tipoPago == 'Combinado'):
             totalCombinado = 0
@@ -2481,7 +2524,7 @@ def agregarPago(request):
                 fecha_objeto = datetime.strptime(facturaCredito.fecha, '%Y-%m-%d %H:%M:%S.%f%z')
 
                 # Convierte la fecha original a la zona horaria configurada en tus settings
-                fecha_con_zona = timezone.localtime(fecha_objeto)
+                fecha_con_zona = dj_timezone.localtime(fecha_objeto)
 
                 # Formatea la fecha y hora para mostrarlas en la plantilla
                 fecha_formateada = fecha_con_zona.strftime('%d/%m/%Y %H:%M:%S')
@@ -2615,7 +2658,7 @@ def comprobar_ventas_caja(request):
         fecha_inicio = caja.fecha_hora_inicio
         
         # Obtener la fecha y hora actual
-        fecha_actual = timezone.now()
+        fecha_actual = dj_timezone.now()
         
         # Filtrar los registros que están dentro del rango de fecha desde fecha_inicio hasta fecha_actual
         registros = Registro.objects.filter(fecha_hora__range=(fecha_inicio, fecha_actual))
