@@ -12,108 +12,129 @@
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
   <style>
-    html {
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
-      overflow-y: scroll;
-    }
+  html {
+    scroll-behavior: smooth;
+    overflow-y: scroll;
+  }
 
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: linear-gradient(to bottom, #000000, #020d15, #051a2a);
-      color: #e0e0e0;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
-    }
+  :root{
+    --bg0:#02060b;
+    --bg1:#061625;
+    --bg2:#071b2c;
 
-    section {
-      scroll-snap-align: start;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      padding: 80px 20px;
-      text-align: center;
-      position: relative;
-    }
+    --text:#eaf2ff;
+    --muted:#b7c3d6;
 
-    .fade-in {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 1s ease;
-      z-index: 1;
-    }
+    --accent:#00ffff;
+    --accent2:#00ffcc;
+    --card:rgba(10, 16, 24, 0.62);
+    --border:rgba(0, 255, 255, 0.18);
 
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    --shadow: 0 18px 50px rgba(0, 0, 0, .45);
+  }
 
-    .section-title {
-      font-size: 2.5rem;
-      background: linear-gradient(90deg, #00ffcc, #00ffff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 1rem;
-    }
+  body{
+    background:
+      radial-gradient(1200px 800px at 20% -10%, rgba(0,255,255,.10), transparent 55%),
+      radial-gradient(900px 600px at 90% 10%, rgba(0,255,204,.10), transparent 60%),
+      linear-gradient(to bottom, var(--bg0), var(--bg1), var(--bg2));
+    color: var(--text);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
 
-    .section-subtitle {
-      font-size: 1.2rem;
-      color: #bbbbbb;
-      max-width: 700px;
-    }
+  section{
+    position: relative;
+  }
 
-    .tech-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 1.5rem;
-      text-decoration: none;
-      color: #00ffff;
-      animation: float 4s ease-in-out infinite;
-      transition: transform 0.4s ease, text-shadow 0.4s ease;
-    }
+  /* Separador/halo para dar “vida” a cada sección */
+  section::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(600px 220px at 50% 10%, rgba(0,255,255,.10), transparent 65%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .fade-in{ z-index:1; }
+
+  /* Resaltado tipo “neón” para palabras clave */
+  .neon{
+    color: var(--text);
+    font-weight: 700;
     
-    .tech-item i {
-      font-size: 2.8rem;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 0 10px #00ffff;
-      transition: transform 0.4s ease, text-shadow 0.4s ease;
-    }
-    
-    .tech-item span {
-      font-size: 0.9rem;
-      color: #00ffff;
-      text-shadow: 0 0 5px #00ffff;
-      transition: text-shadow 0.4s ease;
-    }
-    
-    .tech-item:hover {
-      transform: scale(1.15);
-    }
-    
-    .tech-item:hover i,
-    .tech-item:hover span {
-      text-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    
-    
-    .terminal-bg {
+    padding: .15rem .5rem;
+    border-radius: 999px;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 10% 20%, rgba(0, 255, 204, 0.18) 0, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(0, 140, 255, 0.18) 0, transparent 50%),
+      linear-gradient(to bottom, #020617, #020d25, #020617);
+    color: #e5e7eb;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+  }
+
+  section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 90px 20px 70px;
+    text-align: center;
+    position: relative;
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.9s ease;
+    z-index: 1;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-title {
+    font-size: 2.6rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #22c55e, #06b6d4, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    color: #eceef0ff;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* --- HERO / TERMINAL --- */
+
+  .hero {
+    overflow: hidden;
+  }
+
+  .terminal-bg {
       position: absolute;
-      top: 0;
+      top: 10px;
       left: 0;
       width: 100%;
       height: 100%;
       padding: 60px 40px 40px 40px;
-      color: #00ffcc;
+      color: #22c55e;
       font-family: 'Courier New', monospace;
       font-size: 1rem;
       background: rgba(0, 0, 0, 0.2);
@@ -129,66 +150,456 @@
       white-space: pre-wrap;
       line-height: 1.5;
     }
-    
-    .blink-cursor {
-      display: inline-block;
-      width: 10px;
-      animation: blink 1s step-end infinite;
-      color: #00ffcc;
-    }
-    
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-    
-    
 
-    .card-custom {
-      background: rgba(20, 20, 20, 0.6);
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 30px;
-      margin: 10px;
-      transition: all 0.4s ease;
-      backdrop-filter: blur(8px);
+
+  .blink-cursor {
+    display: inline-block;
+    width: 10px;
+    animation: blink 1s step-end infinite;
+    color: #22c55e;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .hero .fade-in {
+    position: relative;
+    z-index: 2;
+    margin-top: 40px;
+  }
+
+  .hero .section-title {
+    font-size: 3rem;
+  }
+
+  .hero .section-subtitle {
+    font-size: 1.05rem;
+  }
+
+  /* --- CARDS --- */
+
+  .card-custom {
+    background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
+    border: 1px solid #22c55e;
+    border-radius: 18px;
+    padding: 28px;
+    margin: 10px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(14px);
+    max-width: 360px;
+  }
+
+  .card-custom h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #00ffcc;
+  }
+
+  .card-custom p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #eceef0ff;
+  }
+
+  .card-custom:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 16px 40px rgba(6, 182, 212, 0.25),
+      0 0 0 1px rgba(94, 234, 212, 0.3);
+    border-color: #22c55e;
+  }
+
+  
+
+.card-icon{
+  width: 52px;
+  height: 52px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+
+}
+
+.card-icon i{
+  font-size: 35px;
+  background: #eceef0ff;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.25);
+}
+
+
+  /* --- BOTÓN PRINCIPAL --- */
+
+  .btn-primary {
+    background-image: linear-gradient(120deg, #22c55e, #06b6d4, #6366f1);
+    background-size: 220% 220%;
+    border: none;
+    color: #f9fafb;
+    font-weight: 600;
+    padding: 10px 26px;
+    border-radius: 999px;
+    font-size: 1rem;
+    transition: background-position 0.4s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.35);
+  }
+
+  .btn-primary:hover {
+    background-position: 100% 0;
+    transform: translateY(-1px);
+    box-shadow: 0 16px 40px rgba(56, 189, 248, 0.45);
+    color: #020617;
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
+  }
+
+  /* --- NAVBAR --- */
+
+  .navbar {
+    background: radial-gradient(circle at top left, #020617, #020617);
+    box-shadow: 0 2px 16px rgba(15, 23, 42, 0.9);
+  }
+
+  .navbar-dark .navbar-nav .nav-link {
+    color: #9ca3af;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .navbar-dark .navbar-nav .nav-link:hover {
+    color: #e5e7eb;
+  }
+
+  
+
+  /* --- TECNOLOGÍAS --- */
+
+  .tech-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.4rem;
+  text-decoration: none;
+  color: #a5f3fc;
+  animation: float 4s ease-in-out infinite;
+  transition: transform 0.35s ease, text-shadow 0.35s ease, opacity 0.35s ease;
+  opacity: 0.9;
+}
+
+/* Nuevo contenedor circular para alinear todos los iconos */
+.tech-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+  background: radial-gradient(circle, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+}
+
+.tech-item i {
+  font-size: 2.3rem;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+}
+
+.tech-item span {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tech-item:hover {
+  transform: translateY(-6px) scale(1.06);
+  text-shadow:
+    0 0 14px rgba(56, 189, 248, 1),
+    0 0 28px rgba(37, 99, 235, 0.8);
+  opacity: 1;
+}
+
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* --- PROYECTOS --- */
+
+  .proyectos-filtros{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:25px;
+}
+
+.chip{
+  border:1px solid rgba(0,255,255,.25);
+  background: rgba(0, 0, 0, .25);
+  color:#c9fefe;
+  padding:8px 14px;
+  border-radius:999px;
+  cursor:pointer;
+  transition: .2s ease;
+  font-weight:600;
+  font-size:.9rem;
+}
+.chip:hover{ transform: translateY(-1px); box-shadow:0 8px 20px rgba(0,255,204,.12); }
+.chip.active{
+  background: linear-gradient(90deg,#00ffcc,#00ffff);
+  color:#001018;
+  border-color: transparent;
+}
+
+.project-box{
+  background: rgba(20,20,20,.55);
+  border:1px solid rgba(0,255,255,.12);
+  border-radius:16px;
+  overflow:hidden;
+  backdrop-filter: blur(10px);
+  transition:.25s ease;
+  height:100%;
+}
+.project-box:hover{
+  transform: translateY(-6px);
+  box-shadow:0 18px 45px rgba(0,255,204,.18);
+  border-color: rgba(0,255,255,.35);
+}
+
+.project-img{
+  position:relative;
+  height:200px;
+  overflow:hidden;
+}
+.project-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter: contrast(1.05) brightness(.95);
+  transform: scale(1.02);
+  transition: .35s ease;
+}
+.project-box:hover .project-img img{ transform: scale(1.08); }
+
+.project-overlay{
+  position:absolute;
+  left:12px; bottom:12px;
+  display:flex; gap:8px;
+  flex-wrap:wrap;
+}
+.badge-glow{
+  font-size:.75rem;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(0,0,0,.45);
+  border:1px solid rgba(0,255,255,.25);
+  color:#bffcff;
+  box-shadow: 0 0 18px rgba(0,255,255,.08);
+}
+
+.project-body{ padding:18px; text-align:left; }
+.project-title{
+  font-size:1.05rem;
+  margin:0 0 8px 0;
+  color:#eaffff;
+}
+.project-desc{
+  color:#b9c2c7;
+  font-size:.92rem;
+  line-height:1.5;
+  min-height:84px;
+}
+
+.project-metrics{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:10px 0 14px 0;
+}
+.metric{
+  font-size:.82rem;
+  color:#c6fffb;
+  background: rgba(0,255,204,.06);
+  border:1px solid rgba(0,255,204,.12);
+  padding:6px 10px;
+  border-radius:10px;
+}
+
+.project-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+
+.btn-glow{
+  display:inline-block;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:700;
+  border:none;
+  color:#001018;
+  background: linear-gradient(90deg,#00ffcc,#00ffff);
+  text-decoration:none;
+  transition:.2s ease;
+}
+.btn-glow:hover{ filter:brightness(1.05); transform:translateY(-1px); }
+
+.btn-outline-glow{
+  display:inline-block;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:700;
+  border:1px solid rgba(0,255,255,.35);
+  color:#cfffff;
+  background: rgba(0,0,0,.15);
+  text-decoration:none;
+  transition:.2s ease;
+}
+.btn-outline-glow:hover{ background: rgba(0,255,255,.08); transform:translateY(-1px); }
+
+.proyectos-cta{
+  max-width:900px;
+  margin: 0 auto;
+  padding:24px;
+  border-radius:16px;
+  border:1px solid rgba(0,255,255,.12);
+  background: rgba(0,0,0,.20);
+  box-shadow: 0 12px 40px rgba(0,255,204,.10);
+  text-align:center;
+}
+.cta-title{
+  margin:0;
+  font-size:1.4rem;
+  background: linear-gradient(90deg, #00ffcc, #00ffff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.cta-sub{ color:#b9c2c7; margin:8px 0 0 0; }
+
+.project-click { cursor: pointer; }
+.project-click:focus { outline: 2px solid rgba(0,255,255,.35); outline-offset: 4px; }
+
+.modal-tech{
+  background: rgba(35, 35, 36, 0.92);
+  border: 1px solid rgba(0,255,255,.18);
+  box-shadow: 0 25px 80px rgba(0,255,204,.18);
+  backdrop-filter: blur(12px);
+  color: #eaffff;
+}
+.modal-tech .modal-header{
+  border-bottom: 1px solid rgba(0,255,255,.12);
+}
+.modal-tech .modal-footer{
+  border-top: 1px solid rgba(0,255,255,.12);
+}
+.modal-desc{
+  color: #b9c2c7;
+}
+.mini-badges{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.carousel-inner img{
+  max-height: 70vh;
+  object-fit: cover;
+}
+
+
+  /* --- CONTACTO --- */
+
+  #contacto .section-subtitle strong {
+    color: #e5e7eb;
+  }
+
+  /* --- RESPONSIVE --- 
+
+  @media (max-width: 768px) {
+    .terminal-bg {
+      height: 58%;
+      padding: 20px;
+      font-size: 0.8rem;
     }
 
-    .card-custom:hover {
-      box-shadow: 0 10px 20px rgba(0, 255, 204, 0.3);
-      border-color: #00ffff;
+    .hero .section-title {
+      font-size: 2.3rem;
     }
 
-    .btn-primary {
-      background: linear-gradient(to right, #00ffcc, #00ffff);
-      border: none;
-      color: #000;
-      font-weight: bold;
-      padding: 10px 25px;
-      border-radius: 25px;
-      font-size: 1.1rem;
-      transition: all 0.3s ease;
+    section {
+      padding-top: 80px;
     }
+  }*/
 
-    .btn-primary:hover {
-      filter: brightness(1.1);
-      color: #fff;
-    }
+  /* Móviles (<= 500px) */
+@media (max-width: 500px) {
+  .section-title {
+    font-size: 20pxs;      /* ajuste recomendado */
+    line-height: 1.1;
+    margin: 16px 10px;
+    word-break: break-word; /* evita que “CodeByEdhisson” se salga */
+  }
 
-    .navbar-dark .navbar-nav .nav-link {
-      color: #ccc;
-      transition: color 0.3s ease;
-    }
+  .section-subtitle{
+    font-size: 1rem;
+    max-width: 95%;
+  }
+}
 
-    .navbar-dark .navbar-nav .nav-link:hover {
-      color: #00ffff;
-    }
+/* ===== Controles del carrusel: visibles en fondo oscuro ===== */
+#carouselProyecto1 .carousel-control-prev,
+#carouselProyecto1 .carousel-control-next{
+  width: 60px;               /* zona clic más grande */
+  opacity: 1;                /* que no se vean “apagados” */
+}
 
-    .navbar {
-      background: #111; /* Titanium color */
-      box-shadow: 0 2px 10px rgba(0, 255, 204, 0.1);
-    }
+#carouselProyecto1 .carousel-control-prev-icon,
+#carouselProyecto1 .carousel-control-next-icon{
+  width: 2.6rem;
+  height: 2.6rem;
 
-  </style>
+  /* “pill” con contraste */
+  background-color: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(0, 255, 204, 0.35);
+  border-radius: 999px;
+
+  /* glow tecnológico */
+  box-shadow: 0 0 0 4px rgba(0, 255, 204, 0.08), 0 10px 30px rgba(0,0,0,0.35);
+
+  /* suaviza el fondo */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  /* centra el icono */
+  background-size: 55% 55%;
+}
+
+/* Hover/active para “vida” */
+#carouselProyecto1 .carousel-control-prev:hover .carousel-control-prev-icon,
+#carouselProyecto1 .carousel-control-next:hover .carousel-control-next-icon{
+  background-color: rgba(0, 0, 0, 0.72);
+  border-color: rgba(0, 255, 204, 0.75);
+  box-shadow: 0 0 0 6px rgba(0, 255, 204, 0.10), 0 14px 40px rgba(0,0,0,0.45);
+  transform: translateY(-1px);
+}
+
+#carouselProyecto1 .carousel-control-prev:active .carousel-control-prev-icon,
+#carouselProyecto1 .carousel-control-next:active .carousel-control-next-icon{
+  transform: translateY(0);
+}
+
+
+</style>
+
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -219,8 +630,11 @@
     
     <div class="fade-in">
       <h1 class="section-title">CodeByEdhisson</h1>
-      <p class="section-subtitle">Creamos soluciones web funcionales, elegantes y responsivas.<br>Desde una idea, hasta el desarrollo completo.</p>
-      <a href="#contacto" class="btn btn-primary mt-4">Contáctanos</a>
+      <p class="section-subtitle">
+        Diseñamos y desarrollamos productos web <span class="neon">rápidos</span>, <span class="neon">seguros</span> y <span class="neon">escalables</span>.
+        Desde la idea hasta el despliegue, con enfoque en resultados.
+      </p>
+      <a href="#contacto" class="btn btn-primary mt-4">Agendar una reunión</a>
     </div>
   </section>
 
@@ -229,63 +643,432 @@
       <h2 class="section-title">¿Qué hacemos?</h2>
       <div class="d-flex flex-column flex-md-row justify-content-center">
         <div class="card-custom mx-2 mb-3">
-          <h5>Desarrollo a medida</h5>
-          <p>Webs personalizadas con funcionalidades únicas.</p>
+          <div class="card-icon">
+            <i class="bi bi-window-stack"></i>
+          </div>
+          <h5>Aplicaciones web a la medida</h5>
+          <p>Diseño y desarrollo de plataformas pensadas específicamente para los procesos de su empresa:
+          paneles administrativos, módulos internos y experiencias para sus clientes.</p>
         </div>
         <div class="card-custom mx-2 mb-3">
-          <h5>Diseño adaptativo</h5>
-          <p>Tu web se verá genial en cualquier dispositivo.</p>
+          <div class="card-icon">
+            <i class="bi bi-gear-wide-connected"></i>
+          </div>
+          <h5>Automatización y flujos inteligentes</h5>
+          <p>Digitalización de tareas repetitivas, generación de documentos, notificaciones automáticas
+          y conexión con servicios externos para ahorrar tiempo y errores.</p>
         </div>
         <div class="card-custom mx-2 mb-3">
-          <h5>Integraciones completas</h5>
-          <p>APIs, pagos, bases de datos, seguridad y más.</p>
+          <div class="card-icon">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <h5>Escalabilidad y seguridad</h5>
+          <p>Arquitecturas pensadas para crecer: buenas prácticas de desarrollo, bases de datos robustas
+          e infraestructura lista para soportar más usuarios.</p>
         </div>
       </div>
     </div>
   </section>
 
   <section id="tecnologias">
-    <div class="fade-in">
-      <h2 class="section-title">Tecnologías</h2>
-      <p class="section-subtitle">Utilizamos herramientas modernas para ofrecer soluciones robustas y escalables.</p>
-      <!-- Contenedor de tecnologías -->
-      <div class="d-flex justify-content-center flex-wrap text-center mt-5">
-        <!--<a href="https://www.python.org/" target="_blank" class="tech-item">
+  <div class="fade-in">
+    <h2 class="section-title">Tecnologías</h2>
+    <p class="section-subtitle">
+      Combinamos frameworks modernos con buenas prácticas de arquitectura para construir soluciones sólidas,
+      mantenibles y preparadas para el futuro.
+    </p>
+
+
+    <div class="d-flex justify-content-center flex-wrap text-center mt-5">
+      <a href="https://www.djangoproject.com/" target="_blank" class="tech-item">
+        <div class="tech-icon">
           <i class='bx bxl-python'></i>
-          <span>Python</span>
-        </a>-->
-        <a href="https://getbootstrap.com" target="_blank" class="tech-item">
+        </div>
+        <span>Django &amp; Python</span>
+      </a>
+
+      <a href="https://getbootstrap.com" target="_blank" class="tech-item">
+        <div class="tech-icon">
           <i class="bi bi-bootstrap"></i>
-          <span>Bootstrap</span>
-        </a>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" class="tech-item">
-          <i class="bi bi-filetype-html"></i>
-          <span>HTML</span>
-        </a>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank" class="tech-item">
-          <i class="bi bi-filetype-css"></i>
-          <span>CSS</span>
-        </a>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" class="tech-item">
+        </div>
+        <span>Bootstrap</span>
+      </a>
+
+      <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" class="tech-item">
+        <div class="tech-icon">
           <i class="bi bi-filetype-js"></i>
-          <span>JavaScript</span>
-        </a>
-        <!--<a href="https://www.mysql.com/" target="_blank" class="tech-item">
+        </div>
+        <span>JavaScript</span>
+      </a>
+
+      <a href="#" class="tech-item">
+        <div class="tech-icon">
           <i class="bi bi-database"></i>
-          <span></span>
-        </a>-->
-      </div>
-      
+        </div>
+        <span>SQL Databases</span>
+      </a>
     </div>
-  </section>
+
+    <!-- Frase sobre aprender nuevas tecnologías -->
+    <p class="section-subtitle mt-3">
+      ¿No encuentra la tecnología que busca? <span class="neon">La aprendemos por el proyecto</span> y nos adaptamos a su stack.
+    </p>
+  </div>
+</section>
+
 
   <section id="proyectos">
-    <div class="fade-in">
-      <h2 class="section-title">Proyectos</h2>
-      <p class="section-subtitle">Algunos de los desarrollos que hemos realizado para distintos sectores.</p>
-      <img src="https://via.placeholder.com/800x400" alt="Mockup proyecto" class="img-fluid rounded mt-3">
+  <div class="fade-in container">
+    <h2 class="section-title">Proyectos</h2>
+    <p class="section-subtitle">
+      Soluciones reales, orientadas a resultados. Aquí algunos ejemplos de lo que podemos construir.
+    </p>
+
+    <!-- Filtros -->
+    <div class="proyectos-filtros">
+      <button class="chip active" data-filter="all">Todos</button>
+      <button class="chip" data-filter="web">Web</button>
+      <button class="chip" data-filter="ecommerce">E-commerce</button>
+      <button class="chip" data-filter="dash">Dashboards</button>
+      <button class="chip" data-filter="api">Integraciones</button>
     </div>
-  </section>
+
+    <!-- Grid -->
+    <div class="row g-4 mt-4" id="proyectos-grid">
+
+      <!-- Proyecto 1 -->
+      <!-- Proyecto 1 (clickeable) -->
+      <div class="col-12 col-md-6 col-lg-4 proyecto-card" data-cat="ecommerce dash">
+        <div class="project-box project-click"
+            role="button"
+            tabindex="0"
+            data-bs-toggle="modal"
+            data-bs-target="#modalProyecto1">
+
+          <div class="project-img">
+            <img src="{% static 'img/demo1.png' %}" alt="Proyecto e-commerce" />
+            <div class="project-overlay">
+              <span class="badge-glow">E-commerce</span>
+              <span class="badge-glow">Pagos</span>
+              <span class="badge-glow">Panel</span>
+            </div>
+          </div>
+
+          <div class="project-body">
+            <h5 class="project-title">Tienda online + Panel administrativo</h5>
+            <p class="project-desc">
+              <b>Incluye:</b> catálogo, carrito, checkout y gestión completa desde un panel.<br>
+              <b>Funcionalidades Clave:</b> pagos con tarjeta, ofertas/cupones, control de inventario, pedidos y reportes.
+            </p>
+
+            <div class="project-metrics">
+              <div class="metric"><i class="bi bi-lightning-charge"></i> Flujo de compra optimizado</div>
+              <div class="metric"><i class="bi bi-shield-check"></i> Roles y seguridad</div>
+            </div>
+
+            <div class="project-actions">
+              <!-- opcional: mantener botones; no chocan con el modal -->
+              <a class="btn btn-outline-glow" href="/" target="_blank" onclick="event.stopPropagation()">Ver demo</a>
+              <a class="btn btn-glow" href="#contacto" onclick="event.stopPropagation()">Solicitar algo similar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Proyecto 2 -->
+      <div class="col-12 col-md-6 col-lg-4 proyecto-card" data-cat="web api">
+        <div class="project-box project-click" role="button" tabindex="0" data-bs-toggle="modal" data-bs-target="#modalProyecto2">
+          <div class="project-img">
+            <img src="{% static 'img/demo2.png' %}" alt="Landing / Web corporativa" />
+            <div class="project-overlay">
+              <span class="badge-glow">Facturación</span>
+              <span class="badge-glow">Roles</span>
+              <span class="badge-glow">Administración</span>
+            </div>
+          </div>
+
+          <div class="project-body">
+             <h5 class="project-title">Suite Comercial: Online + Ventas + Operaciones</h5>
+            <p class="project-problem">
+              <span class="project-label">Problema:</span>
+              procesos separados para ventas, caja, inventario, servicios y reportes.
+            </p>
+            <p class="project-solution">
+              <span class="project-label">Solución:</span>
+              plataforma integral con eCommerce + POS/ventas + operaciones para tienda física y canal online.
+            </p>
+
+            <div class="mini-badges mt-3">
+              <span class="badge-glow">POS / Ventas</span>
+              <span class="badge-glow">Operaciones</span>
+              <span class="badge-glow">Caja</span>
+              <span class="badge-glow">Crédito</span>
+              <span class="badge-glow">Servicios</span>
+              <span class="badge-glow">Roles</span>
+            </div>
+
+            <div class="project-actions">
+              <a class="btn btn-outline-glow" href="#" target="_blank">Ver demo</a>
+              <a class="btn btn-glow" href="#contacto">Cotizar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proyecto 3 -->
+      <div class="col-12 col-md-6 col-lg-4 proyecto-card" data-cat="web api">
+        <div class="project-box project-click" role="button" tabindex="0" data-bs-toggle="modal" data-bs-target="#modalProyecto3">
+          <div class="project-img">
+            <img src="{% static 'img/demo3.png' %}" alt="Landing / Web corporativa" />
+            <div class="project-overlay">
+              <span class="badge-glow">Notas de pago</span>
+              <span class="badge-glow">Roles</span>
+              <span class="badge-glow">Administración</span>
+              <span class="badge-glow">Notificaciones</span>
+            </div>
+          </div>
+
+          <div class="project-body">
+             <h5 class="project-title">Sistema de cobros de agua potable</h5>
+            <p class="project-problem">
+              <span class="project-label">Problema:</span>
+              cartera vencida, control manual y poca visibilidad de deuda por cliente.
+            </p>
+            <p class="project-solution">
+              <span class="project-label">Solución:</span>
+              sistema centralizado con registro de clientes, emisión de nota de pago,
+              notificaciones automáticas y consulta en línea del valor a pagar.
+            </p>
+
+            <div class="mini-badges mt-3">
+              <span class="badge-glow">Clientes / Lecturas</span>
+              <span class="badge-glow">Notas de pago</span>
+              <span class="badge-glow">Notificaciones</span>
+              <span class="badge-glow">Portal usuario</span>
+            </div>
+
+            <div class="project-actions">
+              <a class="btn btn-glow" href="#contacto">Soliciar uno similar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <!-- CTA final -->
+    <div class="proyectos-cta mt-5">
+      <h4 class="cta-title">¿Quiere un proyecto similar?</h4>
+      <p class="cta-sub">Se puede cotizar con alcance claro, tiempos y entregables. Respuesta rápida.</p>
+      <a href="#contacto" class="btn btn-glow mt-2">Solicitar desarrollo</a>
+    </div>
+  </div>
+</section>
+
+    <!-- Modal Proyecto 1 -->
+    <div class="modal fade" id="modalProyecto1" tabindex="-1" aria-labelledby="modalProyecto1Label" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content modal-tech">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalProyecto1Label">Proyecto 1 — Tienda online + Panel administrativo</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Carrusel Bootstrap -->
+            <div id="carouselProyecto1" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselProyecto1" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                <button type="button" data-bs-target="#carouselProyecto1" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#carouselProyecto1" data-bs-slide-to="2"></button>
+              </div>
+
+              <div class="carousel-inner rounded-3 overflow-hidden">
+                <div class="carousel-item active">
+                  <img src="{% static 'img/demo1.png' %}" class="d-block w-100" alt="Demo 1 - Home">
+                </div>
+                <div class="carousel-item">
+                  <img src="{% static 'img/demo11.png' %}" class="d-block w-100" alt="Demo 2 - Carrito">
+                </div>
+                <div class="carousel-item">
+                  <img src="{% static 'img/demo12.png' %}" class="d-block w-100" alt="Demo 3 - Panel">
+                </div>
+              </div>
+
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselProyecto1" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselProyecto1" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+              </button>
+            </div>
+
+            <!-- Texto debajo del carrusel (opcional) -->
+            <div class="modal-desc mt-3">
+              <div class="mini-badges">
+                <span class="badge-glow">Login / Roles</span>
+                <span class="badge-glow">Inventario</span>
+                <span class="badge-glow">Reportes</span>
+                <span class="badge-glow">Pagos con tarjeta</span>
+                <span class="badge-glow">Carrito / Checkout</span>
+                <span class="badge-glow">Ofertas</span>
+              </div>
+              <p class="mt-3 mb-0">
+                Vista demo del sistema completo: <b>catálogo</b>, <b>carrito</b>, <b>pago</b> y <b>panel administrativo</b>.
+                Todo en un solo flujo, rápido y seguro.
+              </p>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <a class="btn btn-outline-glow" href="/" target="_blank">Ver demo en vivo</a>
+            <a class="btn btn-glow" href="#contacto" data-bs-dismiss="modal">Solicitar desarrollo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================
+     MODAL PROYECTO 2
+     ======================= -->
+    <div class="modal fade" id="modalProyecto2" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-tech">
+
+          <div class="modal-header border-0">
+            <div>
+              <h5 class="modal-title mb-1">Proyecto 2 — Suite Comercial: Online + Ventas + Operaciones</h5>
+              <small class="modal-subtitle">
+                eCommerce + POS/ventas + operaciones para tienda física: cajas, crédito, roles, servicios y reportes.
+              </small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Carrusel -->
+            <div id="carouselProyecto2" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselProyecto2" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                <button type="button" data-bs-target="#carouselProyecto2" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#carouselProyecto2" data-bs-slide-to="2"></button>
+              </div>
+
+              <div class="carousel-inner rounded-4 overflow-hidden">
+                <!-- Cambie estas imágenes por sus capturas -->
+                <div class="carousel-item active">
+                  <img src="{% static 'img/demo2.png' %}" class="d-block w-100" alt="Demo 2 - Facturacion">
+                </div>
+                <div class="carousel-item">
+                  <img src="{% static 'img/demo21.png' %}" class="d-block w-100" alt="Demo 2 - Operaciones">
+                </div>
+                <div class="carousel-item">
+                  <img src="{% static 'img/demo22.png' %}" class="d-block w-100" alt="Demo 2 - Panel">
+                </div>
+              </div>
+
+              <!-- Controles -->
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselProyecto2" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselProyecto2" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+              </button>
+            </div>
+
+            <!-- Texto debajo -->
+            <div class="modal-desc mt-3">
+              <div class="mini-badges">
+                <span class="badge-glow">POS / Ventas</span>
+                <span class="badge-glow">Operaciones</span>
+                <span class="badge-glow">Caja</span>
+                <span class="badge-glow">Crédito</span>
+                <span class="badge-glow">Servicios técnicos</span>
+                <span class="badge-glow">Roles y permisos</span>
+                <span class="badge-glow">Inventario</span>
+                <span class="badge-glow">Reportes</span>
+              </div>
+
+              <p class="mt-3 mb-0">
+                Demo del ecosistema completo para tienda física y canal online:
+                <strong>ventas, caja, inventario, operaciones y servicios</strong> trabajando en un solo sistema.
+              </p>
+              <p class="mt-2 mb-0 modal-muted">
+                Todo queda centralizado, con trazabilidad por usuario y control por roles.
+              </p>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <a class="btn btn-outline-glow" href="" target="_blank">Ver video demo</a>
+            <a class="btn btn-glow" href="#contacto" data-bs-dismiss="modal">Solicitar desarrollo</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================
+     MODAL PROYECTO 3
+     ======================= -->
+    <div class="modal fade" id="modalProyecto3" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-tech">
+
+          <div class="modal-header border-0">
+            <div>
+              <h5 class="modal-title mb-1">Proyecto 3 — Sistema de Cobros de Agua Potable</h5>
+              <small class="modal-subtitle">
+                Demo del flujo completo: registro de clientes, control de valores por pagar,
+                emisión de nota de pago, notificaciones por deuda y portal web para consulta en línea.
+              </small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Carrusel -->
+            <div id="carouselProyecto2" class="carousel slide" data-bs-ride="carousel">
+              
+              <div class="carousel-inner rounded-4 overflow-hidden">
+                <!-- Cambie estas imágenes por sus capturas -->
+                 
+                <div class="carousel-item active">
+                  <div class="ratio ratio-16x9">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/rVeOpXS31xo?si=hnORfpmUvB1D5Mfb" title="Sistema de cobros de agua potable" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Texto debajo -->
+            <div class="modal-desc mt-3">
+              <div class="mini-badges">
+                <span class="badge-glow">Panel Admin</span>
+                <span class="badge-glow">Notas de pago</span>
+                <span class="badge-glow">Email automático</span>
+                <span class="badge-glow">Consulta online</span>
+                <span class="badge-glow">Cifras de consumo</span>
+              </div>           
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <a class="btn btn-glow" href="#contacto" data-bs-dismiss="modal">Solicitar más información</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
 
   <section id="contacto">
     <div class="fade-in">
@@ -312,6 +1095,7 @@
     const lines = [
     "> Iniciando servidor...",
     "> Cargando módulos... 30%",
+    "> Cargando módulos... 70%",
     "> Cargando módulos... 100%",
     "> Conectando a base de datos...",
     "> Proyecto desplegado exitosamente!!! 🎉"
@@ -351,18 +1135,35 @@
     charIndex++;
 
     if (charIndex < currentLine.length) {
-      setTimeout(typeLine, 80); // más lento
+      setTimeout(typeLine, 70); // más lento
     } else {
       charIndex = 0;
       currentLineElement.cursorSpan.remove();
       currentLineElement = null;
       lineIndex++;
-      setTimeout(typeLine, 600); // pausa antes de siguiente línea
+      setTimeout(typeLine, 400); // pausa antes de siguiente línea
     }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     typeLine();
+  });
+
+  const chips = document.querySelectorAll('.chip');
+  const cards = document.querySelectorAll('.proyecto-card');
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+
+      const filter = chip.dataset.filter;
+      cards.forEach(card => {
+        const cats = (card.dataset.cat || '').split(' ');
+        const show = (filter === 'all') || cats.includes(filter);
+        card.style.display = show ? '' : 'none';
+      });
+    });
   });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
