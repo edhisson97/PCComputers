@@ -1706,7 +1706,7 @@ def generarPdf(request):
             #enviar por correo el pdf
             destinatario = email  # O la dirección de correo electrónico a la que deseas enviar el correo
             asunto = 'Facturacion emitida por PC Computers'
-            cuerpo = 'Adjunto encontrarás la factura emitida por PC Computers.'
+            cuerpo = 'Adjunto encontrarás la Nota de Venta emitida por PC Computers.'
             archivo_adjunto = output_path
             # Crear mensaje de correo electrónico
             mensaje = EmailMultiAlternatives(asunto, cuerpo, 'noreply@example.com', [destinatario])
@@ -1815,7 +1815,7 @@ def generarPdf(request):
                 # Ejemplo: solo advertir y seguir firmando
                 print("PRECHECK advertencias:", pre.get("mensajes"))
 
-        #final pre check 
+            #final pre check 
             
             # 3) Firmar
             xml_firmado = firmar_xml_xades(xml_bytes)
@@ -2132,38 +2132,39 @@ def generarPdf(request):
 
         # (Opcional) eliminar archivo temporal
         
-        # Guardar los detalles de la factura
-        factura = FacturaCompleta.objects.create(
-            numero_factura=numero_factura,
-            cliente=usuario_adicional.user,
-            total=total,
-            descuento=descuento,
-            estado='Pendiente'  # Estado inicial de la factura
-        )
+        if not (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
+            # Guardar los detalles de la factura
+            factura = FacturaCompleta.objects.create(
+                numero_factura=numero_factura,
+                cliente=usuario_adicional.user,
+                total=total,
+                descuento=descuento,
+                estado='Pendiente'  # Estado inicial de la factura
+            )
 
-        # Guardar el XML de la factura
-        factura_xml = FacturaXML.objects.create(
-            factura=factura,
-            xml_content=xml_firmado_path,  # El contenido del XML generado
-            xml_firmado=xml_firmado,  # El XML firmado
-            estado_autorizacion='Pendiente',  # O el estado que corresponda
-        )
+            # Guardar el XML de la factura
+            factura_xml = FacturaXML.objects.create(
+                factura=factura,
+                xml_content=xml_firmado_path,  # El contenido del XML generado
+                xml_firmado=xml_firmado,  # El XML firmado
+                estado_autorizacion='Pendiente',  # O el estado que corresponda
+            )
 
-        if resultado_sri.get("ok"):
-            # Actualizar el estado del XML autorizado
-            factura_xml.estado_autorizacion = 'AUTORIZADO'
-            factura_xml.numero_autorizacion = resultado_sri.get("numero_autorizacion", "")
-            factura_xml.fecha_autorizacion = resultado_sri.get("fecha_autorizacion", "")
-            factura_xml.save()
+            if resultado_sri.get("ok"):
+                # Actualizar el estado del XML autorizado
+                factura_xml.estado_autorizacion = 'AUTORIZADO'
+                factura_xml.numero_autorizacion = resultado_sri.get("numero_autorizacion", "")
+                factura_xml.fecha_autorizacion = resultado_sri.get("fecha_autorizacion", "")
+                factura_xml.save()
 
-            factura.estado = 'Pagada'  # Cambiar el estado de la factura si corresponde
-            factura.save()
+                factura.estado = 'Pagada'  # Cambiar el estado de la factura si corresponde
+                factura.save()
 
-        
-        try:
-            os.remove(output_path)
-        except OSError:
-            pass  # no bloquear por esto
+            
+            try:
+                os.remove(output_path)
+            except OSError:
+                pass  # no bloquear por esto
 
         log = logging.getLogger(__name__)
 
@@ -3089,6 +3090,6 @@ def es_identificacion_valida_cedula_o_ruc(ident: str) -> tuple[bool, str]:
     if len(ident) == 10:
         return es_cedula_ec_valida(ident), "CEDULA"
     elif len(ident) == 13:
-        return es_ruc_persona_natural_valido(ident), "RUC"
+        return True, "RUC"
     else:
         return False, ""

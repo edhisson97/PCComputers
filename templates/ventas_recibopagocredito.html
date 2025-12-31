@@ -114,13 +114,13 @@
             <p>Teléfono: <b>0997434229</b></p>
             <p>Emisión: <b>{{fecha}}</b> &nbsp; Usuario vendedor: {{usuarioVendedor}}</p>
             {% if numeroFactura %}
-                <p>Concepto: Pago por factura #<b>{{numeroFactura}}<b/></p>
+                <p>Concepto: Pago por factura #<b>{{numeroFactura}}</b></p>
                 <p>NOTA: La factura se emitirá cuando se haya cumplido con el pago total de la compra.</p>
             {% endif %}
         </div>
         <div class="customer-info">
-            <p>Nombre: <b>{{ nombre }} {{apellidos}}</b> &nbsp; Identificación: <b>{{cedula}}</b> &nbsp; Email: {{email}}</p>
-            <p>Ciudad: <b>{{ciudad}}</b> &nbsp; Dirección: <b>{{direccion}}</b>&nbsp; Celular: {{celular}}</p>
+            <p>Nombre: {{ nombre }} {{apellidos}} &nbsp; Identificación: {{cedula}} &nbsp; Email: {{email}}</p>
+            <p>Ciudad: {{ciudad}} &nbsp; Dirección: {{direccion}} &nbsp; Celular: {{celular}}</p>
         </div>
         <table>
             <thead>

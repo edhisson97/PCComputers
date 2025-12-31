@@ -33,14 +33,7 @@
     --shadow: 0 18px 50px rgba(0, 0, 0, .45);
   }
 
-  body{
-    background:
-      radial-gradient(1200px 800px at 20% -10%, rgba(0,255,255,.10), transparent 55%),
-      radial-gradient(900px 600px at 90% 10%, rgba(0,255,204,.10), transparent 60%),
-      linear-gradient(to bottom, var(--bg0), var(--bg1), var(--bg2));
-    color: var(--text);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  }
+  
 
   section{
     position: relative;
@@ -490,7 +483,7 @@
 .project-click:focus { outline: 2px solid rgba(0,255,255,.35); outline-offset: 4px; }
 
 .modal-tech{
-  background: rgba(35, 35, 36, 0.92);
+  background: rgba(69, 69, 70, 0.92);
   border: 1px solid rgba(0,255,255,.18);
   box-shadow: 0 25px 80px rgba(0,255,204,.18);
   backdrop-filter: blur(12px);
@@ -557,13 +550,17 @@
 
 /* ===== Controles del carrusel: visibles en fondo oscuro ===== */
 #carouselProyecto1 .carousel-control-prev,
-#carouselProyecto1 .carousel-control-next{
+#carouselProyecto1 .carousel-control-next,
+#carouselProyecto2 .carousel-control-prev,
+#carouselProyecto2 .carousel-control-next{
   width: 60px;               /* zona clic más grande */
   opacity: 1;                /* que no se vean “apagados” */
 }
 
 #carouselProyecto1 .carousel-control-prev-icon,
-#carouselProyecto1 .carousel-control-next-icon{
+#carouselProyecto1 .carousel-control-next-icon,
+#carouselProyecto2 .carousel-control-prev-icon,
+#carouselProyecto2 .carousel-control-next-icon{
   width: 2.6rem;
   height: 2.6rem;
 
@@ -585,7 +582,9 @@
 
 /* Hover/active para “vida” */
 #carouselProyecto1 .carousel-control-prev:hover .carousel-control-prev-icon,
-#carouselProyecto1 .carousel-control-next:hover .carousel-control-next-icon{
+#carouselProyecto1 .carousel-control-next:hover .carousel-control-next-icon,
+#carouselProyecto2 .carousel-control-prev:hover .carousel-control-prev-icon,
+#carouselProyecto2 .carousel-control-next:hover .carousel-control-next-icon{
   background-color: rgba(0, 0, 0, 0.72);
   border-color: rgba(0, 255, 204, 0.75);
   box-shadow: 0 0 0 6px rgba(0, 255, 204, 0.10), 0 14px 40px rgba(0,0,0,0.45);
@@ -593,7 +592,9 @@
 }
 
 #carouselProyecto1 .carousel-control-prev:active .carousel-control-prev-icon,
-#carouselProyecto1 .carousel-control-next:active .carousel-control-next-icon{
+#carouselProyecto1 .carousel-control-next:active .carousel-control-next-icon,
+#carouselProyecto2 .carousel-control-prev:active .carousel-control-prev-icon,
+#carouselProyecto2 .carousel-control-next:active .carousel-control-next-icon{
   transform: translateY(0);
 }
 
@@ -726,8 +727,8 @@
 
     <!-- Filtros -->
     <div class="proyectos-filtros">
-      <button class="chip active" data-filter="all">Todos</button>
-      <button class="chip" data-filter="web">Web</button>
+      <!--<button class="chip active" data-filter="all">Todos</button>-->
+      <button class="chip" >Web</button>
       <button class="chip" data-filter="ecommerce">E-commerce</button>
       <button class="chip" data-filter="dash">Dashboards</button>
       <button class="chip" data-filter="api">Integraciones</button>
@@ -769,7 +770,7 @@
             <div class="project-actions">
               <!-- opcional: mantener botones; no chocan con el modal -->
               <a class="btn btn-outline-glow" href="/" target="_blank" onclick="event.stopPropagation()">Ver demo</a>
-              <a class="btn btn-glow" href="#contacto" onclick="event.stopPropagation()">Solicitar algo similar</a>
+              <a class="btn btn-glow" href="#contacto">Solicitar algo similar</a>
             </div>
           </div>
         </div>
@@ -1149,8 +1150,8 @@
     typeLine();
   });
 
-  const chips = document.querySelectorAll('.chip');
-  const cards = document.querySelectorAll('.proyecto-card');
+  //const chips = document.querySelectorAll('.chip');
+  //const cards = document.querySelectorAll('.proyecto-card');
 
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
