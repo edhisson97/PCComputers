@@ -45,6 +45,10 @@
           <i class="fa-solid fa-download"></i>
           <div>Descargar Reportes</div>
         </div>
+        <div class="box" data-bs-toggle="modal" data-bs-target="#fraseModal" style="cursor:pointer;">
+            <i class="fa-solid fa-star"></i>
+          <div>Frase del día</div>
+        </div>
         <div class="box" onclick="location.href='pagina3.html';" style="cursor:pointer;">
             <i class="fa-solid fa-wrench"></i>
           <div>{{user}}</div>
@@ -55,5 +59,45 @@
         </div>
       </div>
 </div>
+
+<div class="modal fade" id="fraseModal" tabindex="-1" aria-labelledby="fraseModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="fraseModalLabel">
+          ✨ Actualizar Frase del Día
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form method="POST" action="actualizar-frase/">
+        <!-- CSRF si usas Django -->
+        {% csrf_token %} 
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">La frase del día es:</label>
+            <h6>{%if frase%}{{frase}}{%else%}Persiste hasta que cada adversidad se convierta en una fortaleza, confía en ti.{%endif%}</h6>
+            <textarea
+              class="form-control"
+              name="frase"
+              rows="3"
+              placeholder="Escribe la frase del día..."
+              required></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">
+            Actualizar
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
 
 {% endblock %} 

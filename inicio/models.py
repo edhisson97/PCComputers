@@ -48,6 +48,12 @@ class Marca(models.Model):
     def __str__(self):
         return self.nombre
     
+class Frase(models.Model):
+    texto = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.texto
+    
 class Carrusel(models.Model):
     imagen = CloudinaryField('image', folder='carrusel')
     # PARA SERVIDORES QUE SOPRTAN ARCHIVOS ESTATICOS

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categoria, subCategoria, Marca, Carrusel, Iva, adicionalUsuario, DescuentoServicio
+from .models import Categoria, subCategoria, Marca, Carrusel, Iva, adicionalUsuario, DescuentoServicio, Frase
 
 # Register your models here.
 @admin.register(Categoria)
@@ -12,7 +12,11 @@ class subCategoriaAdmin(admin.ModelAdmin):
     
 @admin.register(Marca)
 class MarcaAdmin(admin.ModelAdmin):
-    list_display = ('id','nombre')  
+    list_display = ('id','nombre') 
+    
+@admin.register(Frase)
+class FraseAdmin(admin.ModelAdmin):
+    list_display = ('id','texto')  
     
 @admin.register(Carrusel)
 class CarruselAdmin(admin.ModelAdmin):

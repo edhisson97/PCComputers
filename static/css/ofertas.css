@@ -9,7 +9,8 @@ body, html {
   width: 100%;
   height: 120px;      /* más presencia */
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 10px;
+  margin-top: 20px;
 }
 
 .img-ofertas{
@@ -68,6 +69,18 @@ body, html {
   max-width: 560px;
   line-height: 1.35;
 }
+
+.content-left h1,
+.content-left p {
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+.fade {
+    opacity: 0;
+}
+
+
 
 /* BOTÓN CTA llamativo */
 .overlay .btn-cta{

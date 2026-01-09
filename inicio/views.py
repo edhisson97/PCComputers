@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from .models import Categoria, Carrusel, Marca, adicionalUsuario, Iva
+from .models import Categoria, Carrusel, Marca, adicionalUsuario, Iva, Frase
 from productos.models import Producto
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -274,7 +274,8 @@ def pagina_inicio(request):
         productos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "home.html",)
-    return render(request, "paginainicio.html", {"categoria": categoria,"carrusel":carrusel,"todosProductos":productos})
+    frase = Frase.objects.first()
+    return render(request, "paginainicio.html", {"categoria": categoria,"carrusel":carrusel,"todosProductos":productos,"frase":frase})
 
 def pagina_inicio(request):
     try:
@@ -289,7 +290,8 @@ def pagina_inicio(request):
         productos = Producto.objects.exclude(desactivado="si")
     except Producto.DoesNotExist:
         return render(request, "home.html",)
-    return render(request, "home.html", {"categoria": categoria,"carrusel":carrusel,"todosProductos":productos} )
+    frase = Frase.objects.first()
+    return render(request, "home.html", {"categoria": categoria,"carrusel":carrusel,"todosProductos":productos,"frase":frase} )
 
 def pagina_ofertas(request):
     option_value = request.GET.get('option', None)

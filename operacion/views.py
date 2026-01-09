@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .decorators import operador_required
 from django.contrib.auth.models import User, Group
 from .models import Proveedor, Caja, Gasto, Ingreso
+from inicio.models import Frase
 from ventas.models import Registro, Servicio, PagoServicio, PagoServicioCombinado, PagoPendienteCombinado, PagoRegistroCombinado, Pago, Equipo, DescripcionEquipo
 from productos.models import Producto, Categoria, subCategoria, Marca, ImagenProducto, ColorStock
 from operacion.models import ActualizacionStock, ProductosActualizacion
@@ -67,8 +68,20 @@ def stock_operacion(request):
 
 @operador_required
 def inicio_operacion(request):
-    
-    return render(request, 'operacion_inicio.html', {})
+    frase = Frase.objects.first()
+    return render(request, 'operacion_inicio.html', {'frase':frase.texto,})
+
+@operador_required
+def actualizar_frase(request):
+    frase = request.POST.get('frase')
+    # Guardar frase en BD o configuración
+    frase1 = Frase.objects.first()
+    if frase1:
+        frase1.texto = frase
+        frase1.save()
+    else:
+        Frase.objects.create(texto=frase)
+    return redirect('/operacion/')
 
 @operador_required
 def gastos_operacion(request):

@@ -31,8 +31,8 @@
         <div class="overlay overlay-split">
             
             <div class="content-left">
-            <h1>🔥 PRODUCTOS EN OFERTA</h1>
-            <p>Conozca todos los productos en descuento de nuestra tienda.</p>
+            <h1 id="oferta-titulo">🔥 PRODUCTOS EN OFERTA</h1>
+            <p id="oferta-texto" data-frase="{{ frase|default:''|escape }}">Conozca todos los productos en descuento de nuestra tienda.</p>
             </div>
 
             <div class="content-right">
@@ -96,6 +96,59 @@
             {% endfor %}    
         </div>
     </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const titulo = document.getElementById("oferta-titulo");
+    const texto = document.getElementById("oferta-texto");
+
+    // Frase que viene de la BD (puede venir vacía)
+    const fraseBD = texto.dataset.frase?.trim();
+
+    // Frase final: BD o por defecto
+    const fraseFinal = fraseBD && fraseBD !== ""
+        ? fraseBD
+        : "Persiste hasta que cada adversidad se convierta en una fortaleza, confía en ti.";
+
+    const mensajes = [
+        {
+            h1: "🔥 PRODUCTOS EN OFERTA",
+            p: "Conozca todos los productos en descuento de nuestra tienda."
+        },
+        {
+            h1: "🌟 FRASE DEL DÍA",
+            p: fraseFinal
+        }
+    ];
+
+    let indice = 0;
+
+    setInterval(() => {
+        // Desvanecer (respeta tus transiciones)
+        titulo.classList.add("fade");
+        texto.classList.add("fade");
+
+        setTimeout(() => {
+            // Cambiar índice
+            indice = (indice + 1) % mensajes.length;
+
+            // Cambiar contenido
+            titulo.textContent = mensajes[indice].h1;
+            texto.textContent = mensajes[indice].p;
+
+            // Forzar repaint (clave para que la transición vuelva a correr)
+            void titulo.offsetWidth;
+
+            // Aparecer
+            titulo.classList.remove("fade");
+            texto.classList.remove("fade");
+
+        }, 1000); // debe coincidir con tu transition CSS
+    }, 7000); // intervalo total
+});
+</script>
+
+
 
 
     
