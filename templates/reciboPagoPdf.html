@@ -100,27 +100,34 @@
                     <div class="logo-subtitle">Más tecnología y sostenibilidad a tu alcance</div>
                 </div>
             </div>
-            <h4>Factura &nbsp; No. {{numeroFactura}}</h4>
-            
+            {%if nota == 'notaVenta'%}
+                <h4>Nota de venta</h4>
+            {%elif nota == 'cotizacion'%}
+                <h4>Proforma</h4>
+            {%else%}
+                <h4>Factura &nbsp; No. {{numeroFactura}}</h4>
+            {%endif%}
         </div>
         <div class="company-info">
             <p><b>PC Computers</b> - RUC: <b>0703074211001</b></p>
             <p>Dirección: <b>Machala - PAEZ entre BOYACA y GUABO</b></p>
             <p>Teléfono: <b>0997434229</b></p>
-            <p>Tipo de Venta: <b>{{tipoVenta}}</b> </p>
-            <p>Tipo de Pago: 
-                {%if tipoVenta == 'Crédito'%}
-                <b>Crédito</b> &nbsp; Abono: <b>{{abono}}</b> &nbsp; Saldo: <b>{{saldo}}</b>
-                {%else%}
-                    <b>{{tipoPago}}</b> &nbsp; 
-                        {%if tipoPago == 'Cheque'%}Banco: <b>{{nombreBanco}}</b> Número de Cheque: <b>{{numeroCheque}}{%endif%} 
-                        {%if tipoPago == 'Transferencia'%}Banco: <b>{{nombreBanco}}</b> Transferencia #: <b>{{numeroTransferencia}}{%endif%}
-                        {%if tipoPago == 'Tarjeta de Débito'%}Banco: <b>{{nombreBanco}}</b>{%endif%}
-                        {%if tipoPago == 'Tarjeta de Crédito'%}Entidad bancaria: <b>{{nombreBanco}}</b>{%endif%}
-                        {%if tipoPago == 'Combinado'%} {%for c in combinados%} {{c.tipo}}: ${{c.valor}} {%endfor%} {%endif%}
-                    </b>
-                {%endif%}
-            </p>
+            {% if nota != 'cotizacion' %}
+                <p>Tipo de Venta: <b>{{tipoVenta}}</b> 
+                    Tipo de Pago: 
+                    {%if tipoVenta == 'Crédito'%}
+                    <b>Crédito</b> &nbsp; Abono: <b>{{abono}}</b> &nbsp; Saldo: <b>{{saldo}}</b>
+                    {%else%}
+                        <b>{{tipoPago}}</b> &nbsp; 
+                            {%if tipoPago == 'Cheque'%}Banco: <b>{{nombreBanco}}</b> Número de Cheque: <b>{{numeroCheque}}{%endif%} 
+                            {%if tipoPago == 'Transferencia'%}Banco: <b>{{nombreBanco}}</b> Transferencia #: <b>{{numeroTransferencia}}{%endif%}
+                            {%if tipoPago == 'Tarjeta de Débito'%}Banco: <b>{{nombreBanco}}</b>{%endif%}
+                            {%if tipoPago == 'Tarjeta de Crédito'%}Entidad bancaria: <b>{{nombreBanco}}</b>{%endif%}
+                            {%if tipoPago == 'Combinado'%} {%for c in combinados%} {{c.tipo}}: ${{c.valor}} {%endfor%} {%endif%}
+                        </b>
+                    {%endif%}
+                </p>
+            {%endif%}
             <p>Emisión: <b>{{fecha}}</b> &nbsp; Usuario vendedor: {{usuarioVendedor}}</p>
         </div>
         <div class="customer-info">
@@ -171,7 +178,7 @@
                     <td>{{iva}}</td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="total">Peso de la compra: <b>{{peso}}Kg</b></td>
+                    <td colspan="2" class="total">Peso {% if nota != 'cotizacion' %}de la compra{%endif%}: <b>{{peso}}Kg</b></td>
                     <td colspan="3" class="total"><b>Total:</b></td>
                     <td><b>{{total}}</b></td>
                 </tr>

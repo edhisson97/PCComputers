@@ -23,7 +23,6 @@
 <body>
     <div class="botones-container">
         <button class="boton-gris" onclick="goBack()"><i class="fa-solid fa-chevron-left"></i> Regresar </button>
-        <button class="boton-rojo"><i class="fa-solid fa-ban"></i> Cancelar Venta</button>
         <form id="formularioPdf" method="post" action="{% url 'generarPdf' %}">
             {% csrf_token %}
             <input type="hidden" name="nombre" value="{{ nombre }}">
@@ -56,8 +55,77 @@
           
             <!-- Otros campos del formulario si los tienes -->
             
-            <button type="submit" class="boton-verde" name="confirmar_venta"><i class="fa-solid fa-check"></i> Confirmar Venta</button>
-          </form>
+            <button type="submit" class="boton-verde" name="confirmar_venta"><i class="fa-solid fa-check"></i> Generar Factura</button>
+        </form>
+        <form id="formularioPdfNota" method="post" action="{% url 'generarPdfNota' %}">
+            {% csrf_token %}
+            <input type="hidden" name="nombre" value="{{ nombre }}">
+            <input type="hidden" name="apellidos" value="{{ apellidos }}">
+            <input type="hidden" name="cedula" value="{{ cedula }}">
+            <input type="hidden" name="email" value="{{ email }}">
+            <input type="hidden" name="celular" value="{{ celular }}">
+            <input type="hidden" name="ciudad" value="{{ ciudad }}">
+            <input type="hidden" name="direccion" value="{{ direccion }}">
+            <input type="hidden" name="direccionEnvio" value="{{ direccionEnvio }}">
+            <input type="hidden" name="subtotal" value="{{ subtotal }}">
+            <input type="hidden" name="porcentaje" value="{{ porcentaje }}">
+            <input type="hidden" name="descuento" value="{{ descuento }}">
+            <input type="hidden" name="subtotalD" value="{{ subtotalD }}">
+            <input type="hidden" name="porcentajeDescuento" value="{{ porcentajeDescuento }}">
+            <input type="hidden" name="iva" value="{{ iva }}">
+            <input type="hidden" name="total" value="{{ total }}">
+            <input type="hidden" name="tipoPago" value="{{ tipoPago }}">
+            <input type="hidden" name="peso" value="{{ peso }}">
+            <input type="hidden" name="numeroCheque" value="{{ numeroCheque }}">
+            <input type="hidden" name="numeroTransferencia" value="{{ numeroTransferencia }}">
+            <input type="hidden" name="nombreBanco" value="{{ nombreBanco }}">
+            <input type="hidden" name="combinados" value="{{ combinados }}">
+            <input type="hidden" name="tipoVenta" value="{{ tipoVenta }}">
+            <input type="hidden" name="abono" value="{{ abono }}">
+            <input type="hidden" name="saldo" value="{{ saldo }}">
+            <input type="hidden" name="usuarioVendedor" value="{{ usuarioVendedor }}">
+            
+            <!-- Convertir la lista de productos a formato JSON -->
+          
+            <!-- Otros campos del formulario si los tienes -->
+            
+            <button type="submit" class="boton-gris" name="confirmar_nota"> Generar Nota de Venta</button>
+        </form>
+        <form id="formularioPdfCotizar" method="post" action="{% url 'generarPdfCotizar' %}">
+            {% csrf_token %}
+            <input type="hidden" name="nombre" value="{{ nombre }}">
+            <input type="hidden" name="apellidos" value="{{ apellidos }}">
+            <input type="hidden" name="cedula" value="{{ cedula }}">
+            <input type="hidden" name="email" value="{{ email }}">
+            <input type="hidden" name="celular" value="{{ celular }}">
+            <input type="hidden" name="ciudad" value="{{ ciudad }}">
+            <input type="hidden" name="direccion" value="{{ direccion }}">
+            <input type="hidden" name="direccionEnvio" value="{{ direccionEnvio }}">
+            <input type="hidden" name="subtotal" value="{{ subtotal }}">
+            <input type="hidden" name="porcentaje" value="{{ porcentaje }}">
+            <input type="hidden" name="descuento" value="{{ descuento }}">
+            <input type="hidden" name="subtotalD" value="{{ subtotalD }}">
+            <input type="hidden" name="porcentajeDescuento" value="{{ porcentajeDescuento }}">
+            <input type="hidden" name="iva" value="{{ iva }}">
+            <input type="hidden" name="total" value="{{ total }}">
+            <input type="hidden" name="tipoPago" value="{{ tipoPago }}">
+            <input type="hidden" name="peso" value="{{ peso }}">
+            <input type="hidden" name="numeroCheque" value="{{ numeroCheque }}">
+            <input type="hidden" name="numeroTransferencia" value="{{ numeroTransferencia }}">
+            <input type="hidden" name="nombreBanco" value="{{ nombreBanco }}">
+            <input type="hidden" name="combinados" value="{{ combinados }}">
+            <input type="hidden" name="tipoVenta" value="{{ tipoVenta }}">
+            <input type="hidden" name="abono" value="{{ abono }}">
+            <input type="hidden" name="saldo" value="{{ saldo }}">
+            <input type="hidden" name="usuarioVendedor" value="{{ usuarioVendedor }}">
+            
+            <!-- Convertir la lista de productos a formato JSON -->
+          
+            <!-- Otros campos del formulario si los tienes -->
+            
+            <button type="submit" class="boton-gris" name="confirmar_cotizar"> Generar cotización</button>
+        </form>
+        <button class="boton-rojo"><i class="fa-solid fa-ban"></i> Cancelar Transacción</button>
     </div>
     <script>
         document.getElementById('formularioPdf').addEventListener('submit', function() {
@@ -85,6 +153,59 @@
                 }, 5000);
             }
         });
+
+         document.getElementById('formularioPdfNota').addEventListener('submit', function() {
+            // Obtener los datos de productos de localStorage
+            var productosJSON = localStorage.getItem('productos_facturacion');
+            
+            // Verificar si hay datos de productos en localStorage
+            if (productosJSON) {
+                // Convertir los datos de productos de JSON a un objeto JavaScript
+                var productos = JSON.parse(productosJSON);
+                
+                // Adjuntar los datos de productos al formulario antes de enviarlo
+                var form = this;
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'productos_json';
+                input.value = productosJSON;
+                form.appendChild(input);
+                
+                // Redirigir a otra página después de enviar el formulario y generar la descarga
+                // Esperar 3 segundos antes de redirigir a otra página
+                setTimeout(function() {
+                    localStorage.removeItem("productos_facturacion");
+                    window.location.href = '/ventas';
+                }, 5000);
+            }
+        });
+
+         document.getElementById('formularioPdfCotizar').addEventListener('submit', function() {
+            // Obtener los datos de productos de localStorage
+            var productosJSON = localStorage.getItem('productos_facturacion');
+            
+            // Verificar si hay datos de productos en localStorage
+            if (productosJSON) {
+                // Convertir los datos de productos de JSON a un objeto JavaScript
+                var productos = JSON.parse(productosJSON);
+                
+                // Adjuntar los datos de productos al formulario antes de enviarlo
+                var form = this;
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'productos_json';
+                input.value = productosJSON;
+                form.appendChild(input);
+                
+                // Redirigir a otra página después de enviar el formulario y generar la descarga
+                // Esperar 3 segundos antes de redirigir a otra página
+                setTimeout(function() {
+                    localStorage.removeItem("productos_facturacion");
+                    window.location.href = '/ventas';
+                }, 5000);
+            }
+        });
+
         //cancelar la venta
         document.querySelector('.boton-rojo').addEventListener('click', function() {
             // Confirmar la acción antes de eliminar

@@ -27,15 +27,57 @@
     </div>
 
     <div class="oferts">
-        <img class="img-ofertas" src="{% static 'img/fondo1.png' %}" alt="WhatsApp">
-        <div class="overlay">
-            <h1>PRODUCTOS EN OFERTA</h1>
-            <div class="button-container">
-                <p>Conoce todos los productos en descuento de nuestra tienda! </p>
-            <a href="ofertas/" class="btn">OFERTAS <i class="fa-solid fa-chevron-right"></i></a>
+        <img class="img-ofertas" src="{% static 'img/fondo1.png' %}" alt="Ofertas">
+        <div class="overlay overlay-split">
+            
+            <div class="content-left">
+            <h1>🔥 PRODUCTOS EN OFERTA</h1>
+            <p>Conozca todos los productos en descuento de nuestra tienda.</p>
             </div>
+
+            <div class="content-right">
+            <a href="ofertas/" class="btn btn-cta">
+                VER OFERTAS <i class="fa-solid fa-chevron-right"></i>
+            </a>
+            </div>
+
         </div>
     </div>
+
+
+    <!--<div class="oferts">
+
+        <div class="slide active">
+            <img class="img-ofertas" src="{% static 'img/fondo1.png' %}" alt="Ofertas">
+            <div class="overlay">
+                <h1>PRODUCTOS EN OFERTA</h1>
+                <div class="button-container">
+                    <p>Conoce todos los productos en descuento de nuestra tienda</p>
+                    <a href="ofertas/" class="btn">
+                        OFERTAS <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <img class="img-ofertas" src="{% static 'img/motivacion.png' %}" alt="Motivación">
+            <div class="overlay">
+                <h1>MENSAJE DEL DÍA</h1>
+                <div class="button-container">
+                    <p>
+                        “Persiste hasta que cada adversidad se convierta en una fortaleza,
+                        confía en ti.”
+                    </p>
+                    <a href="/motivacion/" class="btn">
+                        VER MÁS <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>-->
+
 
     <div class="categoria-section">
         <div class="categoria-title">
@@ -54,5 +96,7 @@
             {% endfor %}    
         </div>
     </div>
+
+
     
 {% endblock %} 

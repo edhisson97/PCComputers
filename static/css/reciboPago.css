@@ -7,10 +7,21 @@ body {
     left: 0;
     width: 100%;
     background-color: rgb(240, 240, 240);
-    text-align: center;
-    z-index: 9999; /* Para que los botones estén encima del contenido */
-    border-bottom: 3px solid rgb(123, 123, 128); /* Borde de 1px de color azul en la parte inferior */
-  }
+    z-index: 9999;
+    border-bottom: 3px solid rgb(123, 123, 128);
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px;
+}
+
+.botones-container form {
+    display: inline-flex;
+}
+
+
   
   .boton-gris {
     background-color: grey;

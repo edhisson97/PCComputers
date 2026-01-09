@@ -127,9 +127,9 @@
       width: 100%;
       height: 100%;
       padding: 60px 40px 40px 40px;
-      color: #22c55e;
+      color: #187b3bff;
       font-family: 'Courier New', monospace;
-      font-size: 1rem;
+      font-size: 1.2rem;
       background: rgba(0, 0, 0, 0.2);
       z-index: 0;
       text-align: left;
@@ -612,6 +612,64 @@
   transform: translateY(0);
 }
 
+/* Modal confirmación */
+.modal-confirmacion {
+  border-radius: 16px;
+  animation: popIn 0.4s ease;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.icono-check {
+  width: 60px;
+  height: 60px;
+  background: #00f631ff;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  animation: bounce 0.6s;
+}
+
+.mensaje-confirmacion{
+  color: #00f631ff;
+}
+
+.icono-error {
+  width: 60px;
+  height: 60px;
+  background: #f60000ff;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  animation: bounce 0.6s;
+}
+
+.mensaje-error{
+  color: #f60000ff;
+}
+
+@keyframes bounce {
+  0% { transform: scale(0.5); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
 
 </style>
 
@@ -1142,11 +1200,12 @@
       </div>
 
       <div class="modal-body">
-        <form id="formContacto">
+        <form id="formContacto" method="POST" action="{% url 'contactoDesarrollo' %}">
+          {% csrf_token %}
 
           <div class="mb-3">
             <label class="form-label">Asunto</label>
-            <select id="asuntoContacto" class="form-select">
+            <select id="asuntoContacto" class="form-select" name="asunto" onchange="cambiarMensajeContacto()">
               <option value="general">Desarrollo general</option>
               <option value="ecommerce">Proyecto: Tienda online + Panel administrativo</option>
               <option value="suite">Proyecto: Suite Comercial Online + Ventas</option>
@@ -1154,20 +1213,19 @@
             </select>
           </div>
 
-
           <div class="mb-3">
             <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" placeholder="Tu nombre" required>
+            <input type="text" class="form-control"  name="nombre" placeholder="Tu nombre" required>
           </div>
 
           <div class="mb-3">
             <label class="form-label">Correo</label>
-            <input type="email" class="form-control" placeholder="correo@email.com" required>
+            <input type="email" class="form-control" name="correo" placeholder="correo@email.com" required>
           </div>
 
           <div class="mb-3">
             <label class="form-label">Mensaje</label>
-            <textarea id="mensajeContacto" class="form-control" rows="4" placeholder="Cuéntame tu idea..." required></textarea>
+            <textarea id="mensajeContacto" class="form-control" name="mensaje" rows="4" placeholder="Cuéntame tu idea..." required></textarea>
           </div>
 
         </form>
@@ -1184,6 +1242,81 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content modal-confirmacion">
+      <div class="modal-body text-center p-4">
+
+        <div class="icono-check mb-3">
+          ✓
+        </div>
+
+        <h5 class="mb-2 mensaje-confirmacion">Mensaje enviado</h5>
+        <p class="text-muted mb-3">
+          Gracias por contactarnos.<br>
+          Te responderemos pronto.
+        </p>
+
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          data-bs-dismiss="modal"
+        >
+          Aceptar
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modalError" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content modal-confirmacion">
+      <div class="modal-body text-center p-4">
+
+        <div class="icono-error mb-3">
+          X
+        </div>
+
+        <h5 class="mb-2 mensaje-error">Error al enviar mensaje</h5>
+        <p class="text-muted mb-3">
+          Por favor intenta nuevamente. O contáctanos al correo <b>edhisson97sanmartin@gmail.com</b><br>
+          <br>Disculpa las molestias. Te responderemos pronto.
+        </p>
+
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          data-bs-dismiss="modal">Aceptar
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if messages %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    {% for message in messages %}
+      {% if 'success' in message.tags %}
+        const modal = new bootstrap.Modal(
+          document.getElementById('modalConfirmacion')
+        );
+        modal.show();
+      {% endif %}
+      {% if 'error' in message.tags %}
+        const modal = new bootstrap.Modal(
+          document.getElementById('modalError')
+        );
+        modal.show();
+      {% endif %}
+    {% endfor %}
+  });
+</script>
+{% endif %}
 
 
   <script>
@@ -1297,11 +1430,20 @@
   mensaje.value = textos[tipo] || textos.general;
 }
 
-// 🔥 CUANDO CAMBIA EL SELECT
-document.getElementById('asuntoContacto').addEventListener('change', function () {
+function cambiarMensajeContacto() {
+  const asunto = document.getElementById('asuntoContacto');
   const mensaje = document.getElementById('mensajeContacto');
-  mensaje.value = textosContacto[this.value] || textosContacto.general;
-});
+
+  const textos = {
+    general: 'Hola, estoy interesado en un desarrollo de software.',
+    ecommerce: 'Hola, me interesa un sistema tipo tienda online con panel administrativo.',
+    suite: 'Hola, me interesa una suite comercial con ventas e inventario, además de la tienda online.',
+    agua: 'Hola, me interesa un sistema para el cobro de agua potable.'
+  };
+
+  mensaje.value = textos[asunto.value] || textos.general;
+}
+
 
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

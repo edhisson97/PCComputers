@@ -387,20 +387,24 @@ function enviarFormularioConLocalStorage() {
 
         // Verificar si el formulario está lleno
         var formularioLleno = true;
+
+        var tipo = document.getElementById("tipo").value;
+        if (tipo !== "consumidor") {
         
-        for (var i = 0; i < camposFormulario.length; i++) {
-            var campo = camposFormulario[i];
-            // Verificar si el campo tiene un valor (excluyendo campos ocultos y botones)
-            if (campo.type !== 'hidden' && campo.type !== 'button' && campo.value === '' && !['direccionEnvio', 'celular'].includes(campo.name)) {
-                formularioLleno = false;
-                break;
+            for (var i = 0; i < camposFormulario.length; i++) {
+                var campo = camposFormulario[i];
+                // Verificar si el campo tiene un valor (excluyendo campos ocultos y botones)
+                if (campo.type !== 'hidden' && campo.type !== 'button' && campo.value === '' && !['direccionEnvio', 'celular'].includes(campo.name)) {
+                    formularioLleno = false;
+                    break;
+                }
+                // Verificar si es un selector y tiene una opción seleccionada
+                if ((campo.type === 'select-one' || campo.type === 'select-multiple') && campo.selectedIndex === -1) {
+                    formularioLleno = false;
+                    break;
+                }
             }
-            // Verificar si es un selector y tiene una opción seleccionada
-            if ((campo.type === 'select-one' || campo.type === 'select-multiple') && campo.selectedIndex === -1) {
-                formularioLleno = false;
-                break;
-            }
-        }
+        }    
 
         if (formularioLleno) {
             // Preguntar al usuario si desea enviar el formulario
@@ -726,7 +730,7 @@ function enviarFormularioConLocalStorage() {
                     }
                 }
                 if (enviar === true) {
-                    var confirmacion = confirm('¿Estás seguro de que deseas generar la venta?');
+                    var confirmacion = confirm('¿Estás seguro de que deseas generar la venta/cotizar?');
                     if (confirmacion) {
                         // Enviar el formulario
                         formulario.submit();

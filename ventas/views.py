@@ -1204,7 +1204,12 @@ def reciboPago(request):
         usuarioVendedor = request.POST.get('usuarioVendedor')
         
         # 🔍 Validación de identificación (cédula o RUC)
-        es_valida, tipo_ident = es_identificacion_valida_cedula_o_ruc(cedula)
+        nombre_normalizado = nombre.strip().lower()
+        if "consumidor" not in nombre_normalizado:
+            es_valida, tipo_ident = es_identificacion_valida_cedula_o_ruc(cedula)
+        else:
+            es_valida = True
+            tipo_ident = None
 
         if not es_valida:
             messages.success(request, "Cédula/RUC incorrectos, intente nuevamente por favor.")
@@ -2191,6 +2196,769 @@ def generarPdf(request):
     else:
         # Si no es una solicitud POST, retornar una respuesta de error
         return HttpResponse("Error: Esta vista solo acepta solicitudes POST.")
+
+def generarPdfNota(request):
+    print('NOTA DE VENTA --------------')
+    if request.method == 'POST':
+        if 'confirmar_nota' in request.POST:
+            now_ec = dj_timezone.now().astimezone(ZoneInfo("America/Guayaquil"))
+            fecha_emision_str = now_ec.strftime("%d/%m/%Y")    
+            nombre = request.POST.get('nombre')
+            apellidos = request.POST.get('apellidos')
+            cedula = request.POST.get('cedula')
+            email = request.POST.get('email')
+            celular = request.POST.get('celular')
+            ciudad = request.POST.get('ciudad')
+            direccion = request.POST.get('direccion')
+            direccionEnvio = request.POST.get('direccionEnvio')
+            subtotal = request.POST.get('subtotal')
+            porcentaje = request.POST.get('porcentaje')
+            descuento = request.POST.get('descuento')
+            subtotalD = request.POST.get('subtotalD')
+            porcentajeDescuento = request.POST.get('porcentajeDescuento')
+            iva = request.POST.get('iva')
+            total = request.POST.get('total')
+            tipoPago = request.POST.get('tipoPago')
+            tipoVenta = request.POST.get('tipoVenta')
+            usuarioVendedor = request.POST.get('usuarioVendedor')
+            abono = request.POST.get('abono')
+            saldo = request.POST.get('saldo')
+            peso = request.POST.get('peso')
+            nombreBanco = request.POST.get('nombreBanco')
+            numeroCheque = request.POST.get('numeroCheque')
+            numeroTransferencia = request.POST.get('numeroTransferencia')
+            combinados = request.POST.get('combinados')
+            combinados = combinados.replace("'", "\"")
+            combinados_json = json.loads(combinados) if combinados else None
+            usuario_vendedor_completo = User.objects.get(username=usuarioVendedor)
+            
+            
+         # Convertir productos de cadena a lista de diccionarios
+        # Convertir la cadena JSON de productos a una lista de diccionarios
+        # Recuperar los datos de productos de request.POST
+        productos_facturacion = request.POST.get('productos_json')
+        # Convertir los datos de productos de JSON a un objeto de Python
+        productos_fac = []
+        
+        # Verificar si hay datos en el localStorage
+        if productos_facturacion:
+            # Analizar la cadena JSON para obtener la lista de productos
+            productos_a_facturar = json.loads(productos_facturacion)
+
+            for producto in productos_a_facturar:
+                # Aquí puedes acceder a cada atributo del producto
+                id_producto = producto['id']
+                colorCompleto = producto['color']
+                color = colorCompleto.split('(')[0].strip() # Divide la cadena en dos partes y toma la primera parte (el color)
+                codigo = producto['codigo']
+                cantidad = producto['cantidad']
+                cantidad_decimal = Decimal(str(cantidad))
+                
+                try:
+                    #producto_bd = Producto.objects.get(id=id_producto)
+                    producto_bd = get_object_or_404(Producto.objects.exclude(desactivado="si"), id=id_producto)
+                    # Realiza las operaciones necesarias con el producto obtenido
+                except Producto.DoesNotExist:
+                    return JsonResponse({'error': 'Datos no encontrados'}, )
+                #reviso si producto tiene oferta
+                if (producto_bd.precio_oferta):
+                    precio = producto_bd.precio_oferta
+                    preciot = producto_bd.precio_oferta * cantidad_decimal
+                else:
+                    precio = producto_bd.precio
+                    preciot = producto_bd.precio * cantidad_decimal
+                productos_fac.append({
+                    'id': producto_bd.id,
+                    'modelo': producto_bd.modelo,
+                    #'marca': marca_info,
+                    'color':color,
+                    'codigo':codigo,
+                    'cantidad':cantidad,
+                    'precio': precio,
+                    'detalle': producto_bd.detalle,
+                    'preciot':preciot
+                    # Agrega otros campos que necesites
+                })
+        fecha_hora_actual = datetime.now()
+        # Generar número de factura
+        with transaction.atomic():  # Inicia una transacción atómica
+        # Generar número de factura
+            ultima_factura = Factura.objects.select_for_update().last()  # Bloquea la última factura para evitar conflictos
+            numero_factura = ultima_factura.id + 1 if ultima_factura else 1
+
+            # Guardar la nueva factura en la base de datos
+            nueva_factura = Factura.objects.create(id=numero_factura)
+
+        # --- AHORA sí construimos context (una sola vez) ---
+        context = {
+            'nombre': nombre,
+            'apellidos': apellidos,
+            'cedula': cedula,
+            'email': email,
+            'celular': celular,
+            'ciudad': ciudad,
+            'direccion': direccion,
+            'direccionEnvio': direccionEnvio,
+            'productos': productos_fac,
+            'subtotal': subtotal,
+            'porcentaje': porcentaje,
+            'descuento': descuento,
+            'subtotalD': subtotalD,
+            'porcentajeDescuento': porcentajeDescuento,
+            'iva': iva,
+            'total': total,
+            'tipoPago': tipoPago,
+            'peso': peso,
+            'fecha': fecha_emision_str,
+            'nombreBanco': nombreBanco,
+            'numeroCheque': numeroCheque,
+            'numeroTransferencia': numeroTransferencia,
+            'numeroFactura': numero_factura,
+            'combinados': combinados_json,
+            'tipoVenta': tipoVenta,
+            'abono': abono,
+            'saldo': saldo,
+            'usuarioVendedor': usuarioVendedor,
+            'nota': 'notaVenta',
+        }
+        
+        # === Verificación/Recalculo de valores ===
+        # Si algún valor viene vacío o en cero, lo recalculamos para que el PDF y XML no salgan mal
+        if not context.get("subtotal") or D(context["subtotal"]) == 0:
+            subtotal_calc = sum(D(p['cantidad']) * D(p['precio']) for p in productos_fac)
+            context["subtotal"] = float(subtotal_calc)
+
+        if not context.get("subtotalD") or D(context["subtotalD"]) == 0:
+            desc = D(context.get("descuento", 0))
+            context["subtotalD"] = float(D(context["subtotal"]) - desc)
+
+        if not context.get("iva") or D(context["iva"]) == 0:
+            porc_iva = D(context.get("porcentaje", 12))  # % de IVA por defecto 12 si no viene
+            base = D(context["subtotalD"])
+            context["iva"] = float((base * porc_iva / 100).quantize(Decimal("0.01")))
+
+        if not context.get("total") or D(context["total"]) == 0:
+            context["total"] = float(D(context["subtotalD"]) + D(context["iva"]))
+
+        
+        # === Generar PDF (WeasyPrint) para el cliente (independiente del SRI) ===
+        if (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
+            html_content = render_to_string('ventas_recibopagocredito.html', context)
+        else:
+            html_content = render_to_string('reciboPagoPdf.html', context)
+
+        pdf_path = tempfile.mktemp(suffix='.pdf')
+        HTML(string=html_content).write_pdf(pdf_path)
+        
+        if (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
+            
+            html_content = render_to_string('ventas_recibopagocredito.html', context)
+
+            # Convertir directamente a PDF usando WeasyPrint
+            output_path = tempfile.mktemp(suffix='.pdf')
+            HTML(string=html_content).write_pdf(output_path)
+
+            # Codificar la ruta
+            encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+            
+            #enviar por correo el pdf
+            destinatario = email  # O la dirección de correo electrónico a la que deseas enviar el correo
+            asunto = 'Nota de venta emitida por PC Computers'
+            cuerpo = 'Adjunto encontrarás la Nota de Venta emitida por PC Computers.'
+            archivo_adjunto = output_path
+            # Crear mensaje de correo electrónico
+            mensaje = EmailMultiAlternatives(asunto, cuerpo, 'noreply@example.com', [destinatario])
+            # Adjuntar archivo PDF
+            archivo_adjunto = open(archivo_adjunto, 'rb')
+            mensaje.attach(archivo_adjunto.name, archivo_adjunto.read(), 'application/pdf')
+            archivo_adjunto.close()
+            
+            
+        else:
+            
+            import re
+
+            def _dia_clave(clave: str) -> str:
+                """Devuelve ddMMyyyy (8 chars) desde la clave acceso (str)."""
+                return str(clave)[:8]
+
+            def _dia_xml(xmlb: bytes) -> str:
+                """
+                Extrae ddMMyyyy desde <fechaEmision> del XML (xmlb en bytes).
+                Si no encuentra, devuelve cadena vacía.
+                """
+                if isinstance(xmlb, str):
+                    xmlb = xmlb.encode("utf-8")  # asegúrate que sea bytes
+
+                m = re.search(
+                    rb"<fechaEmision>\s*(\d{2})/(\d{2})/(\d{4})\s*</fechaEmision>",
+                    xmlb,
+                    flags=re.IGNORECASE,
+                )
+                if not m:
+                    return ""
+                d, mth, y = (g.decode("utf-8") for g in m.groups())
+                return f"{d}{mth}{y}"  # str, no mezclamos bytes
+
+
+            #### PARA WEASYPRINT
+            # Generar PDF y enviar
+            buffer = BytesIO()
+            html_content = render_to_string('reciboPagoPdf.html', context)
+
+            # Convertir directamente a PDF usando WeasyPrint
+            output_path = tempfile.mktemp(suffix='.pdf')
+            HTML(string=html_content).write_pdf(output_path)
+
+            # Codificar la ruta
+            encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+
+            # === ENVÍO DE CORREO ===
+            destinatario = email  # la dirección del cliente
+            asunto = f'Factura electrónica #{numero_factura} – PC Computers'
+            cuerpo = (
+                'Estimado/a,\n\n'
+                'Adjuntamos su Nota de venta.\n'
+                'Saludos cordiales,\nPC Computers'
+            )
+
+            mensaje = EmailMultiAlternatives(
+                subject=asunto,
+                body=cuerpo,
+                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com"),
+                to=[destinatario],
+            )
+
+            # Adjuntar PDF (verifique que exista)
+            if output_path and os.path.exists(output_path):
+                with open(output_path, 'rb') as f_pdf:
+                    mensaje.attach(
+                        filename=f"Factura_{numero_factura}.pdf",
+                        content=f_pdf.read(),
+                        mimetype='application/pdf'
+                    )
+            else:
+                print("WARN: output_path no existe o es None; no se adjunta PDF:", output_path)
+
+        # 1) Lanzar el envío de correo en segundo plano
+        try:
+            threading.Thread(
+                target=enviar_correo_async,
+                args=(mensaje, destinatario),
+                daemon=True,  # el hilo no bloquea el cierre del proceso
+            ).start()
+        except Exception as e:
+            print("Error al lanzar el hilo de envío de correo:", e)
+
+        # 2) Bajar el stock SIEMPRE (independiente de que el correo se envíe o no)
+        try:
+            for prod in productos_a_facturar:
+                codigo_producto = prod['codigo']
+                cantidad_producto = prod['cantidad']
+                try:
+                    producto_stock = ColorStock.objects.get(id=codigo_producto)
+                    nuevo_stock = int(producto_stock.stock) - int(cantidad_producto)
+                    producto_stock.stock = nuevo_stock
+                    producto_stock.save()
+                except ColorStock.DoesNotExist:
+                    print('debo bajar el stock mediante id y color')
+
+            print("Proceso de stock ejecutado. Correo lanzado en segundo plano a:", destinatario)
+        except Exception as e:
+            print("Error al actualizar el stock:", e)
+        
+        # Realizar la consulta para obtener el usuario con el número de cédula dado
+        try:
+            usuario_adicional = adicionalUsuario.objects.get(cedula=cedula)
+            # Si se encuentra un usuario con el número de cédula dado, 'usuario' contendrá ese objeto adicionalUsuario
+            usuario_adicional.direccion = direccion
+            usuario_adicional.direccionEnvio = direccionEnvio
+            usuario_adicional.celular = celular
+            usuario_adicional.ciudad = ciudad
+            if (tipoVenta == 'Crédito')or (tipoVenta == 'Apartado'):
+                    usuario_adicional.deuda = 'si'
+            usuario_adicional.save()
+            
+            # Obtener el usuario asociado al usuario adicional
+            usuario = usuario_adicional.user
+
+            # Actualizar los campos del usuario con los nuevos valores
+            usuario.first_name = nombre
+            usuario.last_name = apellidos
+            usuario.email = email
+
+            # Guardar los cambios en el usuario
+            usuario.save()
+            
+            
+        except adicionalUsuario.DoesNotExist:
+            # Si no se encuentra ningún usuario con el número de cédula dado, se lanzará una excepción adicionalUsuario.DoesNotExist
+            # Aquí puedes manejar el caso en el que no se encuentre ningún usuario con el número de cédula dado
+            usuario = User.objects.create_user(username=cedula, email=email)
+            usuario.first_name = nombre
+            usuario.last_name = apellidos
+            usuario.is_active = False
+            usuario.save()
+            
+            adicionalU = adicionalUsuario()
+            adicionalU.user = usuario
+            adicionalU.cedula = cedula
+            adicionalU.celular = celular
+            adicionalU.ciudad = ciudad
+            adicionalU.direccion = direccion
+            adicionalU.direccionEnvio = direccionEnvio
+            if (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
+                    adicionalU.deuda = 'si'
+            adicionalU.save()
+            
+        #para crear el registro
+        try:
+            with transaction.atomic():
+                nuevoRegistro = Registro()
+                nuevoRegistro.usuario = usuario
+                nuevoRegistro.fecha_hora = fecha_hora_actual
+                total = total.replace(",", ".")
+                total = Decimal(total)
+                nuevoRegistro.total_vendido = total
+                descuento = descuento.replace(",", ".")
+                descuento = Decimal(descuento)
+                nuevoRegistro.total_descuento = descuento
+                #user_id = request.user.id
+                #nuevoRegistro.vendedor_id = user_id
+                nuevoRegistro.vendedor_id = usuario_vendedor_completo.id
+                nuevoRegistro.tipo_pago = tipoPago
+                nuevoRegistro.tipo_venta = tipoVenta
+                if (tipoVenta == 'Crédito')or (tipoVenta == 'Apartado'):
+                    nuevoRegistro.deuda = 'si'
+                    if abono:
+                        nuevoRegistro.adelanto = abono
+                    else:
+                        nuevoRegistro.adelanto = 0
+                nuevoRegistro.numero_factura = numero_factura
+                nuevoRegistro.save()
+                
+                if tipoPago == 'Combinado':
+                    if combinados_json:
+                        pagoRegistroCombinado = PagoRegistroCombinado()
+                        pagoRegistroCombinado.registro = nuevoRegistro
+                        for item in combinados_json:
+                            tipo = item.get('tipo')
+                            valor = Decimal(item.get('valor'))
+                            if tipo == 'Efectivo':
+                                pagoRegistroCombinado.valorEfectivo = valor
+                            if tipo == 'Tarjeta de Crédito':
+                                pagoRegistroCombinado.valorTarjetaCredito = valor
+                            if tipo == 'Cheque':
+                                pagoRegistroCombinado.valorCheque = valor
+                            if tipo == 'Transferencia':
+                                pagoRegistroCombinado.valorTransferencia = valor
+                            if tipo =='Tarjeta de Débito':
+                                pagoRegistroCombinado.valorTarjetaDebito = valor
+                        pagoRegistroCombinado.save()
+                    
+        except Exception as e:
+            # Imprime la excepción para conocer el tipo y los detalles del error
+            print("Error al guardar el registro:", e)
+        
+        try:
+            if (tipoVenta == 'Crédito')or (tipoVenta == 'Apartado'):
+                 
+                deudaPendiente = Decimal(total) - Decimal(nuevoRegistro.adelanto) 
+                    
+                deuda = Deudas()
+                deuda.total = total
+                deuda.saldo = deudaPendiente
+                deuda.usuario = usuario
+                deuda.registro= nuevoRegistro
+                deuda.save()
+                
+                # Iterar sobre los productos para convertirlos a float y guardarlos
+                for producto in productos_fac:
+                    # Convertir el campo 'precio' de Decimal a float
+                    producto['precio'] = float(producto['precio'])
+                    # Convertir el campo 'preciot' de Decimal a float
+                    producto['preciot'] = float(producto['preciot'])
+                
+                #GUARDAR DATOS DE LA FACTURA PARA LUEGO IMPRIMIRLA
+                facturaCredito=FacturaCredito()
+                facturaCredito.deuda=deuda
+                facturaCredito.nombre=nombre
+                facturaCredito.apellidos=apellidos
+                facturaCredito.cedula=cedula
+                facturaCredito.email=email
+                facturaCredito.celular=celular
+                facturaCredito.ciudad=ciudad
+                facturaCredito.direccion=direccion
+                facturaCredito.direccionEnvio=direccionEnvio
+                facturaCredito.productos=productos_fac
+                facturaCredito.subtotal=subtotal
+                facturaCredito.porcentaje=porcentaje
+                facturaCredito.descuento=descuento
+                facturaCredito.subtotalD=subtotalD
+                facturaCredito.porcentajeDescuento=porcentajeDescuento
+                facturaCredito.iva=iva
+                facturaCredito.total=total
+                facturaCredito.tipoPago=tipoPago
+                facturaCredito.peso=peso
+                facturaCredito.fecha=fecha_hora_actual
+                facturaCredito.numeroCheque=numeroCheque
+                facturaCredito.numeroFactura=numero_factura
+                facturaCredito.combinados=combinados_json
+                facturaCredito.tipoVenta=tipoVenta
+                facturaCredito.abono=abono
+                facturaCredito.saldo=saldo
+                facturaCredito.usuarioVendedor=usuarioVendedor
+                facturaCredito.save()
+                
+        except Exception as e:
+            # Imprime la excepción para conocer el tipo y los detalles del error
+            print("Error al guardar deudas:", e)
+        
+        #######REEMPLACE ESTE CODIGO PARA MEJORAR LA DESCARGA, SI EXISTE ERROR BORRAR##########
+        # Seguridad: verificar que el archivo exista y tenga contenido
+        if not os.path.exists(output_path):
+            raise Http404("No se encontró el PDF generado.")
+
+       # Leer el PDF generado
+        with open(output_path, 'rb') as f:
+            pdf_bytes = f.read()  # ✅ contenido real del PDF
+            
+        if not pdf_bytes:
+            raise Http404("El PDF está vacío.")
+
+        # Codificar a base64 directamente (sin usar BytesIO)
+        encoded_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
+
+        # (Opcional) eliminar archivo temporal
+        
+        if not (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
+            # Guardar los detalles de la factura
+            factura = FacturaCompleta.objects.create(
+                numero_factura=numero_factura,
+                cliente=usuario_adicional.user,
+                total=total,
+                descuento=descuento,
+                estado='Pendiente'  # Estado inicial de la factura
+            )
+    
+            try:
+                os.remove(output_path)
+            except OSError:
+                pass  # no bloquear por esto
+
+        log = logging.getLogger(__name__)
+
+        # ...
+        log.warning("RENDER_DESCARGA -> num_factura=%s", numero_factura)
+
+        # Renderizar el template
+        # Renderizar la página que dispara la descarga y luego redirige
+        return render(request, "descargar_pdf_facturacion.html", {
+            "encoded_pdf": encoded_pdf,                 # en el template usa |escapejs
+            "download_filename": f"Nota de venta_{numero_factura}.pdf",
+        })
+
+    else:
+        # Si no es una solicitud POST, retornar una respuesta de error
+        return HttpResponse("Error: Esta vista solo acepta solicitudes POST.")
+
+
+def generarPdfCotizacion(request):
+    if request.method == 'POST':
+        if 'confirmar_cotizar' in request.POST:
+            now_ec = dj_timezone.now().astimezone(ZoneInfo("America/Guayaquil"))
+            fecha_emision_str = now_ec.strftime("%d/%m/%Y")    
+            nombre = request.POST.get('nombre')
+            apellidos = request.POST.get('apellidos')
+            cedula = request.POST.get('cedula')
+            email = request.POST.get('email')
+            celular = request.POST.get('celular')
+            ciudad = request.POST.get('ciudad')
+            direccion = request.POST.get('direccion')
+            direccionEnvio = request.POST.get('direccionEnvio')
+            subtotal = request.POST.get('subtotal')
+            porcentaje = request.POST.get('porcentaje')
+            descuento = request.POST.get('descuento')
+            subtotalD = request.POST.get('subtotalD')
+            porcentajeDescuento = request.POST.get('porcentajeDescuento')
+            iva = request.POST.get('iva')
+            total = request.POST.get('total')
+            tipoPago = request.POST.get('tipoPago')
+            tipoVenta = request.POST.get('tipoVenta')
+            usuarioVendedor = request.POST.get('usuarioVendedor')
+            abono = request.POST.get('abono')
+            saldo = request.POST.get('saldo')
+            peso = request.POST.get('peso')
+            nombreBanco = request.POST.get('nombreBanco')
+            numeroCheque = request.POST.get('numeroCheque')
+            numeroTransferencia = request.POST.get('numeroTransferencia')
+            combinados = request.POST.get('combinados')
+            combinados = combinados.replace("'", "\"")
+            combinados_json = json.loads(combinados) if combinados else None
+            usuario_vendedor_completo = User.objects.get(username=usuarioVendedor)
+            
+            
+         # Convertir productos de cadena a lista de diccionarios
+        # Convertir la cadena JSON de productos a una lista de diccionarios
+        # Recuperar los datos de productos de request.POST
+        productos_facturacion = request.POST.get('productos_json')
+        # Convertir los datos de productos de JSON a un objeto de Python
+        productos_fac = []
+        
+        # Verificar si hay datos en el localStorage
+        if productos_facturacion:
+            # Analizar la cadena JSON para obtener la lista de productos
+            productos_a_facturar = json.loads(productos_facturacion)
+
+            for producto in productos_a_facturar:
+                # Aquí puedes acceder a cada atributo del producto
+                id_producto = producto['id']
+                colorCompleto = producto['color']
+                color = colorCompleto.split('(')[0].strip() # Divide la cadena en dos partes y toma la primera parte (el color)
+                codigo = producto['codigo']
+                cantidad = producto['cantidad']
+                cantidad_decimal = Decimal(str(cantidad))
+                
+                try:
+                    #producto_bd = Producto.objects.get(id=id_producto)
+                    producto_bd = get_object_or_404(Producto.objects.exclude(desactivado="si"), id=id_producto)
+                    # Realiza las operaciones necesarias con el producto obtenido
+                except Producto.DoesNotExist:
+                    return JsonResponse({'error': 'Datos no encontrados'}, )
+                #reviso si producto tiene oferta
+                if (producto_bd.precio_oferta):
+                    precio = producto_bd.precio_oferta
+                    preciot = producto_bd.precio_oferta * cantidad_decimal
+                else:
+                    precio = producto_bd.precio
+                    preciot = producto_bd.precio * cantidad_decimal
+                productos_fac.append({
+                    'id': producto_bd.id,
+                    'modelo': producto_bd.modelo,
+                    #'marca': marca_info,
+                    'color':color,
+                    'codigo':codigo,
+                    'cantidad':cantidad,
+                    'precio': precio,
+                    'detalle': producto_bd.detalle,
+                    'preciot':preciot
+                    # Agrega otros campos que necesites
+                })
+        fecha_hora_actual = datetime.now()
+        # Generar número de factura
+        with transaction.atomic():  # Inicia una transacción atómica
+        # Generar número de factura
+            ultima_factura = Factura.objects.select_for_update().last()  # Bloquea la última factura para evitar conflictos
+            numero_factura = ultima_factura.id + 1 if ultima_factura else 1
+
+            # Guardar la nueva factura en la base de datos
+            nueva_factura = Factura.objects.create(id=numero_factura)
+
+        # --- AHORA sí construimos context (una sola vez) ---
+        context = {
+            'nombre': nombre,
+            'apellidos': apellidos,
+            'cedula': cedula,
+            'email': email,
+            'celular': celular,
+            'ciudad': ciudad,
+            'direccion': direccion,
+            'direccionEnvio': direccionEnvio,
+            'productos': productos_fac,
+            'subtotal': subtotal,
+            'porcentaje': porcentaje,
+            'descuento': descuento,
+            'subtotalD': subtotalD,
+            'porcentajeDescuento': porcentajeDescuento,
+            'iva': iva,
+            'total': total,
+            'tipoPago': tipoPago,
+            'peso': peso,
+            'fecha': fecha_emision_str,
+            'nombreBanco': nombreBanco,
+            'numeroCheque': numeroCheque,
+            'numeroTransferencia': numeroTransferencia,
+            'numeroFactura': numero_factura,
+            'combinados': combinados_json,
+            'tipoVenta': tipoVenta,
+            'abono': abono,
+            'saldo': saldo,
+            'usuarioVendedor': usuarioVendedor,
+            'nota': 'cotizacion',
+        }
+        
+        # === Verificación/Recalculo de valores ===
+        # Si algún valor viene vacío o en cero, lo recalculamos para que el PDF y XML no salgan mal
+        if not context.get("subtotal") or D(context["subtotal"]) == 0:
+            subtotal_calc = sum(D(p['cantidad']) * D(p['precio']) for p in productos_fac)
+            context["subtotal"] = float(subtotal_calc)
+
+        if not context.get("subtotalD") or D(context["subtotalD"]) == 0:
+            desc = D(context.get("descuento", 0))
+            context["subtotalD"] = float(D(context["subtotal"]) - desc)
+
+        if not context.get("iva") or D(context["iva"]) == 0:
+            porc_iva = D(context.get("porcentaje", 12))  # % de IVA por defecto 12 si no viene
+            base = D(context["subtotalD"])
+            context["iva"] = float((base * porc_iva / 100).quantize(Decimal("0.01")))
+
+        if not context.get("total") or D(context["total"]) == 0:
+            context["total"] = float(D(context["subtotalD"]) + D(context["iva"]))
+
+        html_content = render_to_string('reciboPagoPdf.html', context)
+
+        pdf_path = tempfile.mktemp(suffix='.pdf')
+        HTML(string=html_content).write_pdf(pdf_path)
+            
+        import re
+
+        def _dia_clave(clave: str) -> str:
+            """Devuelve ddMMyyyy (8 chars) desde la clave acceso (str)."""
+            return str(clave)[:8]
+
+        def _dia_xml(xmlb: bytes) -> str:
+            """
+            Extrae ddMMyyyy desde <fechaEmision> del XML (xmlb en bytes).
+            Si no encuentra, devuelve cadena vacía.
+            """
+            if isinstance(xmlb, str):
+                xmlb = xmlb.encode("utf-8")  # asegúrate que sea bytes
+
+            m = re.search(
+                rb"<fechaEmision>\s*(\d{2})/(\d{2})/(\d{4})\s*</fechaEmision>",
+                xmlb,
+                flags=re.IGNORECASE,
+            )
+            if not m:
+                return ""
+            d, mth, y = (g.decode("utf-8") for g in m.groups())
+            return f"{d}{mth}{y}"  # str, no mezclamos bytes
+
+
+        #### PARA WEASYPRINT
+        # Generar PDF y enviar
+        buffer = BytesIO()
+        html_content = render_to_string('reciboPagoPdf.html', context)
+
+        # Convertir directamente a PDF usando WeasyPrint
+        output_path = tempfile.mktemp(suffix='.pdf')
+        HTML(string=html_content).write_pdf(output_path)
+
+        # Codificar la ruta
+        encoded_path = urlsafe_base64_encode(output_path.encode('utf-8'))
+
+        # === ENVÍO DE CORREO ===
+        destinatario = email  # la dirección del cliente
+        asunto = f'Proforma – PC Computers'
+        cuerpo = (
+            'Estimado/a,\n\n'
+            'Adjuntamos su Proforma.\n'
+            'Saludos cordiales,\nPC Computers'
+        )
+
+        mensaje = EmailMultiAlternatives(
+            subject=asunto,
+            body=cuerpo,
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com"),
+            to=[destinatario],
+        )
+
+        # Adjuntar PDF (verifique que exista)
+        if output_path and os.path.exists(output_path):
+            with open(output_path, 'rb') as f_pdf:
+                mensaje.attach(
+                    filename=f"Factura_{numero_factura}.pdf",
+                    content=f_pdf.read(),
+                    mimetype='application/pdf'
+                )
+        else:
+            print("WARN: output_path no existe o es None; no se adjunta PDF:", output_path)
+
+        # 1) Lanzar el envío de correo en segundo plano
+        try:
+            threading.Thread(
+                target=enviar_correo_async,
+                args=(mensaje, destinatario),
+                daemon=True,  # el hilo no bloquea el cierre del proceso
+            ).start()
+        except Exception as e:
+            print("Error al lanzar el hilo de envío de correo:", e)
+        
+        # Realizar la consulta para obtener el usuario con el número de cédula dado
+        try:
+            usuario_adicional = adicionalUsuario.objects.get(cedula=cedula)
+            # Si se encuentra un usuario con el número de cédula dado, 'usuario' contendrá ese objeto adicionalUsuario
+            usuario_adicional.direccion = direccion
+            usuario_adicional.direccionEnvio = direccionEnvio
+            usuario_adicional.celular = celular
+            usuario_adicional.ciudad = ciudad
+            if (tipoVenta == 'Crédito')or (tipoVenta == 'Apartado'):
+                    usuario_adicional.deuda = 'si'
+            usuario_adicional.save()
+            
+            # Obtener el usuario asociado al usuario adicional
+            usuario = usuario_adicional.user
+
+            # Actualizar los campos del usuario con los nuevos valores
+            usuario.first_name = nombre
+            usuario.last_name = apellidos
+            usuario.email = email
+
+            # Guardar los cambios en el usuario
+            usuario.save()
+            
+            
+        except adicionalUsuario.DoesNotExist:
+            # Si no se encuentra ningún usuario con el número de cédula dado, se lanzará una excepción adicionalUsuario.DoesNotExist
+            # Aquí puedes manejar el caso en el que no se encuentre ningún usuario con el número de cédula dado
+            usuario = User.objects.create_user(username=cedula, email=email)
+            usuario.first_name = nombre
+            usuario.last_name = apellidos
+            usuario.is_active = False
+            usuario.save()
+            
+            adicionalU = adicionalUsuario()
+            adicionalU.user = usuario
+            adicionalU.cedula = cedula
+            adicionalU.celular = celular
+            adicionalU.ciudad = ciudad
+            adicionalU.direccion = direccion
+            adicionalU.direccionEnvio = direccionEnvio
+            if (tipoVenta == 'Crédito') or (tipoVenta == 'Apartado'):
+                    adicionalU.deuda = 'si'
+            adicionalU.save()
+            
+        #######REEMPLACE ESTE CODIGO PARA MEJORAR LA DESCARGA, SI EXISTE ERROR BORRAR##########
+        # Seguridad: verificar que el archivo exista y tenga contenido
+        if not os.path.exists(output_path):
+            raise Http404("No se encontró el PDF generado.")
+
+       # Leer el PDF generado
+        with open(output_path, 'rb') as f:
+            pdf_bytes = f.read()  # ✅ contenido real del PDF
+            
+        if not pdf_bytes:
+            raise Http404("El PDF está vacío.")
+
+        # Codificar a base64 directamente (sin usar BytesIO)
+        encoded_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
+
+        # (Opcional) eliminar archivo temporal
+
+       
+
+        # Renderizar el template
+        # Renderizar la página que dispara la descarga y luego redirige
+        return render(request, "descargar_pdf_facturacion.html", {
+            "encoded_pdf": encoded_pdf,                 # en el template usa |escapejs
+            "download_filename": f"Proforma_{fecha_emision_str}.pdf",
+        })
+
+    else:
+        # Si no es una solicitud POST, retornar una respuesta de error
+        return HttpResponse("Error: Esta vista solo acepta solicitudes POST.")
+
+
     
 @login_required
 @vendedor_required
